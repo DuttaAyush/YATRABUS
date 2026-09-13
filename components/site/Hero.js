@@ -1,48 +1,33 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-
 export default function Hero() {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const imageScale = 1.05 + Math.min(scrollY / 1200, 0.18);
-
   return (
-    <section className="relative min-h-[calc(100vh-5rem)] min-h-[580px] md:min-h-[620px] w-full flex flex-col items-center justify-center overflow-hidden pb-8 pt-4 sticky top-20 z-0 bg-slate-950" id="heroSearch">
-      <div className="absolute inset-0 z-0 overflow-hidden w-full h-full">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pb-14 pt-10 sticky top-0 z-0" id="heroSearch">
+      <div className="absolute inset-0 z-0">
         <img
           alt="Modern BharatBenz luxury coach on scenic highway"
-          className="w-full h-full object-cover object-center transition-transform duration-200 ease-out will-change-transform"
-          style={{ transform: `scale(${imageScale})` }}
+          className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-110 ease-out"
           src="/images/screen.png"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-brand-scarlet/50 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center flex flex-col items-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-3 border border-white/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/20">
           <span className="material-symbols-outlined text-[16px] text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>
             stars
           </span>
-          India&apos;s Dedicated Fleet &amp; Pilgrimage Network
+          India&apos;s Dedicated Fleet & Pilgrimage Network
         </div>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-3 max-w-4xl mx-auto font-serif font-semibold">
+        <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-semibold">
           India&apos;s Dedicated Intercity Bus Network
         </h1>
-        <p className="text-xs sm:text-sm md:text-base text-slate-200 max-w-2xl mx-auto mb-6 font-medium">
-          Daily direct luxury BharatBenz &amp; Volvo sleeper coaches with assigned bus numbers and zero hidden aggregator fees.
+        <p className="text-base md:text-lg text-slate-200 max-w-2xl mx-auto mb-8 font-medium">
+          Daily direct luxury BharatBenz & Volvo sleeper coaches with assigned bus numbers and zero hidden aggregator fees.
         </p>
 
         {/* Search Matrix */}
-        <div className="bg-white rounded-3xl hero-shadow p-3 md:p-4 max-w-7xl mx-auto mb-4 text-left w-full">
+        <div className="bg-white rounded-3xl hero-shadow p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left">
           <form className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 items-center">
             <div className="md:col-span-3 flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200/80 focus-within:border-brand-scarlet focus-within:bg-white transition-all">
               <span className="material-symbols-outlined text-brand-scarlet mr-3 text-[22px]">departure_board</span>
@@ -104,7 +89,7 @@ export default function Hero() {
         </div>
 
         {/* Trust Badges Bar */}
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center md:justify-between gap-3 px-6 py-3 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 text-white text-xs font-semibold tracking-wide shadow-md w-full">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center md:justify-between gap-3 px-6 py-3.5 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 text-white text-xs font-semibold tracking-wide shadow-md">
           <div className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-emerald-400 text-[18px]">verified</span> Assigned Bus Plate Instantly
           </div>
@@ -118,7 +103,7 @@ export default function Hero() {
           </div>
           <span className="hidden lg:inline text-white/40">•</span>
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-pink-300 text-[18px]">send_to_mobile</span> Instant WhatsApp &amp; .ics Sync
+            <span className="material-symbols-outlined text-pink-300 text-[18px]">send_to_mobile</span> Instant WhatsApp & .ics Sync
           </div>
         </div>
       </div>
