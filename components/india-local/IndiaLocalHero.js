@@ -10,15 +10,25 @@ export default function IndiaLocalHero() {
     subText: 'Winter Getaway'
   });
   const [scrollScale, setScrollScale] = useState(1);
+  const [textY, setTextY] = useState(0);
+  const [textOpacity, setTextOpacity] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 60);
+
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          const calculatedY = Math.min(Math.max(scrollY, 0) * 0.35, 150);
+          const calculatedOpacity = Math.max(1 - Math.max(scrollY, 0) / 550, 0);
+
           setScrollScale(calculatedScale);
+          setTextY(calculatedY);
+          setTextOpacity(calculatedOpacity);
           ticking = false;
         });
         ticking = true;
@@ -29,6 +39,7 @@ export default function IndiaLocalHero() {
     handleScroll();
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -55,19 +66,55 @@ export default function IndiaLocalHero() {
           <div className="absolute inset-0 bg-teal-950/20 mix-blend-overlay"></div>
         </div>
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-amber-200 text-xs font-semibold tracking-wider uppercase mb-5 shadow-lg">
-            <span className="text-amber-400">✨</span> Explore Incredible Bharat • Curated Domestic Getaways
+          <div
+            style={{
+              transform: `translateY(${isLoaded ? textY * 0.7 : 20}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.8s ease-out 0.05s'
+            }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-amber-200 text-xs font-semibold tracking-wider uppercase mb-5 shadow-lg shadow-teal-950/30"
+          >
+            <span className="text-amber-300 animate-pulse">✨</span> Explore Incredible Bharat • Curated Domestic Getaways
           </div>
-          <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-5xl leading-[1.15] drop-shadow-md">
+          <h1
+            style={{
+              transform: `translateY(${isLoaded ? textY : 35}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
+            }}
+            className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-5xl leading-[1.15] drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
+          >
             Discover India. Unpack Wonders.
-            <span className="block italic font-serif font-medium text-teal-300 drop-shadow-sm mt-1">
+            <span className="block italic font-serif font-medium bg-gradient-to-r from-emerald-200 via-teal-300 to-cyan-200 bg-clip-text text-transparent drop-shadow-md mt-1">
               Memories Last Forever.
             </span>
           </h1>
-          <p className="mt-5 text-base sm:text-lg text-slate-200 max-w-3xl font-light leading-relaxed drop-shadow">
+          <p
+            style={{
+              transform: `translateY(${isLoaded ? textY * 0.85 : 35}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
+            }}
+            className="mt-5 text-base sm:text-lg text-slate-200 max-w-3xl font-light leading-relaxed drop-shadow-md"
+          >
             Curated domestic holiday packages across coastal retreats, serene backwaters, and misty Himalayan valleys. Direct BharatBenz &amp; Volvo coach transfers, handpicked 4★ &amp; 5★ luxury stays, and regional culinary excellence.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div
+            style={{
+              transform: `translateY(${isLoaded ? textY * 0.7 : 35}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s, opacity 0.9s ease-out 0.45s'
+            }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-4"
+          >
             <a
               className="px-7 py-3.5 bg-teal-700 hover:bg-teal-600 text-white font-bold rounded-full shadow-lg hover:shadow-teal-700/40 transition duration-200 flex items-center gap-2 text-sm tracking-wide"
               href="#curated-packages"
@@ -91,7 +138,15 @@ export default function IndiaLocalHero() {
       </section>
 
       {/* FLOATING SEARCH WIDGET */}
-      <div className="relative -mt-20 z-30 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-purpose="search-and-fixed-departures">
+      <div
+        style={{
+          transform: `translateY(${isLoaded ? 0 : 45}px)`,
+          opacity: isLoaded ? 1 : 0,
+          transition: 'transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s, opacity 1s ease-out 0.55s'
+        }}
+        className="relative -mt-20 z-30 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        data-purpose="search-and-fixed-departures"
+      >
         <div className="bg-white rounded-2xl shadow-custom-card border border-slate-100 p-4 sm:p-6 lg:p-7 backdrop-blur">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="border border-slate-200 rounded-xl p-3 hover:border-teal-600 transition flex items-center gap-3">

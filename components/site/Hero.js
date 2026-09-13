@@ -10,15 +10,25 @@ export default function Hero() {
     subText: 'Thursday'
   });
   const [scrollScale, setScrollScale] = useState(1);
+  const [textY, setTextY] = useState(0);
+  const [textOpacity, setTextOpacity] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 60);
+
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          const calculatedY = Math.min(Math.max(scrollY, 0) * 0.35, 150);
+          const calculatedOpacity = Math.max(1 - Math.max(scrollY, 0) / 550, 0);
+
           setScrollScale(calculatedScale);
+          setTextY(calculatedY);
+          setTextOpacity(calculatedOpacity);
           ticking = false;
         });
         ticking = true;
@@ -29,6 +39,7 @@ export default function Hero() {
     handleScroll();
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -54,21 +65,62 @@ export default function Hero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/20">
-          <span className="material-symbols-outlined text-[16px] text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>
+        {/* Entrance Badge */}
+        <div
+          style={{
+            transform: `translateY(${isLoaded ? textY * 0.7 : 20}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.8s ease-out 0.05s'
+          }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/20 shadow-lg shadow-red-950/20"
+        >
+          <span className="material-symbols-outlined text-[16px] text-amber-300 animate-pulse" style={{ fontVariationSettings: "'FILL' 1" }}>
             stars
           </span>
           India&apos;s Dedicated Fleet &amp; Pilgrimage Network
         </div>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-semibold">
-          India&apos;s Dedicated Intercity Bus Network
+
+        {/* Entrance Title */}
+        <h1
+          style={{
+            transform: `translateY(${isLoaded ? textY : 35}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
+          }}
+          className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-semibold drop-shadow-[0_4px_25px_rgba(0,0,0,0.7)]"
+        >
+          India&apos;s Dedicated <span className="bg-gradient-to-r from-white via-red-100 to-amber-200 bg-clip-text text-transparent drop-shadow-md font-serif">Intercity Bus Network</span>
         </h1>
-        <p className="text-base md:text-lg text-slate-200 max-w-2xl mx-auto mb-8 font-medium">
+
+        {/* Entrance Subtitle */}
+        <p
+          style={{
+            transform: `translateY(${isLoaded ? textY * 0.85 : 35}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
+          }}
+          className="text-base md:text-lg text-slate-100 max-w-2xl mx-auto mb-8 font-medium drop-shadow-md leading-relaxed"
+        >
           Daily direct luxury BharatBenz &amp; Volvo sleeper coaches with assigned bus numbers and zero hidden aggregator fees.
         </p>
 
-        {/* Search Matrix */}
-        <div className="bg-white rounded-3xl hero-shadow p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left">
+        {/* Entrance Search Matrix Box */}
+        <div
+          style={{
+            transform: `translateY(${isLoaded ? textY * 0.5 : 45}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, opacity 1s ease-out 0.5s'
+          }}
+          className="bg-white rounded-3xl hero-shadow p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left"
+        >
           <form className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 items-center">
             <div className="md:col-span-3 flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200/80 focus-within:border-brand-scarlet focus-within:bg-white transition-all">
               <span className="material-symbols-outlined text-brand-scarlet mr-3 text-[22px]">departure_board</span>

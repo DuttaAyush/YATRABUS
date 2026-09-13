@@ -6,6 +6,7 @@ import Hero from '@/components/site/Hero';
 import TrustBand from '@/components/site/TrustBand';
 import StatsStrip from '@/components/site/StatsStrip';
 import PopularRoutes from '@/components/site/PopularRoutes';
+import OfferBanner from '@/components/site/OfferBanner';
 import InternationalPackages from '@/components/site/InternationalPackages';
 import SpiritualPackages from '@/components/site/SpiritualPackages';
 import DomesticPackages from '@/components/site/DomesticPackages';
@@ -28,6 +29,7 @@ export default function BusTicketsPage() {
           <TrustBand />
           <StatsStrip />
           <PopularRoutes onOpenSeatDrawer={() => setIsSeatDrawerOpen(true)} />
+          <OfferBanner />
           <InternationalPackages />
           <SpiritualPackages />
           <DomesticPackages />

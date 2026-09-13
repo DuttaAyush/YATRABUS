@@ -10,15 +10,25 @@ export default function SpiritualHero() {
     subText: 'Festival Special'
   });
   const [scrollScale, setScrollScale] = useState(1);
+  const [textY, setTextY] = useState(0);
+  const [textOpacity, setTextOpacity] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 60);
+
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          const calculatedY = Math.min(Math.max(scrollY, 0) * 0.35, 150);
+          const calculatedOpacity = Math.max(1 - Math.max(scrollY, 0) / 550, 0);
+
           setScrollScale(calculatedScale);
+          setTextY(calculatedY);
+          setTextOpacity(calculatedOpacity);
           ticking = false;
         });
         ticking = true;
@@ -29,6 +39,7 @@ export default function SpiritualHero() {
     handleScroll();
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -54,19 +65,57 @@ export default function SpiritualHero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 backdrop-blur-md text-amber-200 font-bold text-xs uppercase tracking-wider mb-4 border border-amber-400/30">
-          <span className="material-symbols-outlined text-[16px] text-amber-300">temple_hindu</span>
+        <div
+          style={{
+            transform: `translateY(${isLoaded ? textY * 0.7 : 20}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.8s ease-out 0.05s'
+          }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 backdrop-blur-md text-amber-200 font-bold text-xs uppercase tracking-wider mb-4 border border-amber-400/30 shadow-lg shadow-amber-950/40"
+        >
+          <span className="material-symbols-outlined text-[16px] text-amber-300 animate-pulse">temple_hindu</span>
           DIVINE SPIRITUAL DARSHAN &amp; DEVSTHAN YATRAS
         </div>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-sm font-serif font-bold">
-          India&apos;s Dedicated <span className="text-amber-400 font-serif">Spiritual Yatra</span> &amp; Sacred Darshan Booking
+
+        <h1
+          style={{
+            transform: `translateY(${isLoaded ? textY : 35}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
+          }}
+          className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)] font-serif font-bold"
+        >
+          India&apos;s Dedicated <span className="bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent font-serif drop-shadow-md">Spiritual Yatra</span> &amp; Sacred Darshan Booking
         </h1>
-        <p className="text-base md:text-lg text-amber-100/90 max-w-2xl mx-auto mb-8 font-medium">
+
+        <p
+          style={{
+            transform: `translateY(${isLoaded ? textY * 0.85 : 35}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
+          }}
+          className="text-base md:text-lg text-amber-100/90 max-w-2xl mx-auto mb-8 font-medium drop-shadow-md leading-relaxed"
+        >
           Direct AC BharatBenz sleeper buses, guaranteed VIP Darshan passes, pure Satvik meals, and verified temple-proximate stays with assigned bus numbers.
         </p>
 
         {/* Search Matrix */}
-        <div className="bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 rounded-3xl p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left shadow-2xl">
+        <div
+          style={{
+            transform: `translateY(${isLoaded ? textY * 0.5 : 45}px)`,
+            opacity: isLoaded ? textOpacity : 0,
+            transition: isLoaded && textY > 0
+              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+              : 'transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, opacity 1s ease-out 0.5s'
+          }}
+          className="bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 rounded-3xl p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left shadow-2xl"
+        >
           <form className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 items-center">
             <div className="md:col-span-3 flex items-center bg-slate-950/60 rounded-2xl px-4 py-3 border border-amber-500/20 focus-within:border-amber-400 transition-all">
               <span className="material-symbols-outlined text-amber-400 mr-3 text-[22px]">departure_board</span>

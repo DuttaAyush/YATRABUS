@@ -10,15 +10,25 @@ export default function InternationalHero() {
     subText: 'Holiday Season'
   });
   const [scrollScale, setScrollScale] = useState(1);
+  const [textY, setTextY] = useState(0);
+  const [textOpacity, setTextOpacity] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 60);
+
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          const calculatedY = Math.min(Math.max(scrollY, 0) * 0.35, 150);
+          const calculatedOpacity = Math.max(1 - Math.max(scrollY, 0) / 550, 0);
+
           setScrollScale(calculatedScale);
+          setTextY(calculatedY);
+          setTextOpacity(calculatedOpacity);
           ticking = false;
         });
         ticking = true;
@@ -29,6 +39,7 @@ export default function InternationalHero() {
     handleScroll();
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -55,15 +66,44 @@ export default function InternationalHero() {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-teal-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/30">
-            <span className="material-symbols-outlined text-[16px] text-amber-300">explore</span>
+          <div
+            style={{
+              transform: `translateY(${isLoaded ? textY * 0.7 : 20}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.8s ease-out 0.05s'
+            }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-teal-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/30 shadow-lg shadow-teal-950/30"
+          >
+            <span className="material-symbols-outlined text-[16px] text-amber-300 animate-pulse">explore</span>
             EXPLORE MORE, WORRY LESS • CURATED GLOBAL ESCAPES
           </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-md font-serif font-semibold">
+
+          <h1
+            style={{
+              transform: `translateY(${isLoaded ? textY : 35}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
+            }}
+            className="text-4xl md:text-6xl lg:text-7xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)] font-serif font-semibold"
+          >
             We Plan. You Pack. <br />
-            <span className="font-serif italic text-teal-300 font-normal">Memories Last Forever.</span>
+            <span className="font-serif italic bg-gradient-to-r from-teal-200 via-cyan-300 to-emerald-200 bg-clip-text text-transparent font-normal drop-shadow-md">Memories Last Forever.</span>
           </h1>
-          <p className="text-base md:text-lg text-slate-100 max-w-2xl mx-auto mb-8 font-medium drop-shadow-sm">
+
+          <p
+            style={{
+              transform: `translateY(${isLoaded ? textY * 0.85 : 35}px)`,
+              opacity: isLoaded ? textOpacity : 0,
+              transition: isLoaded && textY > 0
+                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
+                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
+            }}
+            className="text-base md:text-lg text-slate-100 max-w-2xl mx-auto mb-8 font-medium drop-shadow-md leading-relaxed"
+          >
             Personalized worldwide holiday packages with flights, handpicked 4★ &amp; 5★ luxury stays, hassle-free visa processing, and curated Indian culinary experiences abroad.
           </p>
           <div className="flex items-center justify-center gap-4">
