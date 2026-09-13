@@ -15,16 +15,18 @@ export const metadata = {
 
 export default function SpiritualYatraPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFFDF9] font-sans text-slate-800 antialiased">
+    <div className="min-h-screen flex flex-col bg-slate-950 font-sans text-slate-800 antialiased relative">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 relative">
         <SpiritualHero />
-        <DevsthanRoutes />
-        <UpcomingBatches />
-        <YatraCatalog />
-        <DayWiseBlueprints />
-        <DevoteeCare />
-        <SpiritualFAQ />
+        <div className="relative z-10 bg-[#FFFDF9] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-[0_-25px_60px_rgba(15,23,42,0.35)] border-t border-amber-200/60 pt-8">
+          <DevsthanRoutes />
+          <UpcomingBatches />
+          <YatraCatalog />
+          <DayWiseBlueprints />
+          <DevoteeCare />
+          <SpiritualFAQ />
+        </div>
       </main>
       <Footer />
     </div>

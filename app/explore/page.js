@@ -20,20 +20,22 @@ export default function ExplorePage() {
   const [isSeatDrawerOpen, setIsSeatDrawerOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface font-sans text-slate-800 antialiased">
+    <div className="min-h-screen flex flex-col bg-slate-950 font-sans text-slate-800 antialiased relative">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 relative">
         <Hero />
-        <TrustBand />
-        <StatsStrip />
-        <PopularRoutes onOpenSeatDrawer={() => setIsSeatDrawerOpen(true)} />
-        <InternationalPackages />
-        <SpiritualPackages />
-        <DomesticPackages />
-        <Hospitality />
-        <WhyYatraBus />
-        <Testimonials />
-        <FAQ />
+        <div className="relative z-10 bg-surface rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-[0_-25px_60px_rgba(15,23,42,0.35)] border-t border-white/60 pt-8">
+          <TrustBand />
+          <StatsStrip />
+          <PopularRoutes onOpenSeatDrawer={() => setIsSeatDrawerOpen(true)} />
+          <InternationalPackages />
+          <SpiritualPackages />
+          <DomesticPackages />
+          <Hospitality />
+          <WhyYatraBus />
+          <Testimonials />
+          <FAQ />
+        </div>
       </main>
       <Footer />
       <SeatDrawerModal

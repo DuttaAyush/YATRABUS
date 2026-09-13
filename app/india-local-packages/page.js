@@ -17,18 +17,20 @@ export const metadata = {
 
 export default function IndiaLocalPackagesPage() {
   return (
-    <div className="bg-[#FCFDFD] font-sans text-slate-800 antialiased min-h-screen">
+    <div className="bg-slate-950 font-sans text-slate-800 antialiased min-h-screen relative flex flex-col">
       <Header />
-      <main>
+      <main className="flex-1 relative">
         <IndiaLocalHero />
-        <IndiaLocalTrustBand />
-        <SpotlightDomesticDestinations />
-        <IndiaLocalHowItWorks />
-        <IndiaLocalCatalog />
-        <IndiaLocalFixedDepartures />
-        <IndiaLocalBlueprint />
-        <IndiaLocalStories />
-        <IndiaLocalFAQ />
+        <div className="relative z-10 bg-[#FCFDFD] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-[0_-25px_60px_rgba(15,23,42,0.35)] border-t border-white/60 pt-8">
+          <IndiaLocalTrustBand />
+          <SpotlightDomesticDestinations />
+          <IndiaLocalHowItWorks />
+          <IndiaLocalCatalog />
+          <IndiaLocalFixedDepartures />
+          <IndiaLocalBlueprint />
+          <IndiaLocalStories />
+          <IndiaLocalFAQ />
+        </div>
       </main>
       <Footer />
     </div>

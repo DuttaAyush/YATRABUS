@@ -17,18 +17,20 @@ export const metadata = {
 
 export default function InternationalPackagesPage() {
   return (
-    <div className="bg-[#FBFDFD] font-sans text-slate-800 antialiased min-h-screen">
+    <div className="bg-slate-950 font-sans text-slate-800 antialiased min-h-screen relative flex flex-col">
       <Header />
-      <main>
+      <main className="flex-1 relative">
         <InternationalHero />
-        <InternationalTrustBand />
-        <SpotlightDestinations />
-        <HowItWorks />
-        <InternationalCatalog />
-        <FixedDepartures />
-        <InternationalBlueprint />
-        <TravelerStories />
-        <InternationalFAQ />
+        <div className="relative z-10 bg-[#FBFDFD] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-[0_-25px_60px_rgba(15,23,42,0.35)] border-t border-white/60 pt-8">
+          <InternationalTrustBand />
+          <SpotlightDestinations />
+          <HowItWorks />
+          <InternationalCatalog />
+          <FixedDepartures />
+          <InternationalBlueprint />
+          <TravelerStories />
+          <InternationalFAQ />
+        </div>
       </main>
       <Footer />
     </div>

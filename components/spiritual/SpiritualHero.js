@@ -1,32 +1,47 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
+
 export default function SpiritualHero() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const imageScale = 1.05 + Math.min(scrollY / 1200, 0.18);
+
   return (
-    <section className="relative min-h-[580px] lg:min-h-[620px] flex items-center justify-center overflow-hidden pb-14 pt-10 w-full" id="hero">
-      <div className="absolute inset-0 z-0">
+    <section className="relative min-h-[calc(100vh-5rem)] min-h-[580px] md:min-h-[620px] w-full flex flex-col items-center justify-center overflow-hidden pb-8 pt-4 sticky top-20 z-0 bg-slate-950" id="hero">
+      <div className="absolute inset-0 z-0 overflow-hidden w-full h-full">
         <img
           alt="Spiritual Yatra Sacred Darshan Background"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center transition-transform duration-200 ease-out will-change-transform"
+          style={{ transform: `scale(${imageScale})` }}
           src="/images/yatrabus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_5.jpg"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-amber-950/70 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 backdrop-blur-md text-amber-200 font-bold text-xs uppercase tracking-wider mb-4 border border-amber-400/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center flex flex-col items-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 backdrop-blur-md text-amber-200 font-bold text-xs uppercase tracking-wider mb-2 border border-amber-400/30">
           <span className="material-symbols-outlined text-[16px] text-amber-300">temple_hindu</span>
-          DIVINE SPIRITUAL DARSHAN & DEVSTHAN YATRAS
+          DIVINE SPIRITUAL DARSHAN &amp; DEVSTHAN YATRAS
         </div>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-sm font-serif font-bold">
-          India&apos;s Dedicated <span className="text-amber-400 font-serif">Spiritual Yatra</span> & Sacred Darshan Booking
+        <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-2 max-w-4xl mx-auto drop-shadow-sm font-serif font-bold">
+          India&apos;s Dedicated <span className="text-amber-400 font-serif">Spiritual Yatra</span> &amp; Sacred Darshan Booking
         </h1>
-        <p className="text-base md:text-lg text-amber-100/90 max-w-2xl mx-auto mb-8 font-medium">
+        <p className="text-xs sm:text-sm md:text-base text-amber-100/90 max-w-2xl mx-auto mb-6 font-medium">
           Direct AC BharatBenz sleeper buses, guaranteed VIP Darshan passes, pure Satvik meals, and verified temple-proximate stays with assigned bus numbers.
         </p>
 
         {/* Search Matrix */}
-        <div className="bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 rounded-3xl p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left shadow-2xl">
+        <div className="bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 rounded-3xl p-3 md:p-4 max-w-7xl mx-auto mb-4 text-left shadow-2xl w-full">
           <form className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 items-center">
             <div className="md:col-span-3 flex items-center bg-slate-950/60 rounded-2xl px-4 py-3 border border-amber-500/20 focus-within:border-amber-400 transition-all">
               <span className="material-symbols-outlined text-amber-400 mr-3 text-[22px]">departure_board</span>
@@ -88,14 +103,14 @@ export default function SpiritualHero() {
         </div>
 
         {/* Trust Badges Bar */}
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center md:justify-between gap-3 px-6 py-3.5 bg-amber-950/40 backdrop-blur-md rounded-2xl border border-amber-500/30 text-amber-100 text-xs font-semibold">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center md:justify-between gap-3 px-6 py-3 bg-amber-950/40 backdrop-blur-md rounded-2xl border border-amber-500/30 text-amber-100 text-xs font-semibold w-full">
           <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-amber-300 text-[18px]">verified</span> Guaranteed VIP Darshan Pass</div>
           <span className="hidden sm:inline text-white/40">•</span>
           <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-emerald-300 text-[18px]">restaurant</span> Pure Satvik Dining (No Garlic/Onion)</div>
           <span className="hidden md:inline text-white/40">•</span>
           <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-cyan-300 text-[18px]">airline_seat_recline_extra</span> Real-Time Bus Seat Lock</div>
           <span className="hidden lg:inline text-white/40">•</span>
-          <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-pink-300 text-[18px]">support</span> Purohit & Temple Escort Assist</div>
+          <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-pink-300 text-[18px]">support</span> Purohit &amp; Temple Escort Assist</div>
         </div>
       </div>
     </section>
