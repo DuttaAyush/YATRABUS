@@ -1,8 +1,45 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import DatePickerPopover from '@/components/ui/DatePickerPopover';
 
 export default function IndiaLocalHero() {
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState({
+    mainText: 'Nov - Dec 2026',
+    subText: 'Winter Getaway'
+  });
+  const [scrollScale, setScrollScale] = useState(1);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          setScrollScale(calculatedScale);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleDateSelect = (dateResult) => {
+    setSelectedDate({
+      mainText: dateResult.mainText,
+      subText: dateResult.subText
+    });
+  };
+
   return (
     <>
       {/* HERO BANNER */}
@@ -10,7 +47,8 @@ export default function IndiaLocalHero() {
         <div className="absolute inset-0 z-0">
           <img
             alt="Breathtaking cinematic travel photography of an iconic Indian coastal temple shore at sunrise"
-            className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-110 ease-out"
+            className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
+            style={{ transform: `scale(${scrollScale})` }}
             src="/images/yatrabus_india_local_holiday_travel_packages_1.jpg"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/60 to-slate-900/40"></div>
@@ -80,18 +118,28 @@ export default function IndiaLocalHero() {
                 />
               </div>
             </div>
-            <div className="border border-slate-200 rounded-xl p-3 hover:border-teal-600 transition flex items-center gap-3">
+
+            {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
+            <div
+              className="relative border border-slate-200 hover:border-teal-600 rounded-xl p-3 transition flex items-center gap-3 cursor-pointer hover:bg-teal-50/50"
+              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+            >
               <div className="text-teal-700 text-xl pl-1">🗓️</div>
               <div className="flex-1 min-w-0">
-                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Travel Month</span>
-                <input
-                  className="w-full text-xs font-bold text-slate-800 p-0 border-0 focus:ring-0 truncate cursor-pointer bg-transparent"
-                  readOnly
-                  type="text"
-                  defaultValue="Nov - Dec 2024 / Jan 2025"
-                />
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider cursor-pointer">Travel Month</span>
+                <div className="text-xs font-bold text-slate-800 truncate">{selectedDate.mainText}</div>
               </div>
+
+              {/* Floating Speech Bubble */}
+              <DatePickerPopover
+                isOpen={isDatePickerOpen}
+                onClose={() => setIsDatePickerOpen(false)}
+                onSelectDate={handleDateSelect}
+                selectedDate={selectedDate.mainText}
+                themeColor="teal"
+              />
             </div>
+
             <div className="border border-slate-200 rounded-xl p-3 hover:border-teal-600 transition flex items-center gap-3">
               <div className="text-teal-700 text-xl pl-1">👥</div>
               <div className="flex-1 min-w-0">

@@ -1,8 +1,45 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import DatePickerPopover from '@/components/ui/DatePickerPopover';
 
 export default function InternationalHero() {
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState({
+    mainText: 'Nov - Dec 2026',
+    subText: 'Holiday Season'
+  });
+  const [scrollScale, setScrollScale] = useState(1);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          setScrollScale(calculatedScale);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleDateSelect = (dateResult) => {
+    setSelectedDate({
+      mainText: dateResult.mainText,
+      subText: dateResult.subText
+    });
+  };
+
   return (
     <>
       {/* 2. REFRESHING SUNLIT OCEAN HERO */}
@@ -10,7 +47,8 @@ export default function InternationalHero() {
         <div className="absolute inset-0 z-0">
           <img
             alt="Breathtaking sunlit turquoise ocean and mountains"
-            className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-110 ease-out"
+            className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
+            style={{ transform: `scale(${scrollScale})` }}
             src="/images/yatrabus_international_holiday_travel_packages_1.jpg"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-900/40 to-teal-950/30"></div>
@@ -73,13 +111,28 @@ export default function InternationalHero() {
                 />
               </div>
             </div>
-            <div className="md:col-span-2 flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200 cursor-pointer">
+
+            {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
+            <div
+              className="relative md:col-span-2 flex items-center bg-slate-50 hover:bg-teal-50/60 rounded-2xl px-4 py-3 border border-slate-200 hover:border-teal-600 cursor-pointer transition-all active:scale-[0.98]"
+              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+            >
               <span className="material-symbols-outlined text-teal-600 mr-2.5 text-[22px]">calendar_month</span>
               <div className="flex-1 min-w-0">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Travel Month</label>
-                <div className="text-xs font-bold text-slate-900 truncate">Nov - Dec 2024</div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer">Travel Month</label>
+                <div className="text-xs font-bold text-slate-900 truncate">{selectedDate.mainText}</div>
               </div>
+
+              {/* Floating Speech Bubble */}
+              <DatePickerPopover
+                isOpen={isDatePickerOpen}
+                onClose={() => setIsDatePickerOpen(false)}
+                onSelectDate={handleDateSelect}
+                selectedDate={selectedDate.mainText}
+                themeColor="teal"
+              />
             </div>
+
             <div className="md:col-span-2 flex items-center bg-slate-50 rounded-2xl px-3 py-3 border border-slate-200 text-center">
               <div className="flex-1 min-w-0">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Travelers</label>

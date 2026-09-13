@@ -1,29 +1,70 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
+import DatePickerPopover from '@/components/ui/DatePickerPopover';
+
 export default function Hero() {
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState({
+    mainText: 'Tomorrow, 24 Oct',
+    subText: 'Thursday'
+  });
+  const [scrollScale, setScrollScale] = useState(1);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          setScrollScale(calculatedScale);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleDateSelect = (dateResult) => {
+    setSelectedDate({
+      mainText: dateResult.mainText,
+      subText: dateResult.subText
+    });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pb-14 pt-10 sticky top-0 z-0" id="heroSearch">
       <div className="absolute inset-0 z-0">
         <img
           alt="Modern BharatBenz luxury coach on scenic highway"
-          className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-110 ease-out"
+          className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
+          style={{ transform: `scale(${scrollScale})` }}
           src="/images/screen.png"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-brand-scarlet/50 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/20">
           <span className="material-symbols-outlined text-[16px] text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>
             stars
           </span>
-          India&apos;s Dedicated Fleet & Pilgrimage Network
+          India&apos;s Dedicated Fleet &amp; Pilgrimage Network
         </div>
         <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-semibold">
           India&apos;s Dedicated Intercity Bus Network
         </h1>
         <p className="text-base md:text-lg text-slate-200 max-w-2xl mx-auto mb-8 font-medium">
-          Daily direct luxury BharatBenz & Volvo sleeper coaches with assigned bus numbers and zero hidden aggregator fees.
+          Daily direct luxury BharatBenz &amp; Volvo sleeper coaches with assigned bus numbers and zero hidden aggregator fees.
         </p>
 
         {/* Search Matrix */}
@@ -41,6 +82,7 @@ export default function Hero() {
                 <p className="text-[11px] text-slate-500 truncate">Chatrapati Sq, Dharampeth</p>
               </div>
             </div>
+
             <div className="md:col-span-1 flex justify-center -my-3 md:my-0">
               <button
                 className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-md flex items-center justify-center text-brand-scarlet hover:bg-red-50 hover:scale-105 transition-all"
@@ -49,6 +91,7 @@ export default function Hero() {
                 <span className="material-symbols-outlined text-[20px]">swap_horiz</span>
               </button>
             </div>
+
             <div className="md:col-span-3 flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200/80 focus-within:border-brand-scarlet focus-within:bg-white transition-all">
               <span className="material-symbols-outlined text-brand-scarlet mr-3 text-[22px]">pin_drop</span>
               <div className="flex-1 min-w-0">
@@ -61,14 +104,29 @@ export default function Hero() {
                 <p className="text-[11px] text-slate-500 truncate">Wakad, Swargate, Viman Nagar</p>
               </div>
             </div>
-            <div className="md:col-span-2 flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200/80 cursor-pointer">
+
+            {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
+            <div
+              className="relative md:col-span-2 flex items-center bg-slate-50 hover:bg-red-50/50 rounded-2xl px-4 py-3 border border-slate-200/80 hover:border-brand-scarlet cursor-pointer transition-all active:scale-[0.98]"
+              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+            >
               <span className="material-symbols-outlined text-brand-scarlet mr-2.5 text-[22px]">calendar_month</span>
               <div className="flex-1 min-w-0">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Date of Journey</label>
-                <div className="text-sm font-bold text-slate-900 truncate">Tomorrow, 24 Oct</div>
-                <p className="text-[11px] text-emerald-600 font-semibold truncate">Thursday</p>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer">Date of Journey</label>
+                <div className="text-sm font-bold text-slate-900 truncate">{selectedDate.mainText}</div>
+                <p className="text-[11px] text-emerald-600 font-semibold truncate">{selectedDate.subText}</p>
               </div>
+
+              {/* Floating Speech Bubble */}
+              <DatePickerPopover
+                isOpen={isDatePickerOpen}
+                onClose={() => setIsDatePickerOpen(false)}
+                onSelectDate={handleDateSelect}
+                selectedDate={selectedDate.mainText}
+                themeColor="red"
+              />
             </div>
+
             <div className="md:col-span-1 flex items-center bg-slate-50 rounded-2xl px-3 py-3 border border-slate-200/80 text-center cursor-pointer">
               <div className="flex-1 min-w-0">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Seats</label>
@@ -76,6 +134,7 @@ export default function Hero() {
                 <p className="text-[10px] text-slate-500">All</p>
               </div>
             </div>
+
             <div className="md:col-span-2">
               <button
                 className="w-full min-h-[58px] rounded-2xl bg-brand-scarlet text-white hover:bg-brand-hover transition-all flex items-center justify-center gap-2 font-bold text-sm tracking-wider uppercase shadow-lg shadow-red-600/30"
@@ -103,7 +162,7 @@ export default function Hero() {
           </div>
           <span className="hidden lg:inline text-white/40">•</span>
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-pink-300 text-[18px]">send_to_mobile</span> Instant WhatsApp & .ics Sync
+            <span className="material-symbols-outlined text-pink-300 text-[18px]">send_to_mobile</span> Instant WhatsApp &amp; .ics Sync
           </div>
         </div>
       </div>

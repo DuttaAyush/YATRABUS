@@ -1,12 +1,52 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
+import DatePickerPopover from '@/components/ui/DatePickerPopover';
+
 export default function SpiritualHero() {
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState({
+    mainText: 'Tomorrow, 24 Oct',
+    subText: 'Festival Special'
+  });
+  const [scrollScale, setScrollScale] = useState(1);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          setScrollScale(calculatedScale);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleDateSelect = (dateResult) => {
+    setSelectedDate({
+      mainText: dateResult.mainText,
+      subText: dateResult.subText
+    });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pb-20 pt-10 w-full sticky top-0 z-0" id="hero">
       <div className="absolute inset-0 z-0">
         <img
           alt="Spiritual Yatra Sacred Darshan Background"
-          className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-110 ease-out"
+          className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
+          style={{ transform: `scale(${scrollScale})` }}
           src="/images/yatrabus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_5.jpg"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-amber-950/70 mix-blend-multiply"></div>
@@ -16,10 +56,10 @@ export default function SpiritualHero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 backdrop-blur-md text-amber-200 font-bold text-xs uppercase tracking-wider mb-4 border border-amber-400/30">
           <span className="material-symbols-outlined text-[16px] text-amber-300">temple_hindu</span>
-          DIVINE SPIRITUAL DARSHAN & DEVSTHAN YATRAS
+          DIVINE SPIRITUAL DARSHAN &amp; DEVSTHAN YATRAS
         </div>
         <h1 className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-sm font-serif font-bold">
-          India&apos;s Dedicated <span className="text-amber-400 font-serif">Spiritual Yatra</span> & Sacred Darshan Booking
+          India&apos;s Dedicated <span className="text-amber-400 font-serif">Spiritual Yatra</span> &amp; Sacred Darshan Booking
         </h1>
         <p className="text-base md:text-lg text-amber-100/90 max-w-2xl mx-auto mb-8 font-medium">
           Direct AC BharatBenz sleeper buses, guaranteed VIP Darshan passes, pure Satvik meals, and verified temple-proximate stays with assigned bus numbers.
@@ -60,14 +100,29 @@ export default function SpiritualHero() {
                 <p className="text-[11px] text-amber-200/60 truncate">Kashi Vishwanath, Ram Janmabhoomi</p>
               </div>
             </div>
-            <div className="md:col-span-2 flex items-center bg-slate-950/60 rounded-2xl px-4 py-3 border border-amber-500/20 cursor-pointer">
+
+            {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
+            <div
+              className="relative md:col-span-2 flex items-center bg-slate-950/60 hover:bg-amber-950/40 rounded-2xl px-4 py-3 border border-amber-500/20 hover:border-amber-400 cursor-pointer transition-all active:scale-[0.98]"
+              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+            >
               <span className="material-symbols-outlined text-amber-400 mr-2.5 text-[22px]">calendar_month</span>
               <div className="flex-1 min-w-0">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-300/80">Yatra Month</label>
-                <div className="text-sm font-bold text-white truncate">Nov 2026 Batch</div>
-                <p className="text-[11px] text-amber-400 font-semibold truncate">Festival Special</p>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-300/80 cursor-pointer">Yatra Date</label>
+                <div className="text-sm font-bold text-white truncate">{selectedDate.mainText}</div>
+                <p className="text-[11px] text-amber-400 font-semibold truncate">{selectedDate.subText}</p>
               </div>
+
+              {/* Floating Speech Bubble */}
+              <DatePickerPopover
+                isOpen={isDatePickerOpen}
+                onClose={() => setIsDatePickerOpen(false)}
+                onSelectDate={handleDateSelect}
+                selectedDate={selectedDate.mainText}
+                themeColor="amber"
+              />
             </div>
+
             <div className="md:col-span-1 flex items-center bg-slate-950/60 rounded-2xl px-3 py-3 border border-amber-500/20 text-center cursor-pointer">
               <div className="flex-1 min-w-0">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-300/80">Pilgrims</label>
@@ -95,7 +150,7 @@ export default function SpiritualHero() {
           <span className="hidden md:inline text-white/40">•</span>
           <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-cyan-300 text-[18px]">airline_seat_recline_extra</span> Real-Time Bus Seat Lock</div>
           <span className="hidden lg:inline text-white/40">•</span>
-          <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-pink-300 text-[18px]">support</span> Purohit & Temple Escort Assist</div>
+          <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-pink-300 text-[18px]">support</span> Purohit &amp; Temple Escort Assist</div>
         </div>
       </div>
     </section>
