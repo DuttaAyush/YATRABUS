@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import PackageDetailModal from '@/components/site/PackageDetailModal';
 
 const destinationsData = [
   {
@@ -88,6 +89,8 @@ export default function SpotlightDestinations() {
   const [windowWidth, setWindowWidth] = useState(1200);
   const [touchStartX, setTouchStartX] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [modalPkg, setModalPkg] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const total = destinationsData.length;
 
   useEffect(() => {
@@ -133,10 +136,10 @@ export default function SpotlightDestinations() {
     return diff;
   };
 
-  // Expanded 2D Card Deck Offsets for Larger Cards
+  // 2D Side Offsets (Pure linear translateX values)
   const offset1 = windowWidth < 640 ? 250 : windowWidth < 1024 ? 310 : 385;
   const offset2 = windowWidth < 640 ? 410 : windowWidth < 1024 ? 520 : 650;
-  const offset3 = windowWidth < 640 ? 550 : windowWidth < 1024 ? 680 : 840;
+  const offset3 = windowWidth < 640 ? 650 : windowWidth < 1024 ? 900 : 1200;
 
   return (
     <section className="w-full py-12 md:py-16 bg-[#F8FAFB] overflow-hidden select-none" id="destinations">
@@ -173,7 +176,7 @@ export default function SpotlightDestinations() {
           </div>
         </div>
 
-        {/* 2D TILTED CARD DECK CAROUSEL */}
+        {/* 2D TILTED CARD DECK CAROUSEL (PURE SIDE-TO-SIDE SLIDING) */}
         <div
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -188,48 +191,48 @@ export default function SpotlightDestinations() {
             const isFarRight = diff === 2;
             const isHovered = index === hoveredIndex;
 
-            // Pure 2D Tilt & Fan Offsets (Larger Card Dimensions)
-            let transform = `translate3d(${diff < 0 ? -offset3 : offset3}px, 40px, 0px) scale(0.5) rotate(${diff < 0 ? -10 : 10}deg)`;
+            // Pure 2D Side-to-Side Transforms (Flat horizontal sliding from left/right screen edges)
+            let transform = `translate(${diff < 0 ? -offset3 : offset3}px, 20px) scale(0.72) rotate(${diff < 0 ? -10 : 10}deg)`;
             let opacity = 0;
             let zIndex = 0;
             let widthClass = 'w-[300px] sm:w-[340px]';
             let heightClass = 'h-[390px] sm:h-[420px]';
 
             if (isCenter) {
-              // Center Active Featured Card (Enlarged max-w-[470px], height h-[465px])
+              // Center Active Featured Card
               transform = isHovered
-                ? 'translate3d(0px, -14px, 0px) scale(1.02) rotate(0deg)'
-                : 'translate3d(0px, 0px, 0px) scale(1) rotate(0deg)';
+                ? 'translate(0px, -14px) scale(1.02) rotate(0deg)'
+                : 'translate(0px, 0px) scale(1) rotate(0deg)';
               opacity = 1;
               zIndex = isHovered ? 50 : 30;
               widthClass = 'w-full max-w-[410px] sm:max-w-[470px]';
               heightClass = 'h-[465px]';
             } else if (isLeft) {
-              // Immediate Left Card (Tilted -4.5deg left)
+              // Immediate Left Card
               transform = isHovered
-                ? `translate3d(-${offset1}px, -16px, 0px) scale(0.90) rotate(-1.5deg)`
-                : `translate3d(-${offset1}px, 8px, 0px) scale(0.86) rotate(-4.5deg)`;
+                ? `translate(-${offset1}px, -16px) scale(0.90) rotate(-1.5deg)`
+                : `translate(-${offset1}px, 8px) scale(0.86) rotate(-4.5deg)`;
               opacity = 0.95;
               zIndex = isHovered ? 40 : 20;
             } else if (isRight) {
-              // Immediate Right Card (Tilted +4.5deg right)
+              // Immediate Right Card
               transform = isHovered
-                ? `translate3d(${offset1}px, -16px, 0px) scale(0.90) rotate(1.5deg)`
-                : `translate3d(${offset1}px, 8px, 0px) scale(0.86) rotate(4.5deg)`;
+                ? `translate(${offset1}px, -16px) scale(0.90) rotate(1.5deg)`
+                : `translate(${offset1}px, 8px) scale(0.86) rotate(4.5deg)`;
               opacity = 0.95;
               zIndex = isHovered ? 40 : 20;
             } else if (isFarLeft) {
-              // Far Left Card (Tilted -7.5deg left)
+              // Far Left Card
               transform = isHovered
-                ? `translate3d(-${offset2}px, -12px, 0px) scale(0.78) rotate(-4deg)`
-                : `translate3d(-${offset2}px, 20px, 0px) scale(0.72) rotate(-7.5deg)`;
+                ? `translate(-${offset2}px, -12px) scale(0.78) rotate(-4deg)`
+                : `translate(-${offset2}px, 20px) scale(0.72) rotate(-7.5deg)`;
               opacity = windowWidth < 640 ? 0 : 0.75;
               zIndex = isHovered ? 30 : 10;
             } else if (isFarRight) {
-              // Far Right Card (Tilted +7.5deg right)
+              // Far Right Card
               transform = isHovered
-                ? `translate3d(${offset2}px, -12px, 0px) scale(0.78) rotate(4deg)`
-                : `translate3d(${offset2}px, 20px, 0px) scale(0.72) rotate(7.5deg)`;
+                ? `translate(${offset2}px, -12px) scale(0.78) rotate(4deg)`
+                : `translate(${offset2}px, 20px) scale(0.72) rotate(4deg)`;
               opacity = windowWidth < 640 ? 0 : 0.75;
               zIndex = isHovered ? 30 : 10;
             }
@@ -237,7 +240,14 @@ export default function SpotlightDestinations() {
             return (
               <div
                 key={item.id}
-                onClick={() => handleCardClick(index)}
+                onClick={() => {
+                  if (isCenter) {
+                    setModalPkg(item);
+                    setIsModalOpen(true);
+                  } else {
+                    handleCardClick(index);
+                  }
+                }}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{
@@ -245,7 +255,6 @@ export default function SpotlightDestinations() {
                   opacity,
                   zIndex,
                   willChange: 'transform, opacity',
-                  backfaceVisibility: 'hidden',
                   transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), z-index 0.65s ease'
                 }}
                 className={`absolute rounded-3xl overflow-hidden shadow-2xl cursor-pointer flex flex-col justify-between p-5 bg-slate-900 border transition-all group pointer-events-auto ${widthClass} ${heightClass} ${
@@ -294,7 +303,12 @@ export default function SpotlightDestinations() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleCardClick(index);
+                        if (isCenter) {
+                          setModalPkg(item);
+                          setIsModalOpen(true);
+                        } else {
+                          handleCardClick(index);
+                        }
                       }}
                       className={`font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer ${
                         isCenter
@@ -325,6 +339,12 @@ export default function SpotlightDestinations() {
           ))}
         </div>
       </div>
+
+      <PackageDetailModal
+        pkg={modalPkg}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }

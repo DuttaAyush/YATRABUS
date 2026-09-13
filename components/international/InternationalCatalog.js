@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import PackageDetailModal from '@/components/site/PackageDetailModal';
 
 const packagesData = [
   {
@@ -51,10 +52,17 @@ const packagesData = [
 
 export default function InternationalCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [modalPkg, setModalPkg] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredPackages = activeFilter === 'all'
     ? packagesData
     : packagesData.filter((pkg) => pkg.category === activeFilter);
+
+  const handleOpenModal = (pkg) => {
+    setModalPkg(pkg);
+    setIsModalOpen(true);
+  };
 
   return (
     <section className="w-full py-16 bg-[#F8FAFB] border-b border-slate-200" id="packages">
@@ -73,7 +81,7 @@ export default function InternationalCatalog() {
           {/* FILTER BUTTONS */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
             <button
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activeFilter === 'all'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
@@ -83,7 +91,7 @@ export default function InternationalCatalog() {
               All Escapes
             </button>
             <button
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activeFilter === 'honeymoon'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
@@ -93,7 +101,7 @@ export default function InternationalCatalog() {
               Honeymoon
             </button>
             <button
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activeFilter === 'family'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
@@ -103,7 +111,7 @@ export default function InternationalCatalog() {
               Family Special
             </button>
             <button
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activeFilter === 'europe'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
@@ -120,7 +128,8 @@ export default function InternationalCatalog() {
           {filteredPackages.map((pkg) => (
             <div
               key={pkg.id}
-              className="bg-white rounded-3xl overflow-hidden shadow-luxury border border-slate-200 card-lift flex flex-col group"
+              onClick={() => handleOpenModal(pkg)}
+              className="bg-white rounded-3xl overflow-hidden shadow-luxury border border-slate-200 card-lift flex flex-col group cursor-pointer"
             >
               <div className="relative h-48 w-full overflow-hidden">
                 <img
@@ -147,7 +156,14 @@ export default function InternationalCatalog() {
                     <span className="text-[10px] text-slate-400 block font-semibold">ALL-INCLUSIVE</span>
                     <span className="text-xl font-extrabold text-slate-900">{pkg.price}</span>
                   </div>
-                  <button className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-teal-700 text-white font-bold text-xs transition-all">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenModal(pkg);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-teal-700 text-white font-bold text-xs transition-all cursor-pointer"
+                  >
                     View Itinerary
                   </button>
                 </div>
@@ -156,6 +172,12 @@ export default function InternationalCatalog() {
           ))}
         </div>
       </div>
+
+      <PackageDetailModal
+        pkg={modalPkg}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }

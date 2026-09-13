@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import PackageDetailModal from '@/components/site/PackageDetailModal';
 
 const domesticPackagesData = [
   {
@@ -55,10 +56,17 @@ const domesticPackagesData = [
 
 export default function IndiaLocalCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [modalPkg, setModalPkg] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredPackages = activeFilter === 'all'
     ? domesticPackagesData
     : domesticPackagesData.filter((pkg) => pkg.category === activeFilter);
+
+  const handleOpenModal = (pkg) => {
+    setModalPkg(pkg);
+    setIsModalOpen(true);
+  };
 
   return (
     <section className="py-16 bg-slate-50 border-t border-slate-200/60" data-purpose="curated-packages-grid" id="curated-packages">
@@ -74,7 +82,7 @@ export default function IndiaLocalCatalog() {
           {/* Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2">
             <button
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
                 activeFilter === 'all'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white hover:bg-slate-200 text-slate-700 border border-slate-200'
@@ -84,7 +92,7 @@ export default function IndiaLocalCatalog() {
               All Escapes
             </button>
             <button
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer ${
                 activeFilter === 'coastal'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
@@ -94,7 +102,7 @@ export default function IndiaLocalCatalog() {
               Beach &amp; Coastal
             </button>
             <button
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer ${
                 activeFilter === 'hills'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
@@ -104,7 +112,7 @@ export default function IndiaLocalCatalog() {
               Hill Stations
             </button>
             <button
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer ${
                 activeFilter === 'heritage'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
@@ -121,11 +129,12 @@ export default function IndiaLocalCatalog() {
           {filteredPackages.map((pkg) => (
             <div
               key={pkg.id}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/90 transition flex flex-col justify-between"
+              onClick={() => handleOpenModal(pkg)}
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/90 transition flex flex-col justify-between cursor-pointer group"
             >
               <div>
                 <div className="relative h-48 overflow-hidden">
-                  <img alt={pkg.title} className="w-full h-full object-cover" src={pkg.image} />
+                  <img alt={pkg.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={pkg.image} />
                   <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
                     {pkg.duration}
                   </span>
@@ -134,7 +143,7 @@ export default function IndiaLocalCatalog() {
                   </span>
                 </div>
                 <div className="p-5">
-                  <h3 className="font-serif text-base font-bold text-slate-900 hover:text-teal-700 transition">{pkg.title}</h3>
+                  <h3 className="font-serif text-base font-bold text-slate-900 group-hover:text-teal-700 transition">{pkg.title}</h3>
                   <p className="text-slate-500 text-xs mt-2 line-clamp-2">{pkg.desc}</p>
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     <span className="bg-teal-50 text-teal-800 text-[10px] font-semibold px-2 py-0.5 rounded">{pkg.tag1}</span>
@@ -147,7 +156,14 @@ export default function IndiaLocalCatalog() {
                   <span className="text-[10px] text-slate-400 block uppercase font-bold">All-Inclusive</span>
                   <span className="text-lg font-black text-slate-900">{pkg.price}</span>
                 </div>
-                <button className="px-3.5 py-2 bg-slate-900 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenModal(pkg);
+                  }}
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition cursor-pointer"
+                >
                   View Itinerary
                 </button>
               </div>
@@ -155,6 +171,13 @@ export default function IndiaLocalCatalog() {
           ))}
         </div>
       </div>
+
+      <PackageDetailModal
+        pkg={modalPkg}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }
+

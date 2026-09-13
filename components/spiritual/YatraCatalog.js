@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import PackageDetailModal from '@/components/site/PackageDetailModal';
 
 const yatraPackages = [
   {
@@ -79,11 +80,18 @@ const yatraPackages = [
 
 export default function YatraCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [modalPkg, setModalPkg] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredPackages = yatraPackages.filter(pkg => {
     if (activeFilter === 'all') return true;
     return pkg.category.includes(activeFilter);
   });
+
+  const handleOpenModal = (pkg) => {
+    setModalPkg(pkg);
+    setIsModalOpen(true);
+  };
 
   return (
     <section className="w-full py-16 bg-white border-y border-amber-200/60" id="spiritualPackages">
@@ -126,7 +134,8 @@ export default function YatraCatalog() {
           {filteredPackages.map(pkg => (
             <div
               key={pkg.id}
-              className="bg-[#FFFDF9] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-amber-200 transition-all flex flex-col group"
+              onClick={() => handleOpenModal(pkg)}
+              className="bg-[#FFFDF9] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-amber-200 transition-all flex flex-col group cursor-pointer"
             >
               <div className="relative h-52 w-full overflow-hidden">
                 <img
@@ -163,8 +172,15 @@ export default function YatraCatalog() {
                     <span className="text-2xl font-extrabold text-slate-900">{pkg.price}</span>
                     <span className="text-[10px] text-slate-500">/person</span>
                   </div>
-                  <button className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md">
-                    View & Book
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenModal(pkg);
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md cursor-pointer"
+                  >
+                    View &amp; Book
                   </button>
                 </div>
               </div>
@@ -172,6 +188,12 @@ export default function YatraCatalog() {
           ))}
         </div>
       </div>
+
+      <PackageDetailModal
+        pkg={modalPkg}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }
