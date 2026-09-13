@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function IndiaLocalTrustBand() {
   return (
-    <section className="py-12 bg-white" data-purpose="trust-badges">
+    <section className="py-8 border-b border-slate-200 bg-transparent" data-purpose="trust-badges">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
           <div className="flex flex-col items-center">

@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function InternationalTrustBand() {
   return (
-    <section className="w-full bg-white border-y border-slate-200 py-6 mb-12 shadow-sm">
+    <section className="w-full bg-transparent border-b border-slate-200 py-6 mb-12">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-0 lg:divide-x divide-slate-200 text-center">
           <div className="p-3">

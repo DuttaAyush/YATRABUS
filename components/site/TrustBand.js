@@ -1,6 +1,6 @@
 export default function TrustBand() {
   return (
-    <section className="w-full bg-white border-y border-slate-200 py-6 shadow-sm relative z-20">
+    <section className="w-full bg-transparent border-b border-slate-200 py-6 relative z-20">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
           {/* 1: Handpicked Destinations */}

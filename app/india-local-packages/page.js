@@ -21,7 +21,7 @@ export default function IndiaLocalPackagesPage() {
       <Header />
       <main className="flex-1 relative">
         <IndiaLocalHero />
-        <div className="relative z-10 bg-[#FCFDFD] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-[0_-25px_60px_rgba(15,23,42,0.35)] border-t border-white/60 -mt-16 sm:-mt-24 pt-8">
+        <div className="relative z-10 bg-white rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-[0_-25px_60px_rgba(15,23,42,0.35)] border-t border-white/60 -mt-12 sm:-mt-16 pt-10 sm:pt-14 md:pt-16 overflow-hidden">
           <IndiaLocalTrustBand />
           <SpotlightDomesticDestinations />
           <IndiaLocalHowItWorks />
