@@ -42,10 +42,10 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3">Support &amp; Security</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link className="hover:text-white transition-colors" href="#">Track Bus Live GPS</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="#">Print / Download E-Ticket</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="#">Cancellation &amp; Reschedule</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="#">Depot Station Masters</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/about">About YatraBus</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/profile">Track Bus Live GPS</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/profile">Print / Download E-Ticket</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/about">Depot Station Masters</Link></li>
             </ul>
           </div>
         </div>

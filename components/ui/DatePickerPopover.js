@@ -14,11 +14,57 @@ export default function DatePickerPopover({
   onClose,
   onSelectDate,
   selectedDate,
-  themeColor = 'red'
+  themeColor = 'red',
+  position = 'auto',
+  defaultPosition = 'top',
+  align = 'center'
 }) {
   const [viewDate, setViewDate] = useState(() => new Date());
   const [activeDate, setActiveDate] = useState(() => new Date());
+  const [computedPosition, setComputedPosition] = useState(
+    position === 'auto' ? defaultPosition : position
+  );
   const popoverRef = useRef(null);
+
+  // Dynamic auto positioning based on available viewport space
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (position !== 'auto') {
+      setComputedPosition(position);
+      return;
+    }
+
+    const calculatePosition = () => {
+      if (!popoverRef.current || !popoverRef.current.parentElement) {
+        setComputedPosition(defaultPosition);
+        return;
+      }
+      const parentRect = popoverRef.current.parentElement.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceAbove = parentRect.top;
+      const spaceBelow = viewportHeight - parentRect.bottom;
+
+      // Popover height required for full calendar (~360px)
+      const requiredHeight = 360;
+
+      if (spaceBelow < requiredHeight && spaceAbove > spaceBelow) {
+        setComputedPosition('top');
+      } else if (spaceAbove < requiredHeight && spaceBelow > spaceAbove) {
+        setComputedPosition('bottom');
+      } else {
+        setComputedPosition(defaultPosition);
+      }
+    };
+
+    calculatePosition();
+    window.addEventListener('resize', calculatePosition);
+    window.addEventListener('scroll', calculatePosition, { passive: true });
+    return () => {
+      window.removeEventListener('resize', calculatePosition);
+      window.removeEventListener('scroll', calculatePosition);
+    };
+  }, [isOpen, position, defaultPosition]);
 
   // Close on outside click
   useEffect(() => {
@@ -135,15 +181,29 @@ export default function DatePickerPopover({
 
   const currentTheme = themeStyles[themeColor] || themeStyles.red;
 
+  const positionClasses = computedPosition === 'top'
+    ? 'bottom-full mb-3.5'
+    : 'top-full mt-3.5';
+
+  const alignClasses = align === 'left'
+    ? 'left-0'
+    : align === 'right'
+    ? 'right-0'
+    : 'left-1/2 -translate-x-1/2';
+
+  const arrowClasses = computedPosition === 'top'
+    ? 'top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-[10px] border-x-transparent border-t-[10px] border-t-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.08)]'
+    : 'bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-[10px] border-x-transparent border-b-[10px] border-b-white drop-shadow-[0_-2px_3px_rgba(0,0,0,0.08)]';
+
   return (
     <div
       ref={popoverRef}
       onClick={(e) => e.stopPropagation()}
       aria-label="Date Picker Bubble"
-      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3.5 z-50 w-80 sm:w-88 bg-white/98 backdrop-blur-2xl rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.25)] border border-slate-200/90 p-4 text-slate-800 animate-in fade-in zoom-in-95 duration-200"
+      className={`absolute ${positionClasses} ${alignClasses} z-[99999] w-80 sm:w-88 bg-white/98 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(15,23,42,0.35)] border border-slate-200/90 p-4 text-slate-800 animate-in fade-in zoom-in-95 duration-200`}
     >
-      {/* Speech Bubble Arrow Indicator pointing down */}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-[10px] border-x-transparent border-t-[10px] border-t-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.08)]" />
+      {/* Speech Bubble Arrow Indicator */}
+      <div className={`absolute ${arrowClasses}`} />
 
       {/* Header */}
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">

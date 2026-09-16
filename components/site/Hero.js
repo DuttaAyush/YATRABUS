@@ -52,7 +52,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pb-14 pt-10 sticky top-0 z-0" id="heroSearch">
+    <section className="relative min-h-[580px] lg:min-h-[640px] flex items-center justify-center overflow-hidden pb-14 pt-8" id="heroSearch">
       <div className="absolute inset-0 z-0">
         <img
           alt="Modern BharatBenz luxury coach on scenic highway"
@@ -67,13 +67,6 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
         {/* Entrance Badge */}
         <div
-          style={{
-            transform: `translateY(${isLoaded ? textY * 0.7 : 20}px)`,
-            opacity: isLoaded ? textOpacity : 0,
-            transition: isLoaded && textY > 0
-              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-              : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.8s ease-out 0.05s'
-          }}
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/20 shadow-lg shadow-red-950/20"
         >
           <span className="material-symbols-outlined text-[16px] text-amber-300 animate-pulse" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -84,13 +77,6 @@ export default function Hero() {
 
         {/* Entrance Title */}
         <h1
-          style={{
-            transform: `translateY(${isLoaded ? textY : 35}px)`,
-            opacity: isLoaded ? textOpacity : 0,
-            transition: isLoaded && textY > 0
-              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-              : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
-          }}
           className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-semibold drop-shadow-[0_4px_25px_rgba(0,0,0,0.7)]"
         >
           India&apos;s Dedicated <span className="bg-gradient-to-r from-white via-red-100 to-amber-200 bg-clip-text text-transparent drop-shadow-md font-serif">Intercity Bus Network</span>
@@ -98,13 +84,6 @@ export default function Hero() {
 
         {/* Entrance Subtitle */}
         <p
-          style={{
-            transform: `translateY(${isLoaded ? textY * 0.85 : 35}px)`,
-            opacity: isLoaded ? textOpacity : 0,
-            transition: isLoaded && textY > 0
-              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-              : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
-          }}
           className="text-base md:text-lg text-slate-100 max-w-2xl mx-auto mb-8 font-medium drop-shadow-md leading-relaxed"
         >
           Daily direct luxury BharatBenz &amp; Volvo sleeper coaches with assigned bus numbers and zero hidden aggregator fees.
@@ -112,13 +91,6 @@ export default function Hero() {
 
         {/* Entrance Search Matrix Box */}
         <div
-          style={{
-            transform: `translateY(${isLoaded ? textY * 0.5 : 45}px)`,
-            opacity: isLoaded ? textOpacity : 0,
-            transition: isLoaded && textY > 0
-              ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-              : 'transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, opacity 1s ease-out 0.5s'
-          }}
           className="bg-white rounded-3xl hero-shadow p-3 md:p-4 max-w-7xl mx-auto mb-6 text-left"
         >
           <form className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3 items-center">
@@ -159,7 +131,7 @@ export default function Hero() {
 
             {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
             <div
-              className="relative md:col-span-2 flex items-center bg-slate-50 hover:bg-red-50/50 rounded-2xl px-4 py-3 border border-slate-200/80 hover:border-brand-scarlet cursor-pointer transition-all active:scale-[0.98]"
+              className={`relative md:col-span-2 flex items-center bg-slate-50 hover:bg-red-50/50 rounded-2xl px-4 py-3 border border-slate-200/80 hover:border-brand-scarlet cursor-pointer transition-all active:scale-[0.98] ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}
               onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
             >
               <span className="material-symbols-outlined text-brand-scarlet mr-2.5 text-[22px]">calendar_month</span>
@@ -176,6 +148,8 @@ export default function Hero() {
                 onSelectDate={handleDateSelect}
                 selectedDate={selectedDate.mainText}
                 themeColor="red"
+                position="auto"
+                defaultPosition="top"
               />
             </div>
 
@@ -188,13 +162,13 @@ export default function Hero() {
             </div>
 
             <div className="md:col-span-2">
-              <button
+              <a
+                href="/search-results"
                 className="w-full min-h-[58px] rounded-2xl bg-brand-scarlet text-white hover:bg-brand-hover transition-all flex items-center justify-center gap-2 font-bold text-sm tracking-wider uppercase shadow-lg shadow-red-600/30"
-                type="button"
               >
                 <span className="material-symbols-outlined text-[20px]">search</span>
                 <span>SEARCH BUSES</span>
-              </button>
+              </a>
             </div>
           </form>
         </div>

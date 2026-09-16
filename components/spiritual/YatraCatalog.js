@@ -95,7 +95,7 @@ export default function YatraCatalog() {
 
   return (
     <section className="w-full py-16 bg-white border-y border-amber-200/60" id="spiritualPackages">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+      <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
         <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2 border border-amber-200">
             <span className="material-symbols-outlined text-[16px] text-brand-scarlet">temple_hindu</span>
@@ -143,7 +143,7 @@ export default function YatraCatalog() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={pkg.image}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
                 <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-brand-scarlet text-white font-bold text-xs shadow-sm">
                   {pkg.duration}
                 </span>

@@ -62,8 +62,8 @@ export default function InternationalHero() {
             style={{ transform: `scale(${scrollScale})` }}
             src="/images/yatrabus_international_holiday_travel_packages_1.jpg"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-900/40 to-teal-950/30"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/50 to-teal-900/30 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/35 to-transparent"></div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
           <div
@@ -154,7 +154,7 @@ export default function InternationalHero() {
 
             {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
             <div
-              className="relative md:col-span-2 flex items-center bg-slate-50 hover:bg-teal-50/60 rounded-2xl px-4 py-3 border border-slate-200 hover:border-teal-600 cursor-pointer transition-all active:scale-[0.98]"
+              className={`relative md:col-span-2 flex items-center bg-slate-50 hover:bg-teal-50/60 rounded-2xl px-4 py-3 border border-slate-200 hover:border-teal-600 cursor-pointer transition-all active:scale-[0.98] ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}
               onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
             >
               <span className="material-symbols-outlined text-teal-600 mr-2.5 text-[22px]">calendar_month</span>
@@ -170,6 +170,8 @@ export default function InternationalHero() {
                 onSelectDate={handleDateSelect}
                 selectedDate={selectedDate.mainText}
                 themeColor="teal"
+                position="auto"
+                defaultPosition="top"
               />
             </div>
 

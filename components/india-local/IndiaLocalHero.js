@@ -62,8 +62,8 @@ export default function IndiaLocalHero() {
             style={{ transform: `scale(${scrollScale})` }}
             src="/images/yatrabus_india_local_holiday_travel_packages_1.jpg"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/60 to-slate-900/40"></div>
-          <div className="absolute inset-0 bg-teal-950/20 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/50 to-emerald-900/30 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/35 to-transparent"></div>
         </div>
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
           <div
@@ -176,7 +176,7 @@ export default function IndiaLocalHero() {
 
             {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
             <div
-              className="relative border border-slate-200 hover:border-teal-600 rounded-xl p-3 transition flex items-center gap-3 cursor-pointer hover:bg-teal-50/50"
+              className={`relative border border-slate-200 hover:border-teal-600 rounded-xl p-3 transition flex items-center gap-3 cursor-pointer hover:bg-teal-50/50 ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}
               onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
             >
               <div className="text-teal-700 text-xl pl-1">🗓️</div>
@@ -192,6 +192,8 @@ export default function IndiaLocalHero() {
                 onSelectDate={handleDateSelect}
                 selectedDate={selectedDate.mainText}
                 themeColor="teal"
+                position="auto"
+                defaultPosition="top"
               />
             </div>
 

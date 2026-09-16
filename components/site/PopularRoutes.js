@@ -73,10 +73,10 @@ export default function PopularRoutes() {
                 <span className="font-bold text-brand-scarlet bg-red-50 px-2.5 py-1 rounded-full">Only 4 seats left!</span>
                 <span className="hidden sm:inline text-slate-400">• Free Water & Blanket</span>
               </div>
-              <button className="px-5 py-2.5 rounded-xl bg-brand-scarlet text-white hover:bg-brand-hover font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all" type="button" onClick={() => document.getElementById('seatDrawerModal').classList.remove('hidden')}>
+              <a href="/select-seats" className="px-5 py-2.5 rounded-xl bg-brand-scarlet text-white hover:bg-brand-hover font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all">
                 <span className="">Select Seats</span>
                 <span className="material-symbols-outlined text-[16px]">event_seat</span>
-              </button>
+              </a>
             </div>
           </div>
           {/* MAIN ROUTE 2: Pune to Mumbai */}
@@ -126,10 +126,10 @@ export default function PopularRoutes() {
                 <span className="font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">12 seats available</span>
                 <span className="hidden sm:inline text-slate-400">• High Speed Wi-Fi</span>
               </div>
-              <button className="px-5 py-2.5 rounded-xl bg-brand-scarlet text-white hover:bg-brand-hover font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all" type="button" onClick={() => document.getElementById('seatDrawerModal').classList.remove('hidden')}>
+              <a href="/select-seats" className="px-5 py-2.5 rounded-xl bg-brand-scarlet text-white hover:bg-brand-hover font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all">
                 <span className="">Select Seats</span>
                 <span className="material-symbols-outlined text-[16px]">event_seat</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>

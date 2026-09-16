@@ -67,7 +67,7 @@ const destinationsData = [
     price: '$1,299',
     priceLabel: 'ALL-INCLUSIVE GRAND TOUR',
     description: 'Mt. Titlis cable car, Eiffel Tower dinner cruise, and panoramic Glacier Express train ride.',
-    image: '/images/yatrabus_international_holiday_travel_packages_4.jpg'
+    image: '/images/yatrabus_international_holiday_travel_packages_3.jpg'
   },
   {
     id: 'thailand',

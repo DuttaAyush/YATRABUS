@@ -66,7 +66,7 @@ export default function InternationalCatalog() {
 
   return (
     <section className="w-full py-16 bg-[#F8FAFB] border-b border-slate-200" id="packages">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+      <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <span className="text-xs font-extrabold text-teal-700 uppercase tracking-wider">All-Inclusive Bundles</span>
@@ -137,7 +137,7 @@ export default function InternationalCatalog() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={pkg.image}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
                 <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur text-white font-bold text-xs">
                   {pkg.duration}
                 </span>

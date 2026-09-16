@@ -70,7 +70,7 @@ export default function IndiaLocalCatalog() {
 
   return (
     <section className="py-16 bg-slate-50 border-t border-slate-200/60" data-purpose="curated-packages-grid" id="curated-packages">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+      <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
         {/* Section Title & Tabs */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10">
           <div>

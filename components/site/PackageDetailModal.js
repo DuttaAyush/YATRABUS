@@ -228,13 +228,20 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => alert(`Directing to booking for ${title}`)}
+              <a
+                href={`/customize-package/${pkg.id || 'chardham'}`}
+                className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">tune</span>
+                <span>Customize</span>
+              </a>
+              <a
+                href={`/checkout?package=${pkg.id || 'chardham'}`}
                 className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Book Package</span>
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-              </button>
+              </a>
             </div>
           </div>
 

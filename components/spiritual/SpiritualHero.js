@@ -60,8 +60,8 @@ export default function SpiritualHero() {
           style={{ transform: `scale(${scrollScale})` }}
           src="/images/yatrabus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_5.jpg"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-amber-950/70 mix-blend-multiply"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/50 to-amber-950/30 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/35 to-transparent"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
@@ -152,7 +152,7 @@ export default function SpiritualHero() {
 
             {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
             <div
-              className="relative md:col-span-2 flex items-center bg-slate-950/60 hover:bg-amber-950/40 rounded-2xl px-4 py-3 border border-amber-500/20 hover:border-amber-400 cursor-pointer transition-all active:scale-[0.98]"
+              className={`relative md:col-span-2 flex items-center bg-slate-950/60 hover:bg-amber-950/40 rounded-2xl px-4 py-3 border border-amber-500/20 hover:border-amber-400 cursor-pointer transition-all active:scale-[0.98] ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}
               onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
             >
               <span className="material-symbols-outlined text-amber-400 mr-2.5 text-[22px]">calendar_month</span>
@@ -169,6 +169,8 @@ export default function SpiritualHero() {
                 onSelectDate={handleDateSelect}
                 selectedDate={selectedDate.mainText}
                 themeColor="amber"
+                position="auto"
+                defaultPosition="top"
               />
             </div>
 

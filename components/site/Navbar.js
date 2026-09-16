@@ -15,15 +15,17 @@ export default function Navbar() {
       <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href={getHref('#popularRoutesSection')}>
         <span>Popular Routes</span>
       </Link>
-      <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href={getHref('#packagesSection')}>
+      <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href="/packages">
         <span>Curated Packages</span>
-        <span className="material-symbols-outlined text-[15px] text-white/60">expand_more</span>
       </Link>
       <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href={getHref('#hospitalitySection')}>
         <span>Hospitality</span>
       </Link>
       <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href={getHref('#advantageSection')}>
         <span>Why YatraBus</span>
+      </Link>
+      <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href="/about">
+        <span>About Us</span>
       </Link>
       <Link className="hover:text-white transition-colors duration-200 py-1 flex items-center gap-1 drop-shadow-sm whitespace-nowrap" href={getHref('#faqSection')}>
         <span>FAQ</span>
