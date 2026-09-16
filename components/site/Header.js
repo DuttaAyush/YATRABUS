@@ -40,7 +40,7 @@ export default function Header() {
           <div className="hidden xl:flex items-center p-1 bg-white/10 backdrop-blur-2xl rounded-full border border-white/20 shadow-lg shrink-0">
             <Link
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-semibold text-xs tracking-wide whitespace-nowrap transition-all duration-200 ${
-                pathname === '/bus-tickets' || pathname === '/explore'
+                pathname === '/bus-tickets'
                   ? 'bg-gradient-to-r from-red-600/90 to-brand-scarlet/90 text-white shadow-md border border-white/30'
                   : 'text-white/80 hover:text-white hover:bg-white/15'
               }`}

@@ -58,7 +58,7 @@ export default function Hero() {
           alt="Modern BharatBenz luxury coach on scenic highway"
           className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
           style={{ transform: `scale(${scrollScale})` }}
-          src="/images/screen.png"
+          src="/images/domestic-hero.jpg"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-brand-scarlet/50 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>

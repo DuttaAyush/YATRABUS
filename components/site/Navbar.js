@@ -7,7 +7,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const getHref = (hash) => {
-    return (pathname === '/bus-tickets' || pathname === '/explore') ? hash : `/bus-tickets${hash}`;
+    return (pathname === '/bus-tickets') ? hash : `/bus-tickets${hash}`;
   };
 
   return (

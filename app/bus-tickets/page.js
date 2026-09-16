@@ -33,8 +33,8 @@ export default function BusTicketsPage() {
           <InternationalPackages />
           <SpiritualPackages />
           <DomesticPackages />
-          <Hospitality />
           <WhyYatraBus />
+          <Hospitality />
           <Testimonials />
           <FAQ />
         </div>

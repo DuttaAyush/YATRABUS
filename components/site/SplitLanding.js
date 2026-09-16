@@ -39,7 +39,7 @@ export default function SplitLanding() {
     <div className="relative w-full h-screen overflow-hidden bg-slate-950">
       {/* Top Floating Glass Header */}
       <header className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-8 py-4 flex items-center justify-between pointer-events-auto">
-        <Link href="/explore" className="flex items-center gap-3 group">
+        <Link href="/packages" className="flex items-center gap-3 group">
           <div className="h-11 px-3.5 bg-white/95 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg flex items-center gap-2 transition-transform group-hover:scale-105">
             <img src="/images/logo.png" alt="YatraBus Logo" className="h-7 w-auto object-contain" />
             <span className="font-serif font-bold text-slate-900 text-sm tracking-tight hidden sm:inline">
@@ -83,7 +83,7 @@ export default function SplitLanding() {
         {/* Right CTA */}
         <div className="flex items-center gap-3">
           <Link
-            href="/explore"
+            href="/packages"
             className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-md text-white font-extrabold text-xs uppercase tracking-wider border border-white/20 transition-all shadow-md active:scale-95 flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">grid_view</span>

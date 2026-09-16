@@ -60,20 +60,20 @@ const testimonialData = [
 export default function Testimonials() {
   return (
     <section
-      className="w-full relative py-12 sm:py-16 lg:py-20 overflow-hidden border-t border-slate-200/60 bg-[#F4F2EB]"
+      className="w-full relative overflow-hidden bg-[#F4F2EB]"
       id="testimonialsSection"
     >
       {/* BACKGROUND GRAPHIC IMAGE */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center bg-[#F4F2EB]">
+      <div className="absolute inset-0 z-0">
         <img
           src="/images/testimonials_bg.png"
           alt="Testimonials Section Background"
-          className="w-full h-full object-contain object-center pointer-events-none"
+          className="w-full h-full object-cover object-top pointer-events-none"
         />
       </div>
 
       {/* MAIN CONTENT CONTAINER */}
-      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 relative z-10">
+      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-10 sm:py-14 lg:py-16 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-10 items-center">
           
           {/* LEFT COLUMN: OVERLAY TEXT, ORIGINAL STATS PILLS & CTA */}
@@ -136,7 +136,7 @@ export default function Testimonials() {
             {/* CTA Button */}
             <div className="pt-1">
               <Link
-                href="/explore"
+                href="/packages"
                 className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-[#0B1728] hover:bg-slate-800 text-white font-bold text-sm transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95"
               >
                 <span>Explore Destinations</span>
@@ -144,16 +144,16 @@ export default function Testimonials() {
               </Link>
             </div>
 
-            
+
 
           </div>
 
           {/* RIGHT COLUMN: TESTIMONIAL CARDS MATRIX OVERLAY */}
-          <div className="lg:col-span-7 xl:col-span-8 relative min-h-[540px] flex flex-col justify-center">
+          <div className="lg:col-span-7 xl:col-span-8 relative min-h-[500px] flex flex-col justify-center">
             
             <div className="relative z-10 space-y-5 sm:space-y-7">
               
-              {/* TOP ROW: Card 1 (Aman) & Card 2 (Sneha - shifted left & up) */}
+              {/* TOP ROW: Card 1 (Aman) & Card 2 (Sneha) */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
                 <div className="sm:translate-x-8 sm:-translate-y-16">
                   <TestimonialCard
@@ -180,7 +180,7 @@ export default function Testimonials() {
                 </div>
               </div>
 
-              {/* MIDDLE ROW: Card 3 (Priya) & Card 5 (Karan - shifted down) */}
+              {/* MIDDLE ROW: Card 3 (Priya) & Card 5 (Karan) */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
                 <div className="sm:-translate-x-6 sm:-translate-y-4">
                   <TestimonialCard

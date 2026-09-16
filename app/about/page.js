@@ -80,7 +80,7 @@ export default function AboutUsPage() {
               EXPLORE BUS ROUTES
             </a>
             <a
-              href="/explore"
+              href="/packages"
               className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm tracking-wider uppercase border border-white/20 backdrop-blur-md transition-all"
             >
               DISCOVER PACKAGES
