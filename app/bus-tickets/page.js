@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Header from '@/components/site/Header';
 import Hero from '@/components/site/Hero';
+import SplitHero from '@/components/site/SplitHero';
 import TrustBand from '@/components/site/TrustBand';
 import StatsStrip from '@/components/site/StatsStrip';
 import PopularRoutes from '@/components/site/PopularRoutes';
@@ -16,6 +17,7 @@ import Testimonials from '@/components/site/Testimonials';
 import FAQ from '@/components/site/FAQ';
 import Footer from '@/components/site/Footer';
 import SeatDrawerModal from '@/components/site/SeatDrawerModal';
+import SpotlightDestinations from '@/components/international/SpotlightDestinations';
 
 export default function BusTicketsPage() {
   const [isSeatDrawerOpen, setIsSeatDrawerOpen] = useState(false);
@@ -24,10 +26,14 @@ export default function BusTicketsPage() {
     <div className="min-h-screen flex flex-col bg-slate-950 font-sans text-slate-800 antialiased relative">
       <Header />
       <main className="flex-1 relative">
-        <Hero />
+        {/* Toggle between SplitHero and original Hero */}
+        <SplitHero />
+        {/* <Hero /> */}
         <div className="relative z-10 bg-white rounded-t-[2.5rem] sm:rounded-t-[3.5rem] md:rounded-t-[4rem] shadow-xl border-t border-slate-200 overflow-hidden">
           <TrustBand />
           <StatsStrip />
+          <SpotlightDestinations />
+
           <PopularRoutes onOpenSeatDrawer={() => setIsSeatDrawerOpen(true)} />
           <OfferBanner />
           <InternationalPackages />
