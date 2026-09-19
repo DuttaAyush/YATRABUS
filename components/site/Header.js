@@ -236,10 +236,10 @@ export default function Header() {
 
         {/* Right Side: Profile Action Pill & Mobile Hamburger */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Profile Action Pill with Hover/Click Dropdown */}
+          {/* Profile Action Pill with Hover/Click Dropdown (Visible >=1024px) */}
           <div
             ref={profileRef}
-            className="relative shrink-0 py-1"
+            className="hidden lg:block relative shrink-0 py-1"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >

@@ -282,48 +282,50 @@ export default function SpiritualPackages() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
           {spiritualData.map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => handleOpenSheet(pkg)}
-              className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-amber-200 transition-all duration-300 flex flex-col group cursor-pointer active:scale-[0.99]"
+              className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-amber-200 transition-all duration-300 flex flex-col group cursor-pointer active:scale-[0.99]"
             >
-              <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+              <div className="relative h-28 sm:h-40 md:h-48 w-full overflow-hidden bg-slate-100">
                 <img
                   alt={pkg.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={pkg.image}
                 />
-                <span className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-amber-600 text-white font-bold text-xs">
+                <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg bg-amber-600 text-white font-bold text-[9px] sm:text-xs">
                   {pkg.duration}
                 </span>
-                <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1 rounded-md bg-slate-950/80 text-white text-[11px] font-medium truncate flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px] text-amber-400">temple_hindu</span>
-                  <span>{pkg.subtitle}</span>
+                <div className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 right-1.5 sm:right-2 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-slate-950/80 text-white text-[9px] sm:text-xs font-medium truncate flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[12px] sm:text-[14px] text-amber-400">temple_hindu</span>
+                  <span className="truncate">{pkg.subtitle}</span>
                 </div>
               </div>
 
-              <div className="p-5 flex-1 flex flex-col justify-between">
+              <div className="p-2.5 sm:p-4 md:p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-1 text-xs font-bold text-amber-700 mb-1">
-                    <span className="material-symbols-outlined text-[15px]">verified</span>
-                    <span>{pkg.badge}</span>
+                  <div className="flex items-center gap-1 text-[9px] sm:text-xs font-bold text-amber-700 mb-0.5 sm:mb-1 truncate">
+                    <span className="material-symbols-outlined text-[13px] sm:text-[15px] shrink-0">verified</span>
+                    <span className="truncate">{pkg.badge}</span>
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 mb-1.5 group-hover:text-amber-700 transition-colors font-serif">
+                  <h3 className="text-xs sm:text-base font-bold font-serif text-slate-900 mb-1 sm:mb-1.5 group-hover:text-amber-700 transition-colors line-clamp-1 sm:line-clamp-2">
                     {pkg.title}
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">{pkg.shortPlan}</p>
-                  <div className="inline-block px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200/60 text-[11px] text-amber-800 font-semibold mb-3">
+                  <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed mb-1.5 sm:mb-3 line-clamp-1 sm:line-clamp-2">
+                    {pkg.shortPlan}
+                  </p>
+                  <div className="hidden sm:inline-block px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200/60 text-[11px] text-amber-800 font-semibold mb-3">
                     Includes: Stay + Bus + VIP Pass + Satvik Meals
                   </div>
                 </div>
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between gap-1">
                   <div>
-                    <span className="text-[10px] text-slate-400 block font-medium">Starts at</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xl font-extrabold text-slate-900">{pkg.price}</span>
-                      <span className="text-[11px] text-slate-400">/person</span>
+                    <span className="text-[8px] sm:text-[10px] text-slate-400 block font-medium">Starts at</span>
+                    <div className="flex items-baseline gap-0.5 sm:gap-1">
+                      <span className="text-sm sm:text-xl font-extrabold text-slate-900">{pkg.price}</span>
+                      <span className="text-[9px] sm:text-[11px] text-slate-400">/person</span>
                     </div>
                   </div>
                   <button
@@ -331,7 +333,7 @@ export default function SpiritualPackages() {
                       e.stopPropagation();
                       handleOpenSheet(pkg);
                     }}
-                    className="px-4 py-2 rounded-xl bg-amber-600 text-white hover:bg-amber-700 font-bold text-xs shadow-sm transition-all"
+                    className="px-2.5 py-1 sm:px-4 sm:py-2 text-[10px] sm:text-xs rounded-lg sm:rounded-xl bg-amber-600 text-white hover:bg-amber-700 font-bold shadow-sm transition-all shrink-0"
                     type="button"
                   >
                     View &amp; Book

@@ -159,31 +159,33 @@ export default function SpotlightDestinations({ rotating = true }) {
     >
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         {/* Header with Circular Navigation Controls */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-3 sm:gap-4">
           <div>
             <span className="font-serif italic text-teal-600 font-semibold text-xs tracking-wide block mb-1">Top Global Picks</span>
-            <h2 className="font-serif text-2xl md:text-4xl text-slate-900 tracking-tight font-semibold">Popular International Destinations</h2>
+            <h2 className="font-serif text-xl sm:text-3xl md:text-4xl text-slate-900 tracking-tight font-semibold">Popular International Destinations</h2>
             <p className="text-xs md:text-sm text-slate-500 mt-1 font-normal">Fly to iconic world capitals and sun-kissed archipelagos with curated ease</p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={handlePrev}
-              aria-label="Previous destination"
-              className="w-10 h-10 rounded-full border border-slate-300 hover:border-teal-600 hover:text-teal-700 bg-white text-slate-700 flex items-center justify-center transition-all shadow-sm active:scale-95 cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-            </button>
-            <span className="text-xs font-bold text-slate-400 font-mono">
-              {activeMidIndex + 1} / {total}
-            </span>
-            <button
-              onClick={handleNext}
-              aria-label="Next destination"
-              className="w-10 h-10 rounded-full bg-slate-900 hover:bg-teal-700 text-white flex items-center justify-center transition-all shadow-md active:scale-95 cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[20px]">chevron_right</span>
-            </button>
-            <a className="text-teal-600 hover:text-teal-700 font-bold text-xs flex items-center gap-1 ml-2 transition-colors" href="#packages">
+          <div className="w-full md:w-auto flex items-center justify-between mt-3 md:mt-0 shrink-0">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <button
+                onClick={handlePrev}
+                aria-label="Previous destination"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-slate-300 hover:border-teal-600 hover:text-teal-700 bg-white text-slate-700 flex items-center justify-center transition-all shadow-sm active:scale-95 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">chevron_left</span>
+              </button>
+              <span className="text-xs font-bold text-slate-400 font-mono">
+                {activeMidIndex + 1} / {total}
+              </span>
+              <button
+                onClick={handleNext}
+                aria-label="Next destination"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-teal-700 text-white flex items-center justify-center transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">chevron_right</span>
+              </button>
+            </div>
+            <a className="text-teal-600 hover:text-teal-700 font-bold text-xs flex items-center gap-1 ml-auto md:ml-6 transition-colors" href="#packages">
               <span>View All</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </a>

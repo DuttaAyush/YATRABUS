@@ -77,7 +77,7 @@ export default function Testimonials() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-10 items-center">
           
           {/* LEFT COLUMN: OVERLAY TEXT, ORIGINAL STATS PILLS & CTA */}
-          <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-7 -translate-y-22">
+          <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-7 -translate-y-0 lg:-translate-y-22">
             
             {/* Tagline */}
             <div>
@@ -85,7 +85,7 @@ export default function Testimonials() {
                 <span>TRAVELLER STORIES</span>
                 <span className="w-8 h-[2px] bg-[#007A78]/40" />
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-serif font-extrabold text-slate-900 tracking-tight leading-[1.08]">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-extrabold text-slate-900 tracking-tight leading-[1.08]">
                 Real People.<br />
                 <span className="text-[#007A78]">Real Journeys.</span>
               </h2>
@@ -149,13 +149,13 @@ export default function Testimonials() {
           </div>
 
           {/* RIGHT COLUMN: TESTIMONIAL CARDS MATRIX OVERLAY */}
-          <div className="lg:col-span-7 xl:col-span-8 relative min-h-[500px] flex flex-col justify-center">
+          <div className="lg:col-span-7 xl:col-span-8 relative min-h-0 lg:min-h-[500px] flex flex-col justify-center">
             
-            <div className="relative z-10 space-y-5 sm:space-y-7">
+            <div className="relative z-10 space-y-3 sm:space-y-5 lg:space-y-7 w-full">
               
               {/* TOP ROW: Card 1 (Aman) & Card 2 (Sneha) */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-                <div className="sm:translate-x-8 sm:-translate-y-16">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-between gap-3 sm:gap-4 lg:gap-5">
+                <div className="w-full sm:w-auto flex justify-center lg:translate-x-6 xl:translate-x-8 lg:-translate-y-16">
                   <TestimonialCard
                     avatar={testimonialData[0].avatar}
                     name={testimonialData[0].name}
@@ -167,7 +167,7 @@ export default function Testimonials() {
                   />
                 </div>
 
-                <div className="sm:-translate-x-32 sm:-translate-y-5">
+                <div className="w-full sm:w-auto flex justify-center lg:-translate-x-16 xl:-translate-x-32 lg:-translate-y-5">
                   <TestimonialCard
                     avatar={testimonialData[1].avatar}
                     name={testimonialData[1].name}
@@ -181,8 +181,8 @@ export default function Testimonials() {
               </div>
 
               {/* MIDDLE ROW: Card 3 (Priya) & Card 5 (Karan) */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-                <div className="sm:-translate-x-6 sm:-translate-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-between gap-3 sm:gap-4 lg:gap-5">
+                <div className="w-full sm:w-auto flex justify-center lg:-translate-x-4 xl:-translate-x-6 lg:-translate-y-4">
                   <TestimonialCard
                     avatar={testimonialData[2].avatar}
                     name={testimonialData[2].name}
@@ -194,7 +194,7 @@ export default function Testimonials() {
                   />
                 </div>
 
-                <div className="sm:-translate-x-20 sm:translate-y-6">
+                <div className="w-full sm:w-auto flex justify-center lg:-translate-x-10 xl:-translate-x-20 lg:translate-y-6">
                   <TestimonialCard
                     avatar={testimonialData[4].avatar}
                     name={testimonialData[4].name}
@@ -208,8 +208,8 @@ export default function Testimonials() {
               </div>
 
               {/* BOTTOM ROW: Card 4 (Rohan) */}
-              <div className="flex flex-col sm:flex-row items-center justify-start gap-5">
-                <div className="sm:translate-x-16 sm:translate-y-8">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 lg:gap-5">
+                <div className="w-full sm:w-auto flex justify-center lg:translate-x-10 xl:translate-x-16 lg:translate-y-8">
                   <TestimonialCard
                     avatar={testimonialData[3].avatar}
                     name={testimonialData[3].name}

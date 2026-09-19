@@ -432,50 +432,37 @@ export default function InternationalPackages() {
         {/* Hero Spotlight Banner */}
         <div
           onClick={() => handleOpenSheet(packagesData[0])}
-          className="mb-8 rounded-3xl overflow-hidden shadow-md hover:shadow-xl border border-slate-200 relative group cursor-pointer transition-transform active:scale-[0.99]"
+          className="mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-md hover:shadow-xl border border-slate-200 relative group cursor-pointer transition-transform active:scale-[0.99]"
         >
-          <div className="relative h-72 md:h-84 w-full overflow-hidden bg-slate-900">
+          <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden bg-slate-900">
             <img
               alt="Luxury Dubai & Singapore Escape collage banner"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               src={packagesData[0].image}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
-            <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-between text-white">
+            <div className="absolute inset-0 p-4 sm:p-6 md:p-10 flex flex-col justify-between text-white">
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-sm">
+                <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold uppercase tracking-wider shadow-sm">
                   {packagesData[0].badge}
                 </span>
               </div>
               <div className="max-w-2xl">
-                <h3 className="text-2xl md:text-3xl lg:text-4xl tracking-tight mb-2 font-semibold font-serif">
+                <h3 className="text-lg sm:text-2xl md:text-3xl font-serif tracking-tight mb-1 sm:mb-2 font-semibold">
                   {packagesData[0].title}
                 </h3>
-                <p className="text-xs md:text-sm text-slate-200 leading-relaxed mb-4 line-clamp-2">
+                <p className="text-xs md:text-sm text-slate-200 leading-relaxed mb-2.5 sm:mb-4 line-clamp-2">
                   {packagesData[0].overview}
                 </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/20">
-                    <span className="text-[10px] text-amber-300 block font-semibold">Duration</span>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="bg-white/10 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/20">
+                    <span className="text-[9px] sm:text-[10px] text-amber-300 block font-semibold">Duration</span>
                     <span className="text-xs md:text-sm font-extrabold">{packagesData[0].duration}</span>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/20">
-                    <span className="text-[10px] text-amber-300 block font-semibold">All-Inclusive</span>
+                  <div className="bg-white/10 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/20">
+                    <span className="text-[9px] sm:text-[10px] text-amber-300 block font-semibold">All-Inclusive</span>
                     <span className="text-xs md:text-sm font-extrabold">{packagesData[0].price} / person</span>
                   </div>
-                  {/* Open Card Button (Removed as requested)
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenSheet(packagesData[0]);
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5 transition-all"
-                    type="button"
-                  >
-                    <span>Open Card</span>
-                    <span className="material-symbols-outlined text-[16px]">visibility</span>
-                  </button>
-                  */}
                 </div>
               </div>
             </div>
@@ -483,46 +470,46 @@ export default function InternationalPackages() {
         </div>
 
         {/* 3 International Tour Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-4 md:gap-6">
           {packagesData.slice(1).map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => handleOpenSheet(pkg)}
-              className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200 transition-all duration-300 flex flex-col group cursor-pointer active:scale-[0.99]"
+              className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200 transition-all duration-300 flex flex-col group cursor-pointer active:scale-[0.99]"
             >
-              <div className="relative h-52 w-full overflow-hidden bg-slate-100">
+              <div className="relative h-28 sm:h-40 md:h-52 w-full overflow-hidden bg-slate-100">
                 <img
                   alt={pkg.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={pkg.image}
                 />
-                <span className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white font-bold text-xs">
+                <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg bg-slate-900/80 backdrop-blur-md text-white font-bold text-[9px] sm:text-xs">
                   {pkg.duration}
                 </span>
               </div>
-              <div className="p-5 flex-1 flex flex-col justify-between">
+              <div className="p-2.5 sm:p-4 md:p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <span className="text-xs font-bold text-teal-600 block mb-1">{pkg.badge}</span>
-                  <h3 className="text-base font-bold text-slate-900 mb-2 group-hover:text-teal-600 transition-colors font-serif">
+                  <span className="text-[9px] sm:text-xs font-bold text-teal-600 block mb-0.5 sm:mb-1 truncate">{pkg.badge}</span>
+                  <h3 className="text-xs sm:text-base font-bold text-slate-900 mb-1 sm:mb-2 group-hover:text-teal-600 transition-colors font-serif line-clamp-1 sm:line-clamp-2">
                     {pkg.title}
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-4 line-clamp-2">{pkg.overview}</p>
+                  <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed mb-2 sm:mb-4 line-clamp-1 sm:line-clamp-2">{pkg.overview}</p>
                 </div>
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between gap-1">
                   <div>
-                    <span className="text-[10px] text-slate-400 block font-medium">Starts from</span>
-                    <span className="text-xl font-extrabold text-slate-900">{pkg.price}</span>
+                    <span className="text-[8px] sm:text-[10px] text-slate-400 block font-medium">Starts from</span>
+                    <span className="text-sm sm:text-xl font-extrabold text-slate-900">{pkg.price}</span>
                   </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleOpenSheet(pkg);
                     }}
-                    className="px-4 py-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 font-bold text-xs shadow-sm flex items-center gap-1 transition-all"
+                    className="px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl bg-teal-600 text-white hover:bg-teal-700 font-bold text-[10px] sm:text-xs shadow-sm flex items-center gap-1 transition-all shrink-0"
                     type="button"
                   >
                     <span>View Details</span>
-                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    <span className="material-symbols-outlined text-[12px] sm:text-[14px]">arrow_forward</span>
                   </button>
                 </div>
               </div>

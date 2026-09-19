@@ -64,25 +64,25 @@ export default function Hospitality() {
         </div>
 
         {/* 4 PASTEL HOSPITALITY CARDS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 xl:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 xl:gap-6">
           {hospitalityCards.map((card, idx) => (
             <div
               key={idx}
-              className={`p-5 sm:p-6 rounded-3xl border ${card.bgColor} ${card.borderColor} backdrop-blur-md shadow-sm transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-md space-y-3 flex flex-col justify-between group cursor-pointer`}
+              className={`p-3 sm:p-5 rounded-2xl sm:rounded-3xl border ${card.bgColor} ${card.borderColor} backdrop-blur-md shadow-sm transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-md space-y-2 sm:space-y-3 flex flex-col justify-between group cursor-pointer`}
             >
-              <div className="space-y-3">
+              <div className="space-y-1.5 sm:space-y-3">
                 {/* ICON & TITLE SIDE-BY-SIDE */}
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-2xl ${card.iconBg} flex items-center justify-center shrink-0`}>
-                    <span className="material-symbols-outlined text-[20px]">{card.icon}</span>
+                <div className="flex items-start sm:items-center gap-2 sm:gap-3">
+                  <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl ${card.iconBg} flex items-center justify-center shrink-0`}>
+                    <span className="material-symbols-outlined text-[16px] sm:text-[20px]">{card.icon}</span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                  <h3 className="text-xs sm:text-base font-bold text-slate-900 leading-snug">
                     {card.title}
                   </h3>
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                <p className="text-[10px] sm:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium line-clamp-2 sm:line-clamp-none">
                   {card.desc}
                 </p>
               </div>

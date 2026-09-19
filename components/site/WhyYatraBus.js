@@ -80,43 +80,43 @@ export default function WhyYatraBus() {
         </div>
 
         {/* 4 FEATURE CARDS GRID WITH INCREASED GAPS & BALANCED HEIGHT */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 xl:gap-8 mb-8 sm:mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 xl:gap-8 mb-8 sm:mb-10">
           {advantageCards.map((card, idx) => (
             <div
               key={idx}
-              className={`rounded-2xl p-5 sm:p-6 min-h-[180px] sm:min-h-[200px] border ${card.bgColor} ${card.borderColor} backdrop-blur-md shadow-sm transition-all duration-300 transform-gpu hover:-translate-y-1.5 hover:shadow-md flex flex-col justify-between space-y-4 group cursor-pointer`}
+              className={`rounded-xl sm:rounded-2xl p-3 sm:p-5 min-h-[140px] sm:min-h-[180px] border ${card.bgColor} ${card.borderColor} backdrop-blur-md shadow-sm transition-all duration-300 transform-gpu hover:-translate-y-1.5 hover:shadow-md flex flex-col justify-between space-y-2 sm:space-y-4 group cursor-pointer`}
             >
-              <div className="space-y-3">
+              <div className="space-y-1.5 sm:space-y-3">
                 {/* ICON & TITLE SIDE-BY-SIDE */}
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-8 h-8 rounded-full ${card.iconBg} flex items-center justify-center shrink-0`}>
-                    <span className="material-symbols-outlined text-[17px]">{card.icon}</span>
+                <div className="flex items-start sm:items-center gap-1.5 sm:gap-2.5">
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${card.iconBg} flex items-center justify-center shrink-0`}>
+                    <span className="material-symbols-outlined text-[14px] sm:text-[17px]">{card.icon}</span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                  <h3 className="text-xs sm:text-base font-bold text-slate-900 leading-snug line-clamp-2">
                     {card.title}
                   </h3>
                 </div>
 
                 {/* Card Description */}
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                <p className="text-[10px] sm:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium line-clamp-2 sm:line-clamp-none">
                   {card.desc}
                 </p>
               </div>
 
               {/* Bottom Footer */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-200/40 shrink-0">
+              <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-slate-200/40 shrink-0">
                 <Link
                   href="/"
-                  className={`text-xs font-bold ${card.accentColor} flex items-center gap-1 group-hover:underline`}
+                  className={`text-[10px] sm:text-xs font-bold ${card.accentColor} flex items-center gap-1 group-hover:underline`}
                 >
                   <span>Learn more</span>
                 </Link>
 
                 <Link
                   href="/"
-                  className={`w-7 h-7 rounded-full ${card.btnBg} flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105`}
+                  className={`w-5 h-5 sm:w-7 sm:h-7 rounded-full ${card.btnBg} flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105`}
                 >
-                  <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                  <span className="material-symbols-outlined text-[11px] sm:text-[14px]">arrow_forward</span>
                 </Link>
               </div>
 
