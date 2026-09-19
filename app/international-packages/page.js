@@ -7,7 +7,7 @@ import HowItWorks from '@/components/international/HowItWorks';
 import InternationalCatalog from '@/components/international/InternationalCatalog';
 import FixedDepartures from '@/components/international/FixedDepartures';
 import InternationalBlueprint from '@/components/international/InternationalBlueprint';
-import TravelerStories from '@/components/international/TravelerStories';
+import Testimonials from '@/components/site/Testimonials';
 import InternationalFAQ from '@/components/international/InternationalFAQ';
 
 export const metadata = {
@@ -28,7 +28,7 @@ export default function InternationalPackagesPage() {
           <InternationalCatalog />
           <FixedDepartures />
           <InternationalBlueprint />
-          <TravelerStories />
+          <Testimonials />
           <InternationalFAQ />
         </div>
       </main>

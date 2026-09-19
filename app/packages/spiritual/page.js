@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
+import Testimonials from '@/components/site/Testimonials';
 import PackageDetailModal from '@/components/site/PackageDetailModal';
 
 const spiritualCatalogPackages = [
@@ -501,6 +502,8 @@ export default function DedicatedSpiritualCatalogPage() {
           </div>
         )}
       </main>
+
+      <Testimonials />
 
       <PackageDetailModal
         pkg={selectedPkg}

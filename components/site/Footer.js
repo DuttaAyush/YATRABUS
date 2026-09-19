@@ -40,17 +40,24 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3">Support &amp; Security</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3">Support &amp; Legal</h4>
             <ul className="space-y-2 text-xs">
               <li><Link className="hover:text-white transition-colors" href="/about">About YatraBus</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="/profile">Track Bus Live GPS</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="/profile">Print / Download E-Ticket</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="/about">Depot Station Masters</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/terms">Terms &amp; Conditions</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/privacy-policy">Privacy Policy</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/refund-policy">Return &amp; Refunds</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/contact">Contact Support</Link></li>
             </ul>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <div>© 2025 YatraBus Technologies India Pvt. Ltd. All rights reserved.</div>
+          <div className="flex flex-wrap items-center gap-4">
+            <span>© 2025 YatraBus Technologies India Pvt. Ltd. All rights reserved.</span>
+            <span className="hidden sm:inline">•</span>
+            <Link className="hover:text-slate-300 transition-colors" href="/terms">Terms</Link>
+            <Link className="hover:text-slate-300 transition-colors" href="/privacy-policy">Privacy</Link>
+            <Link className="hover:text-slate-300 transition-colors" href="/refund-policy">Refunds</Link>
+          </div>
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[16px] text-emerald-400">lock</span>
             <span>256-Bit SSL Encrypted Booking</span>

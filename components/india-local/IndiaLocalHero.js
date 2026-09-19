@@ -86,10 +86,10 @@ export default function IndiaLocalHero() {
                 ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
                 : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
             }}
-            className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-5xl leading-[1.15] drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
+            className="font-serif text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-white max-w-5xl leading-[1.15] drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
           >
             Discover India. Unpack Wonders.
-            <span className="block italic font-serif font-medium bg-gradient-to-r from-emerald-200 via-teal-300 to-cyan-200 bg-clip-text text-transparent drop-shadow-md mt-1">
+            <span className="block italic font-serif font-normal bg-gradient-to-r from-emerald-100 via-teal-200 to-cyan-100 bg-clip-text text-transparent drop-shadow-md mt-1">
               Memories Last Forever.
             </span>
           </h1>

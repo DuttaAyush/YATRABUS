@@ -52,7 +52,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-[580px] lg:min-h-[640px] flex items-center justify-center overflow-hidden pb-14 pt-8" id="heroSearch">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pb-16 pt-8 sticky top-0 z-0" id="heroSearch">
       <div className="absolute inset-0 z-0">
         <img
           alt="Modern BharatBenz luxury coach on scenic highway"
@@ -66,20 +66,16 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
         {/* Entrance Badge */}
-        <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-red-200 font-bold text-xs uppercase tracking-wider mb-4 border border-white/20 shadow-lg shadow-red-950/20"
-        >
-          <span className="material-symbols-outlined text-[16px] text-amber-300 animate-pulse" style={{ fontVariationSettings: "'FILL' 1" }}>
-            stars
-          </span>
-          India&apos;s Dedicated Fleet &amp; Pilgrimage Network
+        <div className="inline-flex items-center gap-3 text-[#e5a97d] font-semibold text-xs uppercase tracking-[0.25em] mb-4">
+          <span className="w-10 h-[1.5px] bg-[#e5a97d]/80 inline-block"></span>
+          <span>BHARAT &amp; SPIRITUAL YATRAS</span>
         </div>
 
         {/* Entrance Title */}
         <h1
-          className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-semibold drop-shadow-[0_4px_25px_rgba(0,0,0,0.7)]"
+          className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto font-serif font-medium drop-shadow-[0_4px_25px_rgba(0,0,0,0.7)]"
         >
-          India&apos;s Dedicated <span className="bg-gradient-to-r from-white via-red-100 to-amber-200 bg-clip-text text-transparent drop-shadow-md font-serif">Intercity Bus Network</span>
+          India&apos;s Dedicated <span className="bg-gradient-to-r from-white via-slate-100 to-red-100 bg-clip-text text-transparent drop-shadow-md font-serif font-medium">Intercity Bus Network</span>
         </h1>
 
         {/* Entrance Subtitle */}
@@ -173,7 +169,7 @@ export default function Hero() {
           </form>
         </div>
 
-        {/* Trust Badges Bar */}
+        {/* Trust Badges Bar (Commented out per request)
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center md:justify-between gap-3 px-6 py-3.5 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 text-white text-xs font-semibold tracking-wide shadow-md">
           <div className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-emerald-400 text-[18px]">verified</span> Assigned Bus Plate Instantly
@@ -191,6 +187,7 @@ export default function Hero() {
             <span className="material-symbols-outlined text-pink-300 text-[18px]">send_to_mobile</span> Instant WhatsApp &amp; .ics Sync
           </div>
         </div>
+        */}
       </div>
     </section>
   );

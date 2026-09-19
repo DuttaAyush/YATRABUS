@@ -446,9 +446,6 @@ export default function InternationalPackages() {
                 <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-sm">
                   {packagesData[0].badge}
                 </span>
-                <span className="hidden sm:inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold">
-                  {packagesData[0].subtitle}
-                </span>
               </div>
               <div className="max-w-2xl">
                 <h3 className="text-2xl md:text-3xl lg:text-4xl tracking-tight mb-2 font-semibold font-serif">
@@ -500,10 +497,6 @@ export default function InternationalPackages() {
                 <span className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white font-bold text-xs">
                   {pkg.duration}
                 </span>
-                <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-medium truncate flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px] text-teal-400">pin_drop</span>
-                  <span>{pkg.subtitle}</span>
-                </div>
               </div>
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>

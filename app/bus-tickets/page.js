@@ -14,10 +14,11 @@ import DomesticPackages from '@/components/site/DomesticPackages';
 import Hospitality from '@/components/site/Hospitality';
 import WhyYatraBus from '@/components/site/WhyYatraBus';
 import Testimonials from '@/components/site/Testimonials';
-import FAQ from '@/components/site/FAQ';
+import ContactForm from '@/components/site/ContactForm';
 import Footer from '@/components/site/Footer';
 import SeatDrawerModal from '@/components/site/SeatDrawerModal';
 import SpotlightDestinations from '@/components/international/SpotlightDestinations';
+import FAQ from '@/components/site/FAQ';
 
 export default function BusTicketsPage() {
   const [isSeatDrawerOpen, setIsSeatDrawerOpen] = useState(false);
@@ -42,6 +43,7 @@ export default function BusTicketsPage() {
           <WhyYatraBus />
           <Hospitality />
           <Testimonials />
+          <ContactForm />
           <FAQ />
         </div>
       </main>

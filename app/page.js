@@ -1,11 +1,11 @@
-import SplitLanding from '@/components/site/SplitLanding';
+import BusTicketsPage from './bus-tickets/page';
 
 export const metadata = {
-  title: "YatraBus - India's Dedicated Intercity Bus & Worldwide Travel Network",
+  title: "YatraBus - India's Dedicated Intercity Bus & Curated Travel Packages",
   description:
-    "Explore luxury BharatBenz AC sleeper buses, spiritual darshan yatras, and handpicked international holiday packages with 0% convenience markup.",
+    "Book luxury BharatBenz & Volvo sleeper coaches, spiritual yatra packages, international holidays, and curated India travel experiences. Direct fleet operator — 0% convenience markup.",
 };
 
 export default function RootPage() {
-  return <SplitLanding />;
+  return <BusTicketsPage />;
 }

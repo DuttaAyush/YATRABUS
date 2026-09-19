@@ -7,7 +7,7 @@ import IndiaLocalHowItWorks from '@/components/india-local/IndiaLocalHowItWorks'
 import IndiaLocalCatalog from '@/components/india-local/IndiaLocalCatalog';
 import IndiaLocalFixedDepartures from '@/components/india-local/IndiaLocalFixedDepartures';
 import IndiaLocalBlueprint from '@/components/india-local/IndiaLocalBlueprint';
-import IndiaLocalStories from '@/components/india-local/IndiaLocalStories';
+import Testimonials from '@/components/site/Testimonials';
 import IndiaLocalFAQ from '@/components/india-local/IndiaLocalFAQ';
 
 export const metadata = {
@@ -28,7 +28,7 @@ export default function IndiaLocalPackagesPage() {
           <IndiaLocalCatalog />
           <IndiaLocalFixedDepartures />
           <IndiaLocalBlueprint />
-          <IndiaLocalStories />
+          <Testimonials />
           <IndiaLocalFAQ />
         </div>
       </main>

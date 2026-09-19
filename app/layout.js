@@ -1,8 +1,8 @@
-import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
 });
@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${plusJakarta.variable} ${playfair.variable} scroll-smooth`}
+      className={`${inter.variable} ${playfair.variable} scroll-smooth`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans text-slate-800 antialiased selection:bg-red-600 selection:text-white">
+      <body className="font-sans text-slate-800 antialiased selection:bg-red-600 selection:text-white overflow-x-clip min-h-screen relative">
         {children}
       </body>
     </html>

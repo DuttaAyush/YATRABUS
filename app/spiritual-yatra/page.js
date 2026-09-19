@@ -6,6 +6,7 @@ import UpcomingBatches from '@/components/spiritual/UpcomingBatches';
 import YatraCatalog from '@/components/spiritual/YatraCatalog';
 import DayWiseBlueprints from '@/components/spiritual/DayWiseBlueprints';
 import DevoteeCare from '@/components/spiritual/DevoteeCare';
+import Testimonials from '@/components/site/Testimonials';
 import SpiritualFAQ from '@/components/spiritual/SpiritualFAQ';
 
 export const metadata = {
@@ -25,6 +26,7 @@ export default function SpiritualYatraPage() {
           <YatraCatalog />
           <DayWiseBlueprints />
           <DevoteeCare />
+          <Testimonials />
           <SpiritualFAQ />
         </div>
       </main>

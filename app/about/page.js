@@ -5,42 +5,6 @@ import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 
 export default function AboutUsPage() {
-  const companyPillars = [
-    {
-      icon: 'verified',
-      color: 'text-emerald-600 bg-emerald-100 border-emerald-200',
-      title: 'Assigned Bus Plate Guarantee',
-      desc: 'Unlike conventional aggregators who switch vehicles unpredictably, YATRABUS assigns your exact bus plate registration (e.g. MH-12-QZ-8812) at the time of booking.',
-    },
-    {
-      icon: 'money_off',
-      color: 'text-amber-600 bg-amber-100 border-amber-200',
-      title: '0% Aggregator Surcharge',
-      desc: 'We operate direct fleet distribution. Passengers pay purely for the ticket fare — zero convenience markups, platform fees, or hidden booking charges.',
-    },
-    {
-      icon: 'temple_hindu',
-      color: 'text-brand-scarlet bg-red-100 border-red-200',
-      title: 'Curated Spiritual Yatras',
-      desc: 'Our pilgrimage circuits (Char Dham, Kashi Vishwanath, Tirupati, Somnath) feature Pure Satvik dining options, temple proximity stays, and hassle-free scheduling.',
-    },
-    {
-      icon: 'my_location',
-      color: 'text-blue-600 bg-blue-100 border-blue-200',
-      title: 'Live V1 Progress Tracking',
-      desc: 'Direct GPS integration provides milestone checkpoint tracking and driver communication from departure terminal to final destination.',
-    },
-  ];
-
-  const fleetAmenities = [
-    { icon: 'airline_seat_recline_extra', title: 'Ergonomic 2+2 & Sleeper Berths', desc: 'Plush leatherette seating with extended legroom and memory foam sleeper mattresses.' },
-    { icon: 'ac_unit', title: 'Climate Controlled AC', desc: 'Individual AC vents with HEPA air filtration for a fresh cabin environment.' },
-    { icon: 'power', title: 'Personal Charging Ports', desc: 'Dedicated USB & AC power sockets at every single seat and sleeper berth.' },
-    { icon: 'shield', title: 'Safety & Emergency Protocol', desc: 'Speed limiters, CCTV surveillance, emergency panic buttons, and fire suppression systems.' },
-    { icon: 'clean_hands', title: '100% Sanitized Linen', desc: 'Freshly laundered blankets and pillows provided in sealed hygienic packaging for sleeper journeys.' },
-    { icon: 'wifi', title: 'On-Board High Speed Wi-Fi', desc: 'Seamless connectivity across major expressways including Samruddhi Mahamarg.' },
-  ];
-
   const stats = [
     { label: 'Luxury Fleet Coaches', value: '15+', sub: 'Volvo B11R & BharatBenz' },
     { label: 'Daily Direct Routes', value: '45+', sub: 'Intercity Expressway Network' },
@@ -48,40 +12,113 @@ export default function AboutUsPage() {
     { label: 'Aggregator Markup', value: '0%', sub: 'Pure Transparent Pricing' },
   ];
 
+  const services = [
+    {
+      icon: 'directions_bus',
+      badge: 'BUS TRAVEL',
+      title: 'Go farther, comfortably.',
+      desc: 'Reliable intercity journeys with comfortable coaches and carefully planned routes.',
+      cta: 'Explore Bus Travel →',
+      href: '/search-results',
+      image: '/images/yatrabus_india_local_holiday_travel_packages_1.jpg',
+    },
+    {
+      icon: 'temple_hindu',
+      badge: 'SPIRITUAL JOURNEYS',
+      title: 'Travel with purpose.',
+      desc: "Thoughtfully planned yatras that make visiting India's spiritual destinations easier and more comfortable.",
+      cta: 'Explore Yatras →',
+      href: '/spiritual-yatra',
+      image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_3.jpg',
+    },
+    {
+      icon: 'flight_takeoff',
+      badge: 'INTERNATIONAL HOLIDAYS',
+      title: 'See the world your way.',
+      desc: 'Discover new countries with curated holidays, stays, experiences, and itineraries.',
+      cta: 'Explore International →',
+      href: '/international-packages',
+      image: '/images/yatrabus_international_holiday_travel_packages_9.jpg',
+    },
+    {
+      icon: 'landscape',
+      badge: 'INDIA HOLIDAYS',
+      title: 'There is always more to discover.',
+      desc: "Explore India's beaches, mountains, cities, heritage, and hidden escapes.",
+      cta: 'Explore India →',
+      href: '/india-local-packages',
+      image: '/images/yatrabus_india_local_holiday_travel_packages_5.jpg',
+    },
+  ];
+
+  const whyUsCards = [
+    {
+      icon: 'airline_seat_recline_extra',
+      title: 'Comfort',
+      desc: 'Travel should feel comfortable from the moment you leave.',
+    },
+    {
+      icon: 'visibility',
+      title: 'Clarity',
+      desc: "Know what you're booking, where you're going, and what to expect.",
+    },
+    {
+      icon: 'favorite',
+      title: 'Care',
+      desc: 'Thoughtful planning that takes care of the little things.',
+    },
+    {
+      icon: 'tune',
+      title: 'Choice',
+      desc: 'From a bus ride to a complete holiday, choose the journey that fits you.',
+    },
+  ];
+
+  const destinationChips = [
+    'Mumbai', 'Pune', 'Goa', 'Delhi', 'Kashi', 'Shirdi', 'Dubai', 'Singapore', 'Bali'
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
       <Header />
 
-      {/* HERO BANNER SECTION */}
-      <section className="relative bg-slate-900 text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Background Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-brand-scarlet/40 mix-blend-multiply"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-30"></div>
+      {/* 01. HERO SECTION (PRESERVED INTACT) */}
+      <section className="relative bg-slate-900 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Background Image & Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/yatrabus_india_local_holiday_travel_packages_5.jpg"
+            alt="YatraBus Luxury Coach Fleet & Expressway Network"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/85 to-brand-scarlet/50 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+        </div>
 
-        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-6">
+        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-5">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 font-bold text-xs uppercase tracking-wider border border-white/20">
             <span className="material-symbols-outlined text-[16px]">stars</span>
             <span>India's Dedicated Bus &amp; Pilgrimage Network</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white leading-tight">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight text-white leading-tight max-w-4xl mx-auto">
             Redefining Intercity Travel Across Bharat
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300 max-w-3xl mx-auto font-medium leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-200 max-w-2xl mx-auto font-medium leading-relaxed">
             Built on absolute transparency — zero hidden aggregator markups, assigned bus plate registration numbers at booking, and a dedicated fleet committed to premium comfort, safety, and spiritual yatras.
           </p>
 
-          <div className="pt-4 flex flex-wrap justify-center gap-4">
+          <div className="pt-2 flex flex-wrap justify-center gap-3">
             <a
               href="/search-results"
-              className="px-6 py-3.5 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-sm tracking-wider uppercase shadow-lg shadow-red-600/30 transition-all"
+              className="px-6 py-3 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-red-600/30 transition-all"
             >
               EXPLORE BUS ROUTES
             </a>
             <a
               href="/packages"
-              className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm tracking-wider uppercase border border-white/20 backdrop-blur-md transition-all"
+              className="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs tracking-wider uppercase border border-white/20 backdrop-blur-md transition-all"
             >
               DISCOVER PACKAGES
             </a>
@@ -89,7 +126,7 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* STATS STRIP */}
+      {/* STATS STRIP (PRESERVED INTACT) */}
       <section className="bg-white border-b border-slate-200/90 py-10 px-4 sm:px-6 lg:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((st, idx) => (
@@ -102,112 +139,299 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* OUR MISSION & CORE PILLARS */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-12">
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-brand-scarlet bg-red-50 px-3.5 py-1 rounded-full border border-red-200">
-            WHY YATRABUS STANDS APART
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-slate-900">
-            The Pillars of Our Dedicated Fleet Model
-          </h2>
-          <p className="text-sm text-slate-600">
-            We built YATRABUS to solve the common frustrations of intercity road travel in India: unannounced bus replacements, inflated booking fees, and lack of accountability.
-          </p>
+      {/* 02. WHO WE ARE */}
+      <section className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          {/* Text Content */}
+          <div className="lg:col-span-6 space-y-6">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-brand-scarlet bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200">
+              WHO WE ARE
+            </span>
+
+            <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 leading-tight">
+              Travel Made More Meaningful.
+            </h2>
+
+            <div className="space-y-4 text-base sm:text-lg text-slate-600 font-medium leading-relaxed">
+              <p>
+                YatraBus is a travel company built for people who love discovering new places.
+              </p>
+              <p>
+                From everyday intercity journeys to spiritual trips, weekend escapes, and international holidays, we bring different ways of travelling together in one place.
+              </p>
+              <p className="text-slate-900 font-serif font-bold">
+                Simple planning. Comfortable journeys. Memorable experiences.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <a
+                href="/packages"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-red-600/30 transition-all"
+              >
+                <span>Explore Our Journeys</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Visual Photograph */}
+          <div className="lg:col-span-6 h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 relative group">
+            <img
+              src="/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_8.jpg"
+              alt="YatraBus Expressway Journey Across Bharat"
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
+            <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
+              <div className="text-xs font-bold uppercase text-amber-300">Indian Expressway Fleet &amp; Holiday Experiences</div>
+              <div className="text-sm font-serif">Connecting People with Places Across Bharat &amp; Beyond</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 03. WHAT WE DO */}
+      <section className="bg-white border-y border-slate-200/90 py-20 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-14">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-brand-scarlet bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200">
+              WHAT WE DO
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900">
+              One Place. Many Ways to Travel.
+            </h2>
+            <p className="text-base text-slate-600 font-medium">
+              Whether you're travelling across the country or planning your next holiday, YatraBus helps you get there.
+            </p>
+          </div>
+
+          {/* 4 Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {services.map((srv, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-50 rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group"
+              >
+                <div className="relative h-60 w-full overflow-hidden">
+                  <img
+                    src={srv.image}
+                    alt={srv.title}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-amber-300 font-serif font-bold text-xs px-3.5 py-1 rounded-full border border-amber-400/30 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px]">{srv.icon}</span>
+                    <span>{srv.badge}</span>
+                  </div>
+                </div>
+
+                <div className="p-8 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-serif font-bold text-slate-900">{srv.title}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{srv.desc}</p>
+                  </div>
+
+                  <div className="pt-2">
+                    <a
+                      href={srv.href}
+                      className="inline-flex items-center gap-2 text-xs font-extrabold tracking-wider uppercase text-brand-scarlet hover:text-brand-hover transition-colors"
+                    >
+                      <span>{srv.cta}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* 04. OUR PHILOSOPHY (TYPOGRAPHY & HIGHWAY BACKDROP) */}
+      <section className="relative bg-slate-950 text-white py-24 sm:py-32 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/yatrabus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_2.jpg"
+            alt="YatraBus Philosophy Highway Travel"
+            className="w-full h-full object-cover object-center opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/90 to-slate-950/95"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {companyPillars.map((p, idx) => (
+        <div className="max-w-4xl mx-auto relative z-10 space-y-8">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/30">
+            OUR PHILOSOPHY
+          </span>
+
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-tight">
+            We Believe the Journey Matters Too.
+          </h2>
+
+          <div className="space-y-3 text-base sm:text-xl text-slate-300 font-serif italic max-w-2xl mx-auto leading-relaxed">
+            <p>A great trip isn't just about reaching the destination.</p>
+            <p className="text-white not-italic font-sans font-medium text-sm sm:text-base space-y-1">
+              <span className="block">It's the excitement before leaving.</span>
+              <span className="block">The conversations along the way.</span>
+              <span className="block">The places you discover unexpectedly.</span>
+              <span className="block">And the memories you bring back home.</span>
+            </p>
+            <p className="pt-2 text-amber-300 not-italic font-sans font-semibold text-sm sm:text-base">
+              That's what we want every YatraBus journey to feel like.
+            </p>
+          </div>
+
+          <div className="pt-4">
+            <span className="inline-block px-5 py-2 rounded-2xl bg-white/10 backdrop-blur-md text-amber-300 font-serif font-bold text-sm tracking-wider border border-white/20">
+              Good journeys. Brighter people.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* 05. WHY TRAVEL WITH US? */}
+      <section className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-14">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200">
+            WHY TRAVEL WITH US?
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900">
+            Made for Better Journeys.
+          </h2>
+        </div>
+
+        {/* 4 Small Clean Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {whyUsCards.map((c, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex items-start gap-5"
+              className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-md transition-all space-y-3 text-left"
             >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border ${p.color}`}>
-                <span className="material-symbols-outlined text-[28px]">{p.icon}</span>
+              <div className="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[24px]">{c.icon}</span>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-serif font-bold text-slate-900">{p.title}</h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">{p.desc}</p>
-              </div>
+              <h3 className="text-xl font-serif font-bold text-slate-900">{c.title}</h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">{c.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* FLEET & HOSPITALITY AMENITIES */}
-      <section className="bg-white border-y border-slate-200/90 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-200">
-              FIRST-CLASS CABIN EXPERIENCE
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-slate-900">
-              Modern Fleet Amenities &amp; On-Board Comfort
-            </h2>
-            <p className="text-sm text-slate-600">
-              Every BharatBenz and Volvo coach in our network undergoes multi-point safety inspections before departure to deliver a smooth, quiet expressway journey.
+      {/* 06. OUR STORY */}
+      <section className="bg-white border-y border-slate-200/90 py-20 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-brand-scarlet bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200">
+            OUR STORY
+          </span>
+
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900">
+            It Started With a Simple Idea.
+          </h2>
+
+          <p className="text-lg sm:text-xl text-brand-scarlet font-serif font-bold">
+            Travel should be easier.
+          </p>
+
+          <div className="space-y-5 text-base sm:text-lg text-slate-600 font-medium leading-relaxed max-w-3xl mx-auto text-left sm:text-center">
+            <p>
+              What began with the idea of making bus journeys better grew into something bigger — a travel platform connecting people with places, experiences, and journeys across India and beyond.
+            </p>
+            <p>
+              Today, YatraBus brings together bus travel, spiritual journeys, domestic holidays, and international experiences under one roof.
+            </p>
+            <p className="text-slate-900 font-serif font-bold text-center">
+              And we're still exploring where the road takes us next.
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fleetAmenities.map((am, idx) => (
-              <div key={idx} className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[22px]">{am.icon}</span>
-                </div>
-                <h3 className="text-base font-serif font-bold text-slate-900">{am.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">{am.desc}</p>
-              </div>
+      {/* 07. DESTINATIONS */}
+      <section className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full text-center space-y-10">
+        <div className="space-y-3">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-brand-scarlet bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200">
+            DESTINATIONS
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900">
+            From Here to Somewhere New.
+          </h2>
+          <p className="text-base font-serif font-bold text-slate-600">
+            India. Asia. The World.
+          </p>
+        </div>
+
+        {/* India Map Graphic */}
+        <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl max-w-4xl mx-auto bg-slate-950 p-6 sm:p-10">
+          <img
+            src="/images/india_map_route.jpg"
+            alt="YatraBus India Route Network Map"
+            className="w-full h-80 sm:h-96 object-contain mx-auto opacity-85"
+          />
+          
+          {/* Destination Chips */}
+          <div className="pt-6 flex flex-wrap justify-center gap-2">
+            {destinationChips.map((chip, i) => (
+              <span
+                key={i}
+                className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-xs font-bold border border-white/20 transition-all cursor-default"
+              >
+                ● {chip}
+              </span>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* FOUNDER'S VISION STORY */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-        <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl relative overflow-hidden space-y-6">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400">
-            <span className="material-symbols-outlined text-[16px]">format_quote</span>
-            <span>OUR JOURNEY STORY</span>
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white leading-snug">
-            "Intercity bus travel in Bharat should feel reliable, dignified, and straightforward — whether you're commuting between Nagpur and Pune or embarking on a holy darshan."
-          </h2>
-
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-serif italic">
-            YATRABUS was founded to bridge the gap between bus fleet operators and passengers. By taking direct responsibility for bus assignment, live progress tracking, and transparent pricing, we give passengers full confidence on every single journey.
+        <div className="space-y-4 pt-2">
+          <p className="text-sm font-semibold text-slate-600 italic">
+            Your next story could start anywhere.
           </p>
-
-          <div className="pt-4 flex items-center justify-between border-t border-slate-800">
-            <div>
-              <div className="text-sm font-extrabold text-white">YATRABUS Founders &amp; Fleet Operations Team</div>
-              <div className="text-xs text-slate-400">Nagpur • Pune • New Delhi • Haridwar</div>
-            </div>
-            <div className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
-              100% Indian Owned &amp; Operated
-            </div>
+          <div>
+            <a
+              href="/packages"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-red-600/30 transition-all"
+            >
+              <span>Explore Destinations</span>
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* CTA BAND */}
-      <section className="bg-red-50 border-t border-red-200 py-12 px-4 sm:px-6 lg:px-8 text-center">
-        <div className="max-w-4xl mx-auto space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-            Ready to Travel with Assigned Bus Plate Assurance?
+      {/* 08. FINAL CTA */}
+      <section className="relative bg-slate-950 text-white py-24 sm:py-28 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/testimonials_bg.png"
+            alt="YatraBus Highway Sunset Travel"
+            className="w-full h-full object-cover object-center opacity-35"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/80 to-brand-scarlet/50 mix-blend-multiply"></div>
+        </div>
+
+        <div className="max-w-4xl mx-auto relative z-10 space-y-6">
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
+            Where Will You Go Next?
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-            Book your next intercity journey or spiritual darshan circuit with zero aggregator markup and instant ticket confirmation.
+
+          <p className="text-base sm:text-lg text-slate-200 max-w-xl mx-auto font-medium leading-relaxed">
+            Whether it's a quick getaway, a spiritual journey, or a trip you've been dreaming about for years — we'll help you get there.
           </p>
+
           <div className="pt-2">
             <a
-              href="/search-results"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs tracking-wider uppercase shadow-md shadow-red-600/20 transition-all"
+              href="/packages"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider shadow-xl shadow-red-600/30 transition-all"
             >
-              <span>SEARCH BUS TICKETS</span>
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              <span>Start Exploring</span>
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </a>
+          </div>
+
+          <div className="pt-6 text-xs font-serif font-bold text-amber-300 tracking-wider">
+            Good journeys. Brighter people.
           </div>
         </div>
       </section>

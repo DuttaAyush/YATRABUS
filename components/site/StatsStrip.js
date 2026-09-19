@@ -1,6 +1,6 @@
 export default function StatsStrip() {
   return (
-    <section className="w-full bg-slate-50 border-b border-slate-200 py-6">
+    <section className="w-full bg-white border-b border-slate-200 py-6">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center divide-y md:divide-y-0 md:divide-x divide-slate-200">
           <div className="flex items-center gap-3.5 pt-2 md:pt-0">

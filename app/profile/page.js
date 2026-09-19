@@ -79,11 +79,98 @@ export default function CustomerProfilePage() {
     },
   ];
 
-  const savedPassengers = [
+  const [savedPassengers, setSavedPassengers] = useState([
     { id: 1, name: 'Rajesh Patel', age: 34, gender: 'Male', relation: 'Self / Primary' },
     { id: 2, name: 'Sneha Patel', age: 31, gender: 'Female', relation: 'Spouse' },
     { id: 3, name: 'Aarav Patel', age: 8, gender: 'Male', relation: 'Son' },
-  ];
+  ]);
+
+  const [selectedPassengerId, setSelectedPassengerId] = useState(1);
+  const [isPassengerModalOpen, setIsPassengerModalOpen] = useState(false);
+  const [editingPassenger, setEditingPassenger] = useState(null);
+  const [passengerFormData, setPassengerFormData] = useState({
+    name: '',
+    age: '',
+    gender: 'Male',
+    relation: 'Family',
+  });
+
+  const openAddPassengerModal = () => {
+    setEditingPassenger(null);
+    setPassengerFormData({ name: '', age: '', gender: 'Male', relation: 'Family' });
+    setIsPassengerModalOpen(true);
+  };
+
+  const openEditPassengerModal = (passenger) => {
+    setEditingPassenger(passenger);
+    setPassengerFormData({
+      name: passenger.name,
+      age: passenger.age.toString(),
+      gender: passenger.gender,
+      relation: passenger.relation,
+    });
+    setIsPassengerModalOpen(true);
+  };
+
+  const openEditSelectedPassengerModal = () => {
+    const passenger = savedPassengers.find((p) => p.id === selectedPassengerId) || savedPassengers[0];
+    if (passenger) {
+      openEditPassengerModal(passenger);
+    }
+  };
+
+  const handleDeleteSelectedPassenger = () => {
+    const passenger = savedPassengers.find((p) => p.id === selectedPassengerId) || savedPassengers[0];
+    if (!passenger) return;
+    const remaining = savedPassengers.filter((p) => p.id !== passenger.id);
+    setSavedPassengers(remaining);
+    if (remaining.length > 0) {
+      setSelectedPassengerId(remaining[0].id);
+    } else {
+      setSelectedPassengerId(null);
+    }
+  };
+
+  const handleSavePassenger = (e) => {
+    e.preventDefault();
+    if (!passengerFormData.name.trim() || !passengerFormData.age) return;
+
+    if (editingPassenger) {
+      setSavedPassengers(
+        savedPassengers.map((p) =>
+          p.id === editingPassenger.id
+            ? {
+                ...p,
+                name: passengerFormData.name.trim(),
+                age: parseInt(passengerFormData.age, 10),
+                gender: passengerFormData.gender,
+                relation: passengerFormData.relation.trim(),
+              }
+            : p
+        )
+      );
+    } else {
+      const newId = Date.now();
+      const newPassenger = {
+        id: newId,
+        name: passengerFormData.name.trim(),
+        age: parseInt(passengerFormData.age, 10),
+        gender: passengerFormData.gender,
+        relation: passengerFormData.relation.trim() || 'Traveler',
+      };
+      setSavedPassengers([...savedPassengers, newPassenger]);
+      setSelectedPassengerId(newId);
+    }
+    setIsPassengerModalOpen(false);
+  };
+
+  const handleDeletePassenger = (id) => {
+    const remaining = savedPassengers.filter((p) => p.id !== id);
+    setSavedPassengers(remaining);
+    if (selectedPassengerId === id) {
+      setSelectedPassengerId(remaining.length > 0 ? remaining[0].id : null);
+    }
+  };
 
   const openGpsTracker = (trip) => {
     setSelectedTrackBus(trip);
@@ -94,74 +181,153 @@ export default function CustomerProfilePage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
       <Header />
 
-      {/* USER PROFILE HEADER CARD */}
-      <div className="bg-white border-b border-slate-200/90 py-8 px-4 sm:px-6 lg:px-8 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+      {/* USER PROFILE HEADER BANNER WITH COMPACT CROPPED PROFILE BG */}
+      <div className="relative bg-slate-900 text-slate-900 overflow-hidden shadow-sm">
+        {/* BACKGROUND IMAGE */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/profile_bg.webp"
+            alt="Profile Background"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/45 to-transparent pointer-events-none" />
+        </div>
+
+        {/* MAIN BANNER CONTAINER - REDUCED HEIGHT & PADDING */}
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16 py-5 sm:py-6 lg:py-7 relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           
-          {/* USER INFO */}
-          <div className="flex items-center gap-4">
-            <img
-              src="/images/avatar.png"
-              alt="Rajesh Patel Profile"
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-red-500/20 shadow-md shrink-0"
-            />
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Rajesh Patel</h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold border border-amber-200 flex items-center gap-1">
+          {/* LEFT COLUMN: AVATAR & USER DETAILS */}
+          <div className="flex items-center gap-3.5 sm:gap-5 pl-2 sm:pl-4 lg:pl-6">
+            <div className="relative shrink-0">
+              <img
+                src="/images/avatar.png"
+                alt="Rajesh Patel Profile"
+                className="w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 rounded-full object-cover ring-4 ring-white shadow-lg"
+              />
+            </div>
+
+            <div className="space-y-0.5 sm:space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-extrabold text-slate-950 tracking-tight">
+                  Rajesh Patel
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-200/90 text-amber-950 font-extrabold text-[11px] border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
                   ⭐ VIP Club Member
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">rajesh.patel@gmail.com • +91 98765 43210</p>
-              <div className="text-[11px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">verified</span>
+
+              <p className="text-xs font-semibold text-slate-700">
+                rajesh.patel@gmail.com <span className="mx-1 font-normal text-slate-400">|</span> +91 98765 43210
+              </p>
+
+              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 pt-0.5">
+                <span className="material-symbols-outlined text-[16px] text-emerald-600 fill-1">verified</span>
                 <span>Verified YatraBus Account (Assigned Plate Priority)</span>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => alert('Edit Profile modal opening...')}
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs shadow-sm border border-slate-200 transition-all cursor-pointer active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[14px] text-slate-600">edit</span>
+                  <span>Edit Profile</span>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* QUICK STATS PILLS */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200 text-center">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Upcoming Trips</span>
-              <span className="text-lg font-extrabold text-slate-900">{upcomingTrips.length} Bookings</span>
-            </div>
-
-            <div className="bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200 text-center">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Yatra Wallet</span>
-              <span className="text-lg font-extrabold text-brand-scarlet">₹1,450</span>
-            </div>
+          {/* CENTER COLUMN: SMALLER SLOGAN WITH RED UNDERLINE */}
+          <div className="hidden xl:flex flex-col items-center justify-center text-center px-2">
+            <span className="font-serif italic text-base sm:text-lg lg:text-xl font-bold text-slate-800 leading-snug drop-shadow-sm transform -rotate-1">
+              New Destinations<br />Same You<br />
+              <span className="relative inline-block text-slate-900 font-extrabold">
+                Just Happier
+                <svg className="absolute -bottom-1 left-0 w-full h-1.5 text-red-600" viewBox="0 0 100 20" preserveAspectRatio="none">
+                  <path d="M0 10 Q 50 20 100 5" stroke="currentColor" strokeWidth="4" fill="transparent" strokeLinecap="round" />
+                </svg>
+              </span>
+            </span>
           </div>
-        </div>
-      </div>
 
-      {/* DASHBOARD TAB SWITCHER */}
-      <div className="bg-white border-b border-slate-200/80 sticky top-20 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
-          {[
-            { label: 'Upcoming Trips (2)', key: 'upcoming', icon: 'confirmation_number' },
-            { label: 'Past Journeys & Reviews', key: 'past', icon: 'history' },
-            { label: 'Yatra Wallet & Points', key: 'wallet', icon: 'account_balance_wallet' },
-            { label: 'Saved Passengers (3)', key: 'passengers', icon: 'group' },
-          ].map(tab => (
+          {/* RIGHT COLUMN: 2 COMPACT FROSTED STATS CARDS */}
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            {/* Card 1: Upcoming Trips */}
             <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 whitespace-nowrap ${
-                activeTab === tab.key
-                  ? 'bg-brand-scarlet text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+              type="button"
+              onClick={() => setActiveTab('upcoming')}
+              className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-white/80 shadow-md hover:shadow-lg transition-all cursor-pointer text-left group"
             >
-              <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
-              <span>{tab.label}</span>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">confirmation_number</span>
+              </div>
+              <div>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                  UPCOMING TRIPS
+                </span>
+                <span className="text-xs sm:text-sm font-black text-slate-900 block leading-tight">
+                  {upcomingTrips.length} Bookings
+                </span>
+              </div>
+              <span className="material-symbols-outlined text-red-500 text-sm group-hover:translate-x-0.5 transition-transform ml-0.5">
+                chevron_right
+              </span>
             </button>
-          ))}
+
+            {/* Card 2: Yatra Wallet */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('wallet')}
+              className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-white/80 shadow-md hover:shadow-lg transition-all cursor-pointer text-left group"
+            >
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">account_balance_wallet</span>
+              </div>
+              <div>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                  YATRA WALLET
+                </span>
+                <span className="text-xs sm:text-sm font-black text-red-600 block leading-tight">
+                  ₹1,450
+                </span>
+              </div>
+              <span className="material-symbols-outlined text-red-500 text-sm group-hover:translate-x-0.5 transition-transform ml-0.5">
+                chevron_right
+              </span>
+            </button>
+          </div>
+
+        </div>
+
+        {/* BOTTOM OVERLAPPING TAB SWITCHER CAPSULE SHEET */}
+        <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16 relative z-20 pb-2">
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-full p-1.5 border border-slate-200/80 shadow-lg flex items-center justify-between overflow-x-auto no-scrollbar gap-1 sm:gap-2">
+            {[
+              { label: `Upcoming Trips (${upcomingTrips.length})`, key: 'upcoming', icon: 'confirmation_number' },
+              { label: 'Past Journeys & Reviews', key: 'past', icon: 'history' },
+              { label: 'Yatra Wallet & Points', key: 'wallet', icon: 'account_balance_wallet' },
+              { label: `Saved Passengers (${savedPassengers.length})`, key: 'passengers', icon: 'group' },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex-1 min-w-[150px] sm:min-w-0 py-2 sm:py-2.5 px-3.5 sm:px-5 rounded-xl sm:rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  activeTab === tab.key
+                    ? 'bg-brand-scarlet text-white shadow-md shadow-red-600/30'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px] sm:text-[18px]">{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* MAIN DASHBOARD CONTENT AREA */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-14 xl:px-16 py-8">
         
         {/* TAB 1: UPCOMING TRIPS WITH ASSIGNED BUS PLATE & LIVE GPS TRACKING */}
         {activeTab === 'upcoming' && (
@@ -327,24 +493,109 @@ export default function CustomerProfilePage() {
         {/* TAB 4: SAVED PASSENGERS */}
         {activeTab === 'passengers' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-serif font-bold text-slate-900">Saved Passenger Profiles</h2>
-              <button
-                onClick={() => alert('Add Passenger form modal')}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-sm"
-              >
-                + Add New Passenger
-              </button>
+            {/* Top Action Header Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200/80">
+              <div>
+                <h2 className="text-xl font-serif font-bold text-slate-900">Saved Passenger Profiles</h2>
+                <p className="text-xs text-slate-500">Select a traveler to edit or delete details, or add new passenger profiles.</p>
+              </div>
+
+              {/* Action Buttons Group */}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={openAddPassengerModal}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md shadow-red-600/20"
+                >
+                  <span className="material-symbols-outlined text-[18px]">person_add</span>
+                  <span>+ Add New Passenger</span>
+                </button>
+
+                <button
+                  onClick={openEditSelectedPassengerModal}
+                  disabled={savedPassengers.length === 0}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                  <span>Edit Passenger</span>
+                </button>
+
+                <button
+                  onClick={handleDeleteSelectedPassenger}
+                  disabled={savedPassengers.length === 0}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                  <span>Delete Passenger</span>
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {savedPassengers.map(p => (
-                <div key={p.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-1">
-                  <span className="text-[10px] font-bold text-brand-scarlet uppercase">{p.relation}</span>
-                  <h3 className="text-base font-bold text-slate-900">{p.name}</h3>
-                  <p className="text-xs text-slate-500">{p.gender}, {p.age} Years Old</p>
+            {/* Wide Vertical Component Stack (One Below Another) */}
+            <div className="flex flex-col space-y-3 pt-2">
+              {savedPassengers.length === 0 ? (
+                <div className="w-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-500 text-sm">
+                  No saved passengers found. Click <strong>+ Add New Passenger</strong> to save details.
                 </div>
-              ))}
+              ) : (
+                savedPassengers.map((p) => {
+                  const isSelected = selectedPassengerId === p.id;
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => setSelectedPassengerId(p.id)}
+                      className={`w-full bg-white rounded-2xl p-4 sm:p-5 border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                        isSelected
+                          ? 'border-brand-scarlet ring-2 ring-brand-scarlet/20 shadow-md bg-red-50/10'
+                          : 'border-slate-200/90 hover:border-slate-300 shadow-sm hover:shadow'
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Radio Selection Indicator */}
+                        <div
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                            isSelected ? 'border-brand-scarlet bg-brand-scarlet text-white' : 'border-slate-300 bg-slate-50'
+                          }`}
+                        >
+                          {isSelected && <span className="material-symbols-outlined text-[14px]">check</span>}
+                        </div>
+
+                        {/* Avatar Icon */}
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-600">
+                          <span className="material-symbols-outlined text-[24px]">
+                            {p.gender === 'Female' ? 'woman' : 'man'}
+                          </span>
+                        </div>
+
+                        {/* Passenger Info */}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-base font-bold text-slate-900">{p.name}</h3>
+                            <span className="inline-block px-2.5 py-0.5 rounded-full bg-red-50 text-brand-scarlet text-[10px] font-bold uppercase tracking-wider border border-red-100">
+                              {p.relation}
+                            </span>
+                          </div>
+                          <p className="text-xs font-medium text-slate-500">
+                            {p.gender} • {p.age} Years Old • ID Verified
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right Selection Tag */}
+                      <div className="flex items-center gap-3 sm:self-center self-end pl-11 sm:pl-0">
+                        <span
+                          className={`text-xs font-bold px-3.5 py-1.5 rounded-xl ${
+                            isSelected
+                              ? 'bg-brand-scarlet text-white shadow-sm'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          {isSelected ? 'Selected' : 'Click to Select'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         )}
@@ -416,6 +667,104 @@ export default function CustomerProfilePage() {
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADD / EDIT PASSENGER MODAL */}
+      {isPassengerModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-slate-800 shadow-2xl space-y-5 border border-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-xl font-serif font-bold text-slate-900">
+                {editingPassenger ? 'Edit Passenger Details' : 'Add New Passenger'}
+              </h3>
+              <button
+                onClick={() => setIsPassengerModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleSavePassenger} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={passengerFormData.name}
+                  onChange={(e) => setPassengerFormData({ ...passengerFormData, name: e.target.value })}
+                  placeholder="e.g. Ramesh Kumar"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-brand-scarlet focus:ring-2 focus:ring-brand-scarlet/20 text-sm font-semibold outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                    Age *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    max="120"
+                    value={passengerFormData.age}
+                    onChange={(e) => setPassengerFormData({ ...passengerFormData, age: e.target.value })}
+                    placeholder="e.g. 35"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-brand-scarlet focus:ring-2 focus:ring-brand-scarlet/20 text-sm font-semibold outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                    Gender *
+                  </label>
+                  <select
+                    value={passengerFormData.gender}
+                    onChange={(e) => setPassengerFormData({ ...passengerFormData, gender: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-brand-scarlet focus:ring-2 focus:ring-brand-scarlet/20 text-sm font-semibold outline-none bg-white"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+                  Relation / Tag *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={passengerFormData.relation}
+                  onChange={(e) => setPassengerFormData({ ...passengerFormData, relation: e.target.value })}
+                  placeholder="e.g. Self, Spouse, Father, Friend"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-brand-scarlet focus:ring-2 focus:ring-brand-scarlet/20 text-sm font-semibold outline-none"
+                />
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsPassengerModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs tracking-wide uppercase transition-all shadow-md shadow-red-600/20"
+                >
+                  {editingPassenger ? 'Save Changes' : 'Add Passenger'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

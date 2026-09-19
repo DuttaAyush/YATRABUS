@@ -88,10 +88,10 @@ export default function InternationalHero() {
                 ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
                 : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
             }}
-            className="text-4xl md:text-6xl lg:text-7xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)] font-serif font-semibold"
+            className="text-4xl md:text-6xl lg:text-7xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)] font-serif font-medium"
           >
             We Plan. You Pack. <br />
-            <span className="font-serif italic bg-gradient-to-r from-teal-200 via-cyan-300 to-emerald-200 bg-clip-text text-transparent font-normal drop-shadow-md">Memories Last Forever.</span>
+            <span className="font-serif italic bg-gradient-to-r from-teal-100 via-cyan-200 to-emerald-100 bg-clip-text text-transparent font-normal drop-shadow-md">Memories Last Forever.</span>
           </h1>
 
           <p

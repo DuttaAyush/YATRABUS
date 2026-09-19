@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
+import Testimonials from '@/components/site/Testimonials';
 import PackageDetailModal from '@/components/site/PackageDetailModal';
 
 const spiritualPackagesData = [
@@ -236,7 +237,7 @@ export default function CuratedPackagesMasterPage() {
       <Header />
 
       {/* HERO MASTER BANNER - STICKY WITH SCROLL ZOOM & PARALLAX */}
-      <div className="relative bg-slate-950 text-white pt-20 pb-28 sm:pt-28 sm:pb-36 px-4 sm:px-6 lg:px-8 xl:px-12 overflow-hidden min-h-[480px] sm:min-h-[540px] flex items-center justify-center sticky top-0 z-0">
+      <div className="relative bg-slate-950 text-white pt-20 pb-20 sm:pt-24 sm:pb-24 px-4 sm:px-6 lg:px-8 xl:px-12 overflow-hidden min-h-screen flex items-center justify-center sticky top-0 z-0">
         {/* HERO BACKGROUND IMAGE WITH SCROLL SCALE ZOOM */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
@@ -635,6 +636,8 @@ export default function CuratedPackagesMasterPage() {
           </section>
         )}
       </main>
+
+      <Testimonials />
 
       {/* PACKAGE DETAIL POPUP MODAL SHEET */}
       <PackageDetailModal

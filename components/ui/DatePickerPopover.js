@@ -200,7 +200,7 @@ export default function DatePickerPopover({
       ref={popoverRef}
       onClick={(e) => e.stopPropagation()}
       aria-label="Date Picker Bubble"
-      className={`absolute ${positionClasses} ${alignClasses} z-[99999] w-80 sm:w-88 bg-white/98 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(15,23,42,0.35)] border border-slate-200/90 p-4 text-slate-800 animate-in fade-in zoom-in-95 duration-200`}
+      className={`absolute ${positionClasses} ${alignClasses} z-[99999] w-80 sm:w-88 max-w-[calc(100vw-1.5rem)] bg-white/98 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(15,23,42,0.35)] border border-slate-200/90 p-4 text-slate-800 animate-in fade-in zoom-in-95 duration-200`}
     >
       {/* Speech Bubble Arrow Indicator */}
       <div className={`absolute ${arrowClasses}`} />

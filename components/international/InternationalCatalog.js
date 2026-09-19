@@ -141,7 +141,6 @@ export default function InternationalCatalog() {
                 <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur text-white font-bold text-xs">
                   {pkg.duration}
                 </span>
-                <span className="absolute bottom-2.5 left-3 text-xs text-white font-medium">{pkg.subtitle}</span>
               </div>
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>

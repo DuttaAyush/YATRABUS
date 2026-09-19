@@ -84,11 +84,12 @@ const destinationsData = [
   }
 ];
 
-export default function SpotlightDestinations() {
+export default function SpotlightDestinations({ rotating = true }) {
   const [activeMidIndex, setActiveMidIndex] = useState(3); // Default center on Singapore & Malaysia (index 3)
   const [windowWidth, setWindowWidth] = useState(1200);
   const [touchStartX, setTouchStartX] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const [modalPkg, setModalPkg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const total = destinationsData.length;
@@ -107,6 +108,14 @@ export default function SpotlightDestinations() {
   const handleNext = () => {
     setActiveMidIndex((prev) => (prev + 1) % total);
   };
+
+  useEffect(() => {
+    if (!rotating || isHovered) return;
+    const timer = setInterval(() => {
+      handleNext();
+    }, 900);
+    return () => clearInterval(timer);
+  }, [rotating, isHovered, total]);
 
   const handleCardClick = (index) => {
     setActiveMidIndex(index);
@@ -142,7 +151,12 @@ export default function SpotlightDestinations() {
   const offset3 = windowWidth < 640 ? 650 : windowWidth < 1024 ? 900 : 1200;
 
   return (
-    <section className="w-full py-12 md:py-16 bg-[#F8FAFB] overflow-hidden select-none" id="destinations">
+    <section
+      className="w-full py-12 md:py-16 bg-[#F8FAFB] overflow-hidden select-none"
+      id="destinations"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         {/* Header with Circular Navigation Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
@@ -255,7 +269,7 @@ export default function SpotlightDestinations() {
                   opacity,
                   zIndex,
                   willChange: 'transform, opacity',
-                  transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), z-index 0.65s ease'
+                  transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), z-index 0.35s ease'
                 }}
                 className={`absolute rounded-3xl overflow-hidden shadow-2xl cursor-pointer flex flex-col justify-between p-5 bg-slate-900 border transition-all group pointer-events-auto ${widthClass} ${heightClass} ${
                   isCenter
