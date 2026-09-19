@@ -60,7 +60,7 @@ const testimonialData = [
 export default function Testimonials() {
   return (
     <section
-      className="w-full relative overflow-hidden bg-[#F4F2EB]"
+      className="w-full relative overflow-hidden bg-[#F4F2EB] scroll-mt-28 sm:scroll-mt-32"
       id="testimonialsSection"
     >
       {/* BACKGROUND GRAPHIC IMAGE */}

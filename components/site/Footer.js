@@ -33,9 +33,9 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3">Tour Packages</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link className="hover:text-white transition-colors" href="/international-packages">International Holiday Packages</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="/spiritual-yatra">Spiritual Darshan &amp; Jyotirlinga</Link></li>
-              <li><Link className="hover:text-white transition-colors" href="/india-local-packages">India Local Escapes &amp; Safaris</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/international">International Holiday Packages</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/spiritual">Spiritual Darshan &amp; Jyotirlinga</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/domestic">Domestic Escapes &amp; Safaris</Link></li>
               <li><Link className="hover:text-white transition-colors" href="/">Custom Group Charters</Link></li>
             </ul>
           </div>

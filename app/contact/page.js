@@ -93,7 +93,7 @@ export default function ContactPage() {
         </section>
 
         {/* MAIN CONTENT SECTION OVERLAPPING SHEET */}
-        <div className="relative z-10 bg-slate-50 rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-2xl border-t border-slate-200 overflow-hidden space-y-16 py-12">
+        <div className="relative z-10 bg-slate-50 rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-2xl border-t border-slate-200 overflow-hidden space-y-16 pt-12 pb-0">
           
           {/* CONTACT FORM */}
           <ContactForm />
@@ -160,7 +160,9 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <Testimonials />
+          <div className="w-full">
+            <Testimonials />
+          </div>
         </div>
       </main>
 

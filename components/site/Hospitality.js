@@ -39,7 +39,7 @@ export default function Hospitality() {
   ];
 
   return (
-    <section className="w-full py-12 sm:py-16 bg-white border-b border-slate-200" id="hospitalitySection">
+    <section className="w-full py-12 sm:py-16 bg-white border-b border-slate-200 scroll-mt-28 sm:scroll-mt-32" id="hospitalitySection">
       <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         
         {/* SECTION HEADER */}

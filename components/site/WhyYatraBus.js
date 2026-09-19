@@ -49,7 +49,7 @@ export default function WhyYatraBus() {
 
   return (
     <section
-      className="w-full relative pt-10 sm:pt-14 pb-12 sm:pb-16 border-none overflow-hidden bg-[#F4F2EB]"
+      className="w-full relative isolate pt-10 sm:pt-14 pb-12 sm:pb-16 border-none overflow-hidden bg-[#F4F2EB] scroll-mt-28 sm:scroll-mt-32"
       id="advantageSection"
     >
       {/* BACKGROUND GRAPHIC IMAGE */}
@@ -59,8 +59,8 @@ export default function WhyYatraBus() {
           alt="Why YatraBus Advantage Background"
           className="w-full h-full object-cover object-center pointer-events-none"
         />
-        {/* Light White Overlay */}
-        <div className="absolute inset-0 bg-white/35 backdrop-blur-[0.5px] pointer-events-none" />
+        {/* Light Tint Overlay */}
+        <div className="absolute inset-0 bg-[#F4F2EB]/60 pointer-events-none" />
       </div>
 
       {/* MAIN CONTENT CONTAINER */}
@@ -106,14 +106,14 @@ export default function WhyYatraBus() {
               {/* Bottom Footer */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-200/40 shrink-0">
                 <Link
-                  href="/bus-tickets"
+                  href="/"
                   className={`text-xs font-bold ${card.accentColor} flex items-center gap-1 group-hover:underline`}
                 >
                   <span>Learn more</span>
                 </Link>
 
                 <Link
-                  href="/bus-tickets"
+                  href="/"
                   className={`w-7 h-7 rounded-full ${card.btnBg} flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105`}
                 >
                   <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

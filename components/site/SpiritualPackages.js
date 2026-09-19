@@ -256,7 +256,7 @@ export default function SpiritualPackages() {
   };
 
   return (
-    <section className="w-full py-16 bg-amber-50/40 border-b border-amber-200/60" id="spiritualPackagesSection">
+    <section className="w-full py-16 bg-amber-50/40 border-b border-amber-200/60 scroll-mt-28 sm:scroll-mt-32" id="spiritualPackagesSection">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
@@ -274,7 +274,7 @@ export default function SpiritualPackages() {
           <div>
             <a
               className="inline-flex items-center gap-1 text-sm font-bold text-amber-700 hover:text-amber-800 transition-colors"
-              href="/spiritual-yatra"
+              href="/spiritual"
             >
               <span>Explore all Devsthan Circuits</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -396,6 +396,7 @@ export default function SpiritualPackages() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {/* Downsize Card button (Commented out as requested)
                   {sheetState === 'expanded' && (
                     <button
                       onClick={handleDownsizeToPeek}
@@ -406,6 +407,7 @@ export default function SpiritualPackages() {
                       <span className="hidden sm:inline font-sans">Downsize Card</span>
                     </button>
                   )}
+                  */}
                   <button
                     onClick={handleCloseSheet}
                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/25 hover:bg-white/40 text-white flex items-center justify-center backdrop-blur-md transition-transform active:scale-90"
@@ -449,7 +451,7 @@ export default function SpiritualPackages() {
                     <span>Customize</span>
                   </a>
                   <a
-                    href={`/checkout?package=${selectedPkg.id || 'chardham'}`}
+                    href={`/packages/checkout?package=${selectedPkg.id || 'chardham'}`}
                     className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Book Yatra</span>
@@ -634,7 +636,7 @@ export default function SpiritualPackages() {
                     </div>
                   )}
 
-                  {/* Footer Controls */}
+                  {/* Footer Controls (Commented out as requested)
                   <div className="flex items-center justify-center gap-4 pt-4 border-t border-slate-100">
                     <button
                       onClick={handleDownsizeToPeek}
@@ -652,6 +654,7 @@ export default function SpiritualPackages() {
                       <span>Close Card</span>
                     </button>
                   </div>
+                  */}
                 </div>
               )}
             </div>

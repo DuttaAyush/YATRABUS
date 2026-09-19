@@ -237,7 +237,7 @@ export default function CuratedPackagesMasterPage() {
       <Header />
 
       {/* HERO MASTER BANNER - STICKY WITH SCROLL ZOOM & PARALLAX */}
-      <div className="relative bg-slate-950 text-white pt-20 pb-20 sm:pt-24 sm:pb-24 px-4 sm:px-6 lg:px-8 xl:px-12 overflow-hidden min-h-screen flex items-center justify-center sticky top-0 z-0">
+      <div className="relative bg-slate-950 text-white pt-10 pb-20 sm:pt-12 sm:pb-24 px-4 sm:px-6 lg:px-8 xl:px-12 overflow-hidden min-h-screen flex items-center justify-center sticky top-0 z-0">
         {/* HERO BACKGROUND IMAGE WITH SCROLL SCALE ZOOM */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
@@ -254,40 +254,40 @@ export default function CuratedPackagesMasterPage() {
         <div
           className="max-w-[1800px] w-full mx-auto relative z-10 text-center"
           style={{
-            transform: `translateY(${isLoaded ? textY * 0.8 : 0}px)`,
+            transform: `translateY(${isLoaded ? textY * 0.8 - 70 : -70}px)`,
             opacity: isLoaded ? textOpacity : 0,
             transition: isLoaded && textY > 0
               ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
               : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out'
           }}
         >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 font-bold text-xs uppercase tracking-wider mb-4 border border-white/15 shadow-sm">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 font-bold text-xs uppercase tracking-wider mb-3 sm:mb-4 border border-white/15 shadow-sm">
             <span className="material-symbols-outlined text-[16px]">explore</span>
             YatraBus Curated Travel Portal
           </span>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight mb-4 max-w-4xl mx-auto leading-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight mb-3 sm:mb-4 max-w-4xl mx-auto leading-tight">
             Explore All Curated Travel Packages
           </h1>
-          <p className="text-slate-300 text-sm sm:text-lg max-w-2xl mx-auto font-medium mb-8">
+          <p className="text-slate-300 text-sm sm:text-lg max-w-2xl mx-auto font-medium mb-6 sm:mb-8">
             Discover divine spiritual teerthams, luxurious international holidays, and breathtaking Indian domestic retreats with guaranteed bus connectivity & transparent pricing.
           </p>
 
-          {/* SEARCH & FILTER CONTROLS */}
-          <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-2xl p-3 sm:p-4 rounded-3xl border border-white/20 shadow-2xl flex flex-col sm:flex-row items-center gap-3">
-            <div className="flex-1 flex items-center bg-white/15 rounded-2xl px-4 py-3 w-full border border-white/20 text-white">
-              <span className="material-symbols-outlined text-amber-400 mr-3 text-[22px]">search</span>
+          {/* SEARCH & FILTER CONTROLS - REFINED SLEEK SIZE */}
+          <div className="max-w-3xl sm:max-w-[820px] mx-auto bg-white/10 backdrop-blur-2xl p-1.5 sm:p-2 rounded-2xl md:rounded-full border border-white/20 shadow-xl flex flex-col md:flex-row items-center gap-1.5 sm:gap-2">
+            <div className="flex-1 flex items-center bg-white/15 rounded-xl md:rounded-full px-4 py-2.5 sm:py-2.5 w-full border border-white/15 text-white">
+              <span className="material-symbols-outlined text-amber-300 mr-2.5 text-[21px] shrink-0">search</span>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by destination (e.g. Kedarnath, Dubai, Manali)..."
-                className="w-full bg-transparent text-white font-medium text-sm placeholder-white/60 outline-none p-0 border-0 focus:ring-0"
+                className="w-full bg-transparent text-white font-medium text-xs sm:text-sm placeholder-white/60 outline-none p-0 border-0 focus:ring-0 leading-normal"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="text-white/60 hover:text-white text-xs font-bold px-2"
+                  className="text-white/70 hover:text-white text-xs font-bold px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 transition-all shrink-0 ml-1.5"
                 >
                   Clear
                 </button>
@@ -295,13 +295,13 @@ export default function CuratedPackagesMasterPage() {
             </div>
 
             {/* TAB SELECTOR CHIPS */}
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 px-0.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setActiveTab('all')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
+                className={`px-4 py-2 sm:py-2.5 rounded-lg md:rounded-full font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
                   activeTab === 'all'
-                    ? 'bg-brand-scarlet text-white shadow-md'
+                    ? 'bg-brand-scarlet text-white shadow-md shadow-red-600/30'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
@@ -310,9 +310,9 @@ export default function CuratedPackagesMasterPage() {
               <button
                 type="button"
                 onClick={() => setActiveTab('spiritual')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
+                className={`px-4 py-2 sm:py-2.5 rounded-lg md:rounded-full font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
                   activeTab === 'spiritual'
-                    ? 'bg-amber-600 text-white shadow-md'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
@@ -321,9 +321,9 @@ export default function CuratedPackagesMasterPage() {
               <button
                 type="button"
                 onClick={() => setActiveTab('international')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
+                className={`px-4 py-2 sm:py-2.5 rounded-lg md:rounded-full font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
                   activeTab === 'international'
-                    ? 'bg-teal-600 text-white shadow-md'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-600/30'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
@@ -332,9 +332,9 @@ export default function CuratedPackagesMasterPage() {
               <button
                 type="button"
                 onClick={() => setActiveTab('domestic')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
+                className={`px-4 py-2 sm:py-2.5 rounded-lg md:rounded-full font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
                   activeTab === 'domestic'
-                    ? 'bg-emerald-600 text-white shadow-md'
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
@@ -366,7 +366,7 @@ export default function CuratedPackagesMasterPage() {
               </div>
 
               <Link
-                href="/packages/spiritual"
+                href="/spiritual"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs tracking-wide shadow-md transition-all shrink-0 self-start sm:self-auto hover:scale-105"
               >
                 <span>View All Spiritual Packages</span>
@@ -462,7 +462,7 @@ export default function CuratedPackagesMasterPage() {
               </div>
 
               <Link
-                href="/packages/international"
+                href="/international"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs tracking-wide shadow-md transition-all shrink-0 self-start sm:self-auto hover:scale-105"
               >
                 <span>View All International Packages</span>
@@ -540,7 +540,7 @@ export default function CuratedPackagesMasterPage() {
           </section>
         )}
 
-        {/* SECTION 3: INDIA LOCAL / DOMESTIC PACKAGES */}
+        {/* SECTION 3: DOMESTIC PACKAGES */}
         {(activeTab === 'all' || activeTab === 'domestic') && (
           <section id="domesticSection" className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-emerald-200/80 pb-4">
@@ -550,7 +550,7 @@ export default function CuratedPackagesMasterPage() {
                   Domestic Retreats & Circuits
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-                  India Local Holiday Packages
+                  Domestic Holiday Packages
                 </h2>
                 <p className="text-slate-600 text-xs sm:text-sm font-medium mt-1">
                   Himachal snow peaks, Kerala emerald backwaters, Goa beach resorts, and Kashmir valley packages with direct bus transit.
@@ -558,10 +558,10 @@ export default function CuratedPackagesMasterPage() {
               </div>
 
               <Link
-                href="/packages/india-local"
+                href="/domestic"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tracking-wide shadow-md transition-all shrink-0 self-start sm:self-auto hover:scale-105"
               >
-                <span>View All India Local Packages</span>
+                <span>View All Domestic Packages</span>
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
             </div>

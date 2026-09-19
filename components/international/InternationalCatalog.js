@@ -13,7 +13,7 @@ const packagesData = [
     title: 'Dubai & Abu Dhabi Royal Extravaganza',
     desc: 'Burj Khalifa VIP, Ferrari World, Desert Dune Safari & Marina Yacht Cruise with Indian Dinner.',
     tag: '5★ Marriott Stay • Daily Indian Meals',
-    price: '$749'
+    price: '₹58,999'
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ const packagesData = [
     title: 'Bali & Southeast Asia Island Odyssey',
     desc: 'Ubud private pool villa, Tegalalang rice terraces swing, Uluwatu sunset temple & water sports.',
     tag: 'Private Pool Villa • Pure Veg / Jain',
-    price: '$599'
+    price: '₹44,999'
   },
   {
     id: 3,
@@ -35,7 +35,7 @@ const packagesData = [
     title: 'Grand Wonders of Europe: Swiss Alps & Paris',
     desc: 'Eiffel Tower 2nd Level, Mt. Titlis Rotair Cable Car, Rhine Falls cruise, and scenic Interlaken trains.',
     tag: 'Premium 4★ Hotels • Hindi Tour Manager',
-    price: '$1,699'
+    price: '₹1,49,999'
   },
   {
     id: 4,
@@ -46,7 +46,7 @@ const packagesData = [
     title: 'Santorini Romantic Cyclades Getaway',
     desc: 'Caldera sunset catamaran sailing, Akrotiri archaeological tour, volcanic beach picnic & wine tasting.',
     tag: 'Cliffside Suite • VIP Transfers',
-    price: '$899'
+    price: '₹89,999'
   }
 ];
 

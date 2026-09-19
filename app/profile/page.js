@@ -85,7 +85,7 @@ export default function CustomerProfilePage() {
     { id: 3, name: 'Aarav Patel', age: 8, gender: 'Male', relation: 'Son' },
   ]);
 
-  const [selectedPassengerId, setSelectedPassengerId] = useState(1);
+  const [selectedPassengerIds, setSelectedPassengerIds] = useState([1, 2]);
   const [isPassengerModalOpen, setIsPassengerModalOpen] = useState(false);
   const [editingPassenger, setEditingPassenger] = useState(null);
   const [passengerFormData, setPassengerFormData] = useState({
@@ -94,6 +94,22 @@ export default function CustomerProfilePage() {
     gender: 'Male',
     relation: 'Family',
   });
+
+  const toggleSelectPassenger = (id) => {
+    if (selectedPassengerIds.includes(id)) {
+      setSelectedPassengerIds(selectedPassengerIds.filter((pId) => pId !== id));
+    } else {
+      setSelectedPassengerIds([...selectedPassengerIds, id]);
+    }
+  };
+
+  const handleSelectAllPassengers = () => {
+    if (selectedPassengerIds.length === savedPassengers.length && savedPassengers.length > 0) {
+      setSelectedPassengerIds([]);
+    } else {
+      setSelectedPassengerIds(savedPassengers.map((p) => p.id));
+    }
+  };
 
   const openAddPassengerModal = () => {
     setEditingPassenger(null);
@@ -113,22 +129,22 @@ export default function CustomerProfilePage() {
   };
 
   const openEditSelectedPassengerModal = () => {
-    const passenger = savedPassengers.find((p) => p.id === selectedPassengerId) || savedPassengers[0];
+    const selectedId = selectedPassengerIds[0];
+    const passenger = savedPassengers.find((p) => p.id === selectedId) || savedPassengers[0];
     if (passenger) {
       openEditPassengerModal(passenger);
     }
   };
 
   const handleDeleteSelectedPassenger = () => {
-    const passenger = savedPassengers.find((p) => p.id === selectedPassengerId) || savedPassengers[0];
-    if (!passenger) return;
-    const remaining = savedPassengers.filter((p) => p.id !== passenger.id);
-    setSavedPassengers(remaining);
-    if (remaining.length > 0) {
-      setSelectedPassengerId(remaining[0].id);
-    } else {
-      setSelectedPassengerId(null);
-    }
+    if (selectedPassengerIds.length === 0) return;
+    setSavedPassengers(savedPassengers.filter((p) => !selectedPassengerIds.includes(p.id)));
+    setSelectedPassengerIds([]);
+  };
+
+  const handleDeletePassenger = (id) => {
+    setSavedPassengers(savedPassengers.filter((p) => p.id !== id));
+    setSelectedPassengerIds(selectedPassengerIds.filter((pId) => pId !== id));
   };
 
   const handleSavePassenger = (e) => {
@@ -159,17 +175,9 @@ export default function CustomerProfilePage() {
         relation: passengerFormData.relation.trim() || 'Traveler',
       };
       setSavedPassengers([...savedPassengers, newPassenger]);
-      setSelectedPassengerId(newId);
+      setSelectedPassengerIds([...selectedPassengerIds, newId]);
     }
     setIsPassengerModalOpen(false);
-  };
-
-  const handleDeletePassenger = (id) => {
-    const remaining = savedPassengers.filter((p) => p.id !== id);
-    setSavedPassengers(remaining);
-    if (selectedPassengerId === id) {
-      setSelectedPassengerId(remaining.length > 0 ? remaining[0].id : null);
-    }
   };
 
   const openGpsTracker = (trip) => {
@@ -492,9 +500,9 @@ export default function CustomerProfilePage() {
 
         {/* TAB 4: SAVED PASSENGERS */}
         {activeTab === 'passengers' && (
-          <div className="space-y-4">
-            {/* Top Action Header Bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200/80">
+          <div className="space-y-4 w-full">
+            {/* Top Action Header Bar (Full Width matching section above) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200/80 w-full">
               <div>
                 <h2 className="text-xl font-serif font-bold text-slate-900">Saved Passenger Profiles</h2>
                 <p className="text-xs text-slate-500">Select a traveler to edit or delete details, or add new passenger profiles.</p>
@@ -503,26 +511,41 @@ export default function CustomerProfilePage() {
               {/* Action Buttons Group */}
               <div className="flex flex-wrap items-center gap-2">
                 <button
+                  type="button"
+                  onClick={handleSelectAllPassengers}
+                  disabled={savedPassengers.length === 0}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {selectedPassengerIds.length === savedPassengers.length && savedPassengers.length > 0 ? 'check_box' : 'check_box_outline_blank'}
+                  </span>
+                  <span>{selectedPassengerIds.length === savedPassengers.length && savedPassengers.length > 0 ? 'Deselect All' : 'Select All'}</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={openAddPassengerModal}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md shadow-red-600/20"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md shadow-red-600/20 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[18px]">person_add</span>
                   <span>+ Add New Passenger</span>
                 </button>
 
                 <button
+                  type="button"
                   onClick={openEditSelectedPassengerModal}
                   disabled={savedPassengers.length === 0}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[18px]">edit</span>
                   <span>Edit Passenger</span>
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleDeleteSelectedPassenger}
                   disabled={savedPassengers.length === 0}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[18px]">delete</span>
                   <span>Delete Passenger</span>
@@ -530,44 +553,44 @@ export default function CustomerProfilePage() {
               </div>
             </div>
 
-            {/* Wide Vertical Component Stack (One Below Another) */}
-            <div className="flex flex-col space-y-3 pt-2">
+            {/* Adjusted Width Passenger Cards List (Max Width 1090px - ~75% of Edit Passenger button) */}
+            <div className="flex flex-col space-y-3 pt-2 max-w-6xl ml-3 sm:ml-4">
               {savedPassengers.length === 0 ? (
                 <div className="w-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-500 text-sm">
                   No saved passengers found. Click <strong>+ Add New Passenger</strong> to save details.
                 </div>
               ) : (
                 savedPassengers.map((p) => {
-                  const isSelected = selectedPassengerId === p.id;
+                  const isSelected = selectedPassengerIds.includes(p.id);
                   return (
                     <div
                       key={p.id}
-                      onClick={() => setSelectedPassengerId(p.id)}
+                      onClick={() => toggleSelectPassenger(p.id)}
                       className={`w-full bg-white rounded-2xl p-4 sm:p-5 border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                         isSelected
                           ? 'border-brand-scarlet ring-2 ring-brand-scarlet/20 shadow-md bg-red-50/10'
                           : 'border-slate-200/90 hover:border-slate-300 shadow-sm hover:shadow'
                       }`}
                     >
-                      <div className="flex items-center gap-4">
-                        {/* Radio Selection Indicator */}
+                      <div className="flex items-center gap-3.5">
+                        {/* Checkbox */}
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                          className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
                             isSelected ? 'border-brand-scarlet bg-brand-scarlet text-white' : 'border-slate-300 bg-slate-50'
                           }`}
                         >
                           {isSelected && <span className="material-symbols-outlined text-[14px]">check</span>}
                         </div>
 
-                        {/* Avatar Icon */}
-                        <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-600">
-                          <span className="material-symbols-outlined text-[24px]">
+                        {/* Avatar */}
+                        <div className="w-11 h-11 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-600">
+                          <span className="material-symbols-outlined text-[22px]">
                             {p.gender === 'Female' ? 'woman' : 'man'}
                           </span>
                         </div>
 
                         {/* Passenger Info */}
-                        <div className="space-y-1">
+                        <div className="space-y-0.5">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="text-base font-bold text-slate-900">{p.name}</h3>
                             <span className="inline-block px-2.5 py-0.5 rounded-full bg-red-50 text-brand-scarlet text-[10px] font-bold uppercase tracking-wider border border-red-100">
@@ -580,10 +603,36 @@ export default function CustomerProfilePage() {
                         </div>
                       </div>
 
-                      {/* Right Selection Tag */}
-                      <div className="flex items-center gap-3 sm:self-center self-end pl-11 sm:pl-0">
+                      {/* Right Side Actions: Edit & Delete buttons first, Rightmost "Click to Select" / "Selected" Badge */}
+                      <div className="flex items-center gap-2.5 sm:self-center self-end pl-11 sm:pl-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditPassengerModal(p);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                          title="Edit Passenger"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">edit</span>
+                          <span>Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePassenger(p.id);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-white border border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 font-bold text-xs transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                          title="Delete Passenger"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">delete</span>
+                          <span>Delete</span>
+                        </button>
+
                         <span
-                          className={`text-xs font-bold px-3.5 py-1.5 rounded-xl ${
+                          className={`text-xs font-bold px-3.5 py-1.5 rounded-xl transition-all ${
                             isSelected
                               ? 'bg-brand-scarlet text-white shadow-sm'
                               : 'bg-slate-100 text-slate-600'

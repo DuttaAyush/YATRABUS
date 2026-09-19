@@ -19,7 +19,7 @@ export default function AboutUsPage() {
       title: 'Go farther, comfortably.',
       desc: 'Reliable intercity journeys with comfortable coaches and carefully planned routes.',
       cta: 'Explore Bus Travel →',
-      href: '/search-results',
+      href: '/search',
       image: '/images/yatrabus_india_local_holiday_travel_packages_1.jpg',
     },
     {
@@ -28,7 +28,7 @@ export default function AboutUsPage() {
       title: 'Travel with purpose.',
       desc: "Thoughtfully planned yatras that make visiting India's spiritual destinations easier and more comfortable.",
       cta: 'Explore Yatras →',
-      href: '/spiritual-yatra',
+      href: '/spiritual',
       image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_3.jpg',
     },
     {
@@ -37,16 +37,16 @@ export default function AboutUsPage() {
       title: 'See the world your way.',
       desc: 'Discover new countries with curated holidays, stays, experiences, and itineraries.',
       cta: 'Explore International →',
-      href: '/international-packages',
+      href: '/international',
       image: '/images/yatrabus_international_holiday_travel_packages_9.jpg',
     },
     {
       icon: 'landscape',
-      badge: 'INDIA HOLIDAYS',
+      badge: 'DOMESTIC HOLIDAYS',
       title: 'There is always more to discover.',
       desc: "Explore India's beaches, mountains, cities, heritage, and hidden escapes.",
       cta: 'Explore India →',
-      href: '/india-local-packages',
+      href: '/domestic',
       image: '/images/yatrabus_india_local_holiday_travel_packages_5.jpg',
     },
   ];
@@ -111,7 +111,7 @@ export default function AboutUsPage() {
 
           <div className="pt-2 flex flex-wrap justify-center gap-3">
             <a
-              href="/search-results"
+              href="/search"
               className="px-6 py-3 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-red-600/30 transition-all"
             >
               EXPLORE BUS ROUTES

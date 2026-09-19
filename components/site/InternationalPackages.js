@@ -92,7 +92,7 @@ const packagesData = [
       'All Sightseeing Entry Tickets (Burj Khalifa, Universal Studios, Night Safari)',
       'Private AC Coach Transfers throughout both countries with English/Hindi Guide',
     ],
-    exclusions: ['Personal Expenses & Mini Bar', 'Tourism Dirham Fee (~$5/night)', 'Optional Water Sports Activities'],
+    exclusions: ['Personal Expenses & Mini Bar', 'Tourism Dirham Fee (~₹400/night)', 'Optional Water Sports Activities'],
   },
   {
     id: 'dubai-dunes',
@@ -154,7 +154,7 @@ const packagesData = [
       'UAE Tourist E-Visa & Travel Insurance',
       'All Entry Tickets & Private Airport Transfers',
     ],
-    exclusions: ['Tourism Dirham Tax ($4/room/night)', 'Personal Shopping'],
+    exclusions: ['Tourism Dirham Tax (₹350/room/night)', 'Personal Shopping'],
   },
   {
     id: 'singapore-malaysia',
@@ -403,7 +403,7 @@ export default function InternationalPackages() {
   };
 
   return (
-    <section className="w-full py-16 bg-white border-b border-slate-200" id="internationalPackagesSection">
+    <section className="w-full py-16 bg-white border-b border-slate-200 scroll-mt-28 sm:scroll-mt-32" id="internationalPackagesSection">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
@@ -421,7 +421,7 @@ export default function InternationalPackages() {
           <div>
             <a
               className="inline-flex items-center gap-1 text-sm font-bold text-teal-600 hover:text-teal-700 transition-colors"
-              href="/international-packages"
+              href="/international"
             >
               <span>Explore all Global Packages</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -463,6 +463,7 @@ export default function InternationalPackages() {
                     <span className="text-[10px] text-amber-300 block font-semibold">All-Inclusive</span>
                     <span className="text-xs md:text-sm font-extrabold">{packagesData[0].price} / person</span>
                   </div>
+                  {/* Open Card Button (Removed as requested)
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -474,6 +475,7 @@ export default function InternationalPackages() {
                     <span>Open Card</span>
                     <span className="material-symbols-outlined text-[16px]">visibility</span>
                   </button>
+                  */}
                 </div>
               </div>
             </div>
@@ -582,6 +584,7 @@ export default function InternationalPackages() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {/* Downsize Card button (Commented out as requested)
                   {sheetState === 'expanded' && (
                     <button
                       onClick={handleDownsizeToPeek}
@@ -592,6 +595,7 @@ export default function InternationalPackages() {
                       <span className="hidden sm:inline font-sans">Downsize Card</span>
                     </button>
                   )}
+                  */}
                   <button
                     onClick={handleCloseSheet}
                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/25 hover:bg-white/40 text-white flex items-center justify-center backdrop-blur-md transition-transform active:scale-90"
@@ -635,7 +639,7 @@ export default function InternationalPackages() {
                     <span>Customize</span>
                   </a>
                   <a
-                    href={`/checkout?package=${selectedPkg.id}`}
+                    href={`/packages/checkout?package=${selectedPkg.id}`}
                     className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Book Package</span>
@@ -847,7 +851,7 @@ export default function InternationalPackages() {
                     </div>
                   )}
 
-                  {/* Footer Controls */}
+                  {/* Footer Controls (Commented out as requested)
                   <div className="flex items-center justify-center gap-4 pt-4 border-t border-slate-100">
                     <button
                       onClick={handleDownsizeToPeek}
@@ -865,6 +869,7 @@ export default function InternationalPackages() {
                       <span>Close Card</span>
                     </button>
                   </div>
+                  */}
                 </div>
               )}
             </div>

@@ -9,7 +9,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="w-full py-14 bg-slate-50" id="faqSection">
+    <section className="w-full py-14 bg-slate-50 scroll-mt-28 sm:scroll-mt-32" id="faqSection">
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="text-center mb-10">
           <span className="text-xs font-bold text-brand-scarlet uppercase tracking-wider">Clear Answers</span>
@@ -35,7 +35,7 @@ export default function FAQ() {
               <span className="">What is included in the 3 package types?</span>
               <span className="material-symbols-outlined text-brand-scarlet text-[20px] transition-transform duration-200 faq-icon" style={{ transform: openIndex === 2 ? 'rotate(180deg)' : 'rotate(0deg)' }}>expand_more</span>
             </h3>
-            <p className={`text-xs md:text-sm text-slate-600 mt-2 leading-relaxed ${openIndex === 2 ? '' : 'hidden'}`}>Spiritual packages include VIP temple passes and satvik dining. International packages bundle roundtrip flights, 4–5 star stays, and visa assistance. India Local packages feature comfortable bus transfers and handpicked resort stays.</p>
+            <p className={`text-xs md:text-sm text-slate-600 mt-2 leading-relaxed ${openIndex === 2 ? '' : 'hidden'}`}>Spiritual packages include VIP temple passes and satvik dining. International packages bundle roundtrip flights, 4–5 star stays, and visa assistance. Domestic packages feature comfortable bus transfers and handpicked resort stays.</p>
           </div>
         </div>
       </div>

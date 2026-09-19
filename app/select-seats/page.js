@@ -149,7 +149,7 @@ export default function CinemaSeatBookingPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <a
-              href="/bus-tickets"
+              href="/"
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm"
               title="Back to Bus Search"
             >

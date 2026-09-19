@@ -120,14 +120,13 @@ const sampleBuses = [
   },
 ];
 
-export default function SearchResultsPage() {
+export default function SearchPage() {
   const [buses, setBuses] = useState(sampleBuses);
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('all'); // 'all' | 'sleeper' | 'seater'
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [minRating, setMinRating] = useState(0);
-  const [sortBy, setSortBy] = useState('cheapest'); // 'cheapest' | 'fastest' | 'rating' | 'departure'
+  const [sortBy, setSortBy] = useState('cheapest');
 
-  // INTERACTIVE INLINE SEARCH CONTROL STATES
   const [fromCity, setFromCity] = useState('Nagpur');
   const [toCity, setToCity] = useState('Pune');
   const [selectedDate, setSelectedDate] = useState({
@@ -136,7 +135,6 @@ export default function SearchResultsPage() {
   });
   const [passengerCount, setPassengerCount] = useState(1);
 
-  // DROPDOWN / POPOVER VISIBILITY STATES
   const [isFromOpen, setIsFromOpen] = useState(false);
   const [isToOpen, setIsToOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -170,7 +168,6 @@ export default function SearchResultsPage() {
     setIsPassengerOpen(false);
   };
 
-  // Filter Logic
   const filteredBuses = buses.filter((bus) => {
     if (selectedTimeSlots.length > 0 && !selectedTimeSlots.includes(bus.timeSlot)) {
       return false;
@@ -201,14 +198,9 @@ export default function SearchResultsPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
       <Header />
 
-      {/* TOP INTERACTIVE ROUTE SEARCH MODIFICATION RIBBON */}
       <div className="bg-white border-b border-slate-200/90 shadow-sm py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          
-          {/* INTERACTIVE INLINE CONTROL CAPSULES */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 relative">
-            
-            {/* 1. FROM CITY PICKER */}
             <div className="relative">
               <button
                 type="button"
@@ -223,7 +215,6 @@ export default function SearchResultsPage() {
                 <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
               </button>
 
-              {/* From City Dropdown Menu */}
               {isFromOpen && (
                 <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fadeIn">
                   <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 py-1.5 border-b border-slate-100">
@@ -254,7 +245,6 @@ export default function SearchResultsPage() {
               )}
             </div>
 
-            {/* SWAP CITIES BUTTON */}
             <button
               type="button"
               onClick={handleSwapCities}
@@ -264,7 +254,6 @@ export default function SearchResultsPage() {
               <span className="material-symbols-outlined text-[16px]">swap_horiz</span>
             </button>
 
-            {/* 2. TO CITY PICKER */}
             <div className="relative">
               <button
                 type="button"
@@ -279,7 +268,6 @@ export default function SearchResultsPage() {
                 <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
               </button>
 
-              {/* To City Dropdown Menu */}
               {isToOpen && (
                 <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fadeIn">
                   <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 py-1.5 border-b border-slate-100">
@@ -310,7 +298,6 @@ export default function SearchResultsPage() {
               )}
             </div>
 
-            {/* 3. DATE OF JOURNEY PICKER */}
             <div className={`relative ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}>
               <button
                 type="button"
@@ -335,7 +322,6 @@ export default function SearchResultsPage() {
               />
             </div>
 
-            {/* 4. PASSENGERS COUNT DROPDOWN */}
             <div className="relative">
               <button
                 type="button"
@@ -350,7 +336,6 @@ export default function SearchResultsPage() {
                 <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
               </button>
 
-              {/* Passengers Count Dropdown */}
               {isPassengerOpen && (
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fadeIn">
                   <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 py-1.5 border-b border-slate-100">
@@ -382,7 +367,6 @@ export default function SearchResultsPage() {
             </div>
           </div>
 
-          {/* UPDATE SEARCH / REFRESH ACTION BUTTON & TOAST */}
           <div className="flex items-center gap-3">
             {toastMessage && (
               <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 animate-fadeIn">
@@ -405,10 +389,7 @@ export default function SearchResultsPage() {
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA: FILTERS & BUS LIST */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* LEFT SIDEBAR: FILTERS */}
         <aside className="lg:col-span-3 space-y-6">
           <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -428,7 +409,6 @@ export default function SearchResultsPage() {
               </button>
             </div>
 
-            {/* Departure Time Filter */}
             <div className="space-y-3">
               <label className="text-xs font-extrabold uppercase tracking-wider text-slate-500 block">
                 Departure Time
@@ -467,7 +447,6 @@ export default function SearchResultsPage() {
               </div>
             </div>
 
-            {/* Bus Type / Category Filter */}
             <div className="space-y-3 pt-4 border-t border-slate-100">
               <label className="text-xs font-extrabold uppercase tracking-wider text-slate-500 block">
                 Bus Type
@@ -494,7 +473,6 @@ export default function SearchResultsPage() {
               </div>
             </div>
 
-            {/* Operator Rating Filter */}
             <div className="space-y-3 pt-4 border-t border-slate-100">
               <label className="text-xs font-extrabold uppercase tracking-wider text-slate-500 block">
                 Operator Rating
@@ -521,7 +499,6 @@ export default function SearchResultsPage() {
               </div>
             </div>
 
-            {/* Trust Surcharge Guarantee */}
             <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-emerald-800">
                 <span className="material-symbols-outlined text-[16px]">verified</span>
@@ -534,10 +511,7 @@ export default function SearchResultsPage() {
           </div>
         </aside>
 
-        {/* RIGHT AREA: SORT STRIP & BUS LISTING CARDS */}
         <section className="lg:col-span-9 space-y-6">
-          
-          {/* SORT STRIP & RESULTS COUNT */}
           <div className="bg-white rounded-3xl p-4 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <span className="text-base font-bold text-slate-900 font-serif">
@@ -546,7 +520,6 @@ export default function SearchResultsPage() {
               <span className="text-xs text-slate-500 block">Nagpur to Pune • Direct Express Fleet</span>
             </div>
 
-            {/* Sort Pills */}
             <div className="flex items-center gap-2 overflow-x-auto">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0">Sort By:</span>
               {[
@@ -569,7 +542,6 @@ export default function SearchResultsPage() {
             </div>
           </div>
 
-          {/* BUS LISTING CARDS */}
           <div className="space-y-4">
             {filteredBuses.length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-3">
@@ -595,7 +567,6 @@ export default function SearchResultsPage() {
                   key={bus.id}
                   className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
                 >
-                  {/* TOP BADGE & OPERATOR INFO */}
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                     <div>
                       <div className="flex items-center gap-2.5 mb-1">
@@ -615,7 +586,6 @@ export default function SearchResultsPage() {
                       </div>
                     </div>
 
-                    {/* PRICE & SEAT AVAILABILITY */}
                     <div className="text-left md:text-right">
                       <span className="text-[10px] text-emerald-600 font-extrabold uppercase tracking-widest block">
                         0% Aggregator Surcharge
@@ -627,16 +597,12 @@ export default function SearchResultsPage() {
                     </div>
                   </div>
 
-                  {/* MIDDLE: TIMELINE & ROUTE DETAILS */}
                   <div className="py-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                    
-                    {/* Departure */}
                     <div className="md:col-span-4">
                       <div className="text-xl font-black text-slate-900">{bus.depTime}</div>
                       <div className="text-xs font-bold text-slate-700">{bus.depLocation}</div>
                     </div>
 
-                    {/* DURATION & ARROW */}
                     <div className="md:col-span-4 text-center">
                       <span className="text-[11px] font-semibold text-slate-400 block">{bus.duration}</span>
                       <div className="w-full h-0.5 bg-slate-200 my-1.5 relative">
@@ -649,17 +615,13 @@ export default function SearchResultsPage() {
                       </span>
                     </div>
 
-                    {/* Arrival */}
                     <div className="md:col-span-4 text-left md:text-right">
                       <div className="text-xl font-black text-slate-900">{bus.arrTime}</div>
                       <div className="text-xs font-bold text-slate-700">{bus.arrLocation}</div>
                     </div>
                   </div>
 
-                  {/* BOTTOM: AMENITIES & SELECT SEATS ACTION */}
                   <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    
-                    {/* Amenity Icons */}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
                       {bus.amenities.includes('wifi') && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 text-[11px] font-semibold">
@@ -683,7 +645,6 @@ export default function SearchResultsPage() {
                       )}
                     </div>
 
-                    {/* Seats Left & Select Button */}
                     <div className="flex items-center gap-3 self-end sm:self-auto">
                       <span className="text-xs font-extrabold text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-200">
                         {bus.seatsLeft} Seats Left

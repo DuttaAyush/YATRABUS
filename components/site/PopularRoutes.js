@@ -170,15 +170,15 @@ export default function PopularRoutes({ onOpenSeatDrawer, rotating = true }) {
 
   return (
     <section
-      className="w-full py-7 bg-slate-50 select-none overflow-hidden"
+      className="w-full py-8 sm:py-10 bg-slate-50 select-none overflow-hidden scroll-mt-28 sm:scroll-mt-32"
       id="popularRoutesSection"
     >
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-brand-scarlet text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-100 text-brand-scarlet text-xs font-extrabold uppercase tracking-wider mb-2.5 shadow-sm border border-red-200">
               <span className="material-symbols-outlined text-[16px]">verified</span>
-              DIRECT FLEET OPERATOR
+              DIRECT FLEET OPERATOR • 0% MARKUP
             </div>
             <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-serif font-semibold">
               Popular Intercity Express Routes
@@ -206,7 +206,7 @@ export default function PopularRoutes({ onOpenSeatDrawer, rotating = true }) {
             </button>
             <a
               className="text-brand-scarlet hover:text-brand-hover font-bold text-xs flex items-center gap-1 ml-2 transition-colors"
-              href="/bus-tickets"
+              href="/search"
             >
               <span>View All</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -283,13 +283,7 @@ export default function PopularRoutes({ onOpenSeatDrawer, rotating = true }) {
                 </div>
                 <a
                   href="/select-seats"
-                  onClick={(e) => {
-                    if (onOpenSeatDrawer) {
-                      e.preventDefault();
-                      onOpenSeatDrawer();
-                    }
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-brand-scarlet text-white hover:bg-brand-hover font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all shrink-0"
+                  className="px-5 py-2.5 rounded-xl bg-brand-scarlet text-white hover:bg-brand-hover font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all shrink-0 cursor-pointer"
                 >
                   <span>Select Seats</span>
                   <span className="material-symbols-outlined text-[16px]">event_seat</span>

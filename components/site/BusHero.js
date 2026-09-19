@@ -4,15 +4,18 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import DatePickerPopover from '@/components/ui/DatePickerPopover';
 
-export default function SplitHero() {
+export default function BusHero() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState({
     mainText: 'Tomorrow, 24 Oct',
-    subText: 'Thursday'
+    subText: 'Thursday',
   });
   const [fromCity, setFromCity] = useState('Nagpur');
   const [toCity, setToCity] = useState('Pune, MH');
   const [scrollScale, setScrollScale] = useState(1);
+  const [textY, setTextY] = useState(0);
+  const [textOpacity, setTextOpacity] = useState(1);
+  const [bgOpacity, setBgOpacity] = useState(1);
 
   const handleSwap = () => {
     setFromCity(toCity);
@@ -26,7 +29,14 @@ export default function SplitHero() {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          const calculatedY = Math.min(Math.max(scrollY, 0) * 0.35, 150);
+          const calculatedOpacity = Math.max(1 - Math.max(scrollY, 0) / 450, 0);
+          const calculatedBgOpacity = Math.max(1 - Math.max(scrollY - 500, 0) / 400, 0);
+
           setScrollScale(calculatedScale);
+          setTextY(calculatedY);
+          setTextOpacity(calculatedOpacity);
+          setBgOpacity(calculatedBgOpacity);
           ticking = false;
         });
         ticking = true;
@@ -44,31 +54,42 @@ export default function SplitHero() {
   const handleDateSelect = (dateResult) => {
     setSelectedDate({
       mainText: dateResult.mainText,
-      subText: dateResult.subText
+      subText: dateResult.subText,
     });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pb-16 pt-10 bg-slate-950 sticky top-0 z-0" id="heroSearch">
-      
-      {/* PLAIN TAJ MAHAL HERO BACKGROUND IMAGE WITH ZOOM EFFECT */}
-      <div className="absolute inset-0 z-0">
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pb-16 pt-10 bg-slate-950 sticky top-0 z-0"
+      id="heroSearch"
+    >
+      {/* TAJ MAHAL HERO BACKGROUND IMAGE WITH PARALLAX ZOOM & EXIT FADE */}
+      <div
+        className="absolute inset-0 z-0 transition-opacity duration-150"
+        style={{ opacity: bgOpacity }}
+      >
         <img
           alt="Ancient Indian Taj Mahal bathed in golden sunrise light"
           className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
           style={{ transform: `scale(${scrollScale})` }}
           src="/images/domestic-hero.jpg"
         />
-        {/* Subtle Bottom Fade to match the page section transition */}
+        {/* Subtle Bottom Fade */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-950/80 to-transparent pointer-events-none" />
       </div>
 
       {/* MAIN CONTENT CONTAINER */}
-      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10 space-y-8 sm:space-y-10">
-        
+      <div
+        className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10 space-y-8 sm:space-y-10"
+        style={{
+          transform: `translateY(${textY}px)`,
+          opacity: textOpacity,
+          pointerEvents: textOpacity < 0.05 ? 'none' : 'auto',
+          transition: textY > 0 ? 'transform 0.1s ease-out, opacity 0.1s ease-out' : undefined,
+        }}
+      >
         {/* LEFT-ALIGNED HERO TEXT CONTENT */}
         <div className="max-w-3xl space-y-4 text-left text-white">
-          
           {/* Tag / Badge */}
           <div className="flex items-center gap-3 text-[#e5a97d] font-semibold text-xs uppercase tracking-[0.25em] mb-2">
             <span className="w-10 h-[1.5px] bg-[#e5a97d]/80 inline-block"></span>
@@ -77,7 +98,8 @@ export default function SplitHero() {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]">
-            Sacred Yatras &amp;<br />
+            Sacred Yatras &amp;
+            <br />
             <span className="text-white">Intercity Bus Network</span>
           </h1>
 
@@ -89,37 +111,39 @@ export default function SplitHero() {
           {/* Category Pills */}
           <div className="flex flex-wrap items-center gap-2.5 pt-1">
             <Link
-              href="/spiritual-yatra"
+              href="/spiritual"
               className="px-4 py-1.5 rounded-full bg-amber-500/30 backdrop-blur-md border border-amber-300/50 text-amber-200 text-xs font-bold hover:bg-amber-500/40 transition-all shadow-sm"
             >
               🛕 Spiritual Circuits
             </Link>
             <Link
-              href="/india-local-packages"
+              href="/domestic"
               className="px-4 py-1.5 rounded-full bg-red-500/30 backdrop-blur-md border border-red-300/50 text-red-200 text-xs font-bold hover:bg-red-500/40 transition-all shadow-sm"
             >
               🚍 Bus &amp; Local Escapes
             </Link>
           </div>
-
         </div>
 
-        {/* ULTRA-TRANSPARENT GLASS SEARCH BAR CAPSULE (Matched exact reference transparency) */}
+        {/* ULTRA-TRANSPARENT GLASS SEARCH BAR CAPSULE */}
         <div className="w-full max-w-6xl">
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl md:rounded-full border border-white/15 shadow-2xl p-2 sm:p-2.5 md:py-2 md:pl-4 md:pr-4">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                window.location.href = '/search-results';
+                window.location.href = '/search';
               }}
               className="flex flex-col md:flex-row items-center justify-between gap-1 sm:gap-2"
             >
-              
               {/* 1. FROM FIELD */}
               <div className="flex-1 w-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-3">
-                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">departure_board</span>
+                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">
+                  departure_board
+                </span>
                 <div className="min-w-0 flex-1">
-                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90 cursor-pointer">FROM</label>
+                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90 cursor-pointer">
+                    FROM
+                  </label>
                   <input
                     type="text"
                     value={fromCity}
@@ -130,12 +154,9 @@ export default function SplitHero() {
                 </div>
               </div>
 
-              {/* DESKTOP CENTER DIVIDER LINE (DECREASED) & CENTERED SWAP ARROW */}
+              {/* DESKTOP CENTER DIVIDER LINE & SWAP ARROW */}
               <div className="hidden md:flex items-center justify-center relative shrink-0 w-8 self-stretch">
-                {/* Small decreased vertical line separating From & To */}
                 <div className="h-5 sm:h-6 w-[1px] bg-white/20 pointer-events-none" />
-                
-                {/* Arrow button centered directly on that line */}
                 <button
                   type="button"
                   onClick={handleSwap}
@@ -161,9 +182,13 @@ export default function SplitHero() {
 
               {/* 2. TO FIELD */}
               <div className="flex-1 w-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-3">
-                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">pin_drop</span>
+                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">
+                  pin_drop
+                </span>
                 <div className="min-w-0 flex-1">
-                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90 cursor-pointer">TO</label>
+                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90 cursor-pointer">
+                    TO
+                  </label>
                   <input
                     type="text"
                     value={toCity}
@@ -179,13 +204,21 @@ export default function SplitHero() {
 
               {/* 3. DATE OF JOURNEY FIELD */}
               <div
-                className={`relative flex-1 w-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded-2xl md:rounded-none transition-all ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}
+                className={`relative flex-1 w-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-3 cursor-pointer hover:bg-white/5 rounded-2xl md:rounded-none transition-all ${
+                  isDatePickerOpen ? 'z-[9999]' : 'z-10'
+                }`}
                 onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
               >
-                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">calendar_month</span>
+                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">
+                  calendar_month
+                </span>
                 <div className="min-w-0 flex-1">
-                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90 cursor-pointer">DATE OF JOURNEY</label>
-                  <div className="text-base sm:text-lg font-medium text-white truncate leading-snug">{selectedDate.mainText}</div>
+                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90 cursor-pointer">
+                    DATE OF JOURNEY
+                  </label>
+                  <div className="text-base sm:text-lg font-medium text-white truncate leading-snug">
+                    {selectedDate.mainText}
+                  </div>
                 </div>
 
                 <DatePickerPopover
@@ -202,50 +235,34 @@ export default function SplitHero() {
               {/* DESKTOP DIVIDER */}
               <div className="hidden md:block h-5 sm:h-6 w-[1px] bg-white/20 shrink-0 mx-1" />
 
-              {/* 4. PASSENGERS / SEATS FIELD */}
+              {/* 4. PASSENGERS FIELD */}
               <div className="flex-1 w-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-3">
-                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">group</span>
+                <span className="material-symbols-outlined text-amber-300 text-[22px] sm:text-[24px] shrink-0">
+                  group
+                </span>
                 <div className="min-w-0 flex-1">
-                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90">PASSENGERS</label>
-                  <div className="text-base sm:text-lg font-medium text-white truncate leading-snug">1 Passenger (1 Seat)</div>
+                  <label className="block text-[11px] sm:text-xs font-medium uppercase tracking-wider text-amber-300/90">
+                    PASSENGERS
+                  </label>
+                  <div className="text-base sm:text-lg font-medium text-white truncate leading-snug">
+                    1 Passenger (1 Seat)
+                  </div>
                 </div>
               </div>
 
-              {/* 5. SEARCH BUTTON (Enclosed cleanly within the frosted pill) */}
+              {/* 5. SEARCH BUTTON */}
               <div className="w-full md:w-auto p-1 shrink-0">
                 <a
-                  href="/search-results"
-                  className="w-full md:w-auto px-7 sm:px-8 py-3.5 sm:py-3.5 rounded-full bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl shadow-red-600/35 hover:scale-[1.03] active:scale-95 cursor-pointer"
+                  href="/search"
+                  className="w-full md:w-auto px-7 sm:px-8 py-3.5 rounded-full bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl shadow-red-600/35 hover:scale-[1.03] active:scale-95 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[20px]">search</span>
                   <span>SEARCH</span>
                 </a>
               </div>
-
             </form>
           </div>
         </div>
-
-        {/* Bottom Trust Badges Bar (Commented out per request)
-        <div className="max-w-6xl flex flex-wrap items-center justify-center md:justify-between gap-3 px-6 py-3.5 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 text-white text-xs font-semibold tracking-wide shadow-lg">
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-emerald-400 text-[18px]">verified</span> Assigned Bus Plate Instantly
-          </div>
-          <span className="hidden sm:inline text-white/40">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-amber-300 text-[18px]">money_off</span> 0% Convenience Markup
-          </div>
-          <span className="hidden md:inline text-white/40">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-cyan-300 text-[18px]">event_seat</span> Real-Time Live Seat Lock
-          </div>
-          <span className="hidden lg:inline text-white/40">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-pink-300 text-[18px]">send_to_mobile</span> Instant WhatsApp &amp; .ics Sync
-          </div>
-        </div>
-        */}
-
       </div>
     </section>
   );

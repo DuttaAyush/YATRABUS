@@ -10,6 +10,16 @@ export default function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const isBusTicketsActive = pathname === '/';
+  const isSpiritualActive = pathname === '/spiritual';
+  const isInternationalActive = pathname === '/international';
+  const isDomesticActive = pathname === '/domestic';
+  const isCategoryPage =
+    isBusTicketsActive ||
+    isSpiritualActive ||
+    isInternationalActive ||
+    isDomesticActive;
+
   const profileRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
 
@@ -66,8 +76,42 @@ export default function Header() {
     setIsProfileOpen(false);
   }, [pathname]);
 
+  // Reset scroll to hero section if requested
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && sessionStorage.getItem('resetHero')) {
+        sessionStorage.removeItem('resetHero');
+        if ('scrollRestoration' in window.history) {
+          window.history.scrollRestoration = 'manual';
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    } catch (err) {}
+  }, [pathname]);
+
+  // Handle click on Navbar Logo or Bus Tickets: smooth scroll to hero & quick reload
+  const handleLogoOrBusClick = (e) => {
+    setIsMobileMenuOpen(false);
+    try {
+      sessionStorage.setItem('resetHero', 'true');
+    } catch (err) {}
+
+    if (pathname === '/') {
+      e.preventDefault();
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+          }
+          window.location.reload();
+        }, 120);
+      }
+    }
+  };
+
   const getHashHref = (hash) => {
-    return pathname === '/bus-tickets' ? hash : `/bus-tickets${hash}`;
+    return pathname === '/' ? hash : `/${hash}`;
   };
 
   return (
@@ -79,7 +123,7 @@ export default function Header() {
           <Link
             className="flex items-center gap-2 group transition-transform active:scale-95 shrink-0"
             href="/"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={handleLogoOrBusClick}
           >
             <div className="px-2 sm:px-2.5 py-1 bg-white/95 backdrop-blur-md rounded-xl border border-white/30 shadow-md flex items-center justify-center">
               <img
@@ -92,49 +136,97 @@ export default function Header() {
 
           {/* Apple Frosted Glass Category Switcher Capsule (Visible >=1024px) */}
           <div className="hidden lg:flex items-center p-1 bg-white/10 backdrop-blur-2xl rounded-full border border-white/20 shadow-lg shrink-0">
+            {/* Bus Tickets */}
             <Link
               className={`flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3.5 py-1 xl:py-1.5 rounded-full font-semibold text-[11px] xl:text-xs tracking-wide whitespace-nowrap transition-all duration-200 ${
-                pathname === '/bus-tickets'
+                isBusTicketsActive
                   ? 'bg-gradient-to-r from-red-600/90 to-brand-scarlet/90 text-white shadow-md border border-white/30'
                   : 'text-white/80 hover:text-white hover:bg-white/15'
               }`}
-              href="/bus-tickets"
+              href="/"
+              onClick={handleLogoOrBusClick}
             >
-              <span className="material-symbols-outlined text-[14px] xl:text-[15px]">directions_bus</span>
+              <span
+                className={`material-symbols-outlined text-[14px] xl:text-[15px] transition-colors duration-200 ${
+                  isBusTicketsActive
+                    ? 'text-white'
+                    : !isCategoryPage
+                    ? 'text-brand-scarlet'
+                    : 'text-white/70'
+                }`}
+              >
+                directions_bus
+              </span>
               <span>Bus Tickets</span>
             </Link>
+
+            {/* Spiritual Yatras */}
             <Link
               className={`flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-full font-semibold text-[11px] xl:text-xs tracking-wide whitespace-nowrap transition-all duration-200 ${
-                pathname === '/spiritual-yatra'
+                isSpiritualActive
                   ? 'bg-gradient-to-r from-amber-600/90 to-amber-500/90 text-white shadow-md border border-white/30'
                   : 'text-white/80 hover:text-white hover:bg-white/15'
               }`}
-              href="/spiritual-yatra"
+              href="/spiritual"
             >
-              <span className="material-symbols-outlined text-[14px] xl:text-[15px]">temple_hindu</span>
+              <span
+                className={`material-symbols-outlined text-[14px] xl:text-[15px] transition-colors duration-200 ${
+                  isSpiritualActive
+                    ? 'text-white'
+                    : !isCategoryPage
+                    ? 'text-amber-400'
+                    : 'text-white/70'
+                }`}
+              >
+                temple_hindu
+              </span>
               <span>Spiritual Yatras</span>
             </Link>
+
+            {/* International */}
             <Link
               className={`flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-full font-semibold text-[11px] xl:text-xs tracking-wide whitespace-nowrap transition-all duration-200 ${
-                pathname === '/international-packages'
+                isInternationalActive
                   ? 'bg-gradient-to-r from-teal-600/90 to-teal-500/90 text-white shadow-md border border-white/30'
                   : 'text-white/80 hover:text-white hover:bg-white/15'
               }`}
-              href="/international-packages"
+              href="/international"
             >
-              <span className="material-symbols-outlined text-[14px] xl:text-[15px]">flight_takeoff</span>
+              <span
+                className={`material-symbols-outlined text-[14px] xl:text-[15px] transition-colors duration-200 ${
+                  isInternationalActive
+                    ? 'text-white'
+                    : !isCategoryPage
+                    ? 'text-emerald-400'
+                    : 'text-white/70'
+                }`}
+              >
+                flight_takeoff
+              </span>
               <span>International</span>
             </Link>
+
+            {/* Domestic */}
             <Link
               className={`flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-1 xl:py-1.5 rounded-full font-semibold text-[11px] xl:text-xs tracking-wide whitespace-nowrap transition-all duration-200 ${
-                pathname === '/india-local-packages'
+                isDomesticActive
                   ? 'bg-gradient-to-r from-emerald-600/90 to-emerald-500/90 text-white shadow-md border border-white/30'
                   : 'text-white/80 hover:text-white hover:bg-white/15'
               }`}
-              href="/india-local-packages"
+              href="/domestic"
             >
-              <span className="material-symbols-outlined text-[14px] xl:text-[15px]">landscape</span>
-              <span>India Local</span>
+              <span
+                className={`material-symbols-outlined text-[14px] xl:text-[15px] transition-colors duration-200 ${
+                  isDomesticActive
+                    ? 'text-white'
+                    : !isCategoryPage
+                    ? 'text-sky-400'
+                    : 'text-white/70'
+                }`}
+              >
+                landscape
+              </span>
+              <span>Domestic</span>
             </Link>
           </div>
         </div>
@@ -282,10 +374,10 @@ export default function Header() {
               </p>
               <div className="grid grid-cols-2 gap-2.5">
                 <Link
-                  href="/bus-tickets"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  href="/"
+                  onClick={handleLogoOrBusClick}
                   className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/bus-tickets'
+                    isBusTicketsActive
                       ? 'bg-red-950/60 border-brand-scarlet text-white shadow-lg shadow-red-950/50'
                       : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
                   }`}
@@ -294,7 +386,7 @@ export default function Header() {
                     <span className="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
                       <span className="material-symbols-outlined text-[18px]">directions_bus</span>
                     </span>
-                    {pathname === '/bus-tickets' && (
+                    {isBusTicketsActive && (
                       <span className="px-2 py-0.5 rounded-full bg-brand-scarlet text-white text-[9px] font-bold">Active</span>
                     )}
                   </div>
@@ -303,10 +395,10 @@ export default function Header() {
                 </Link>
 
                 <Link
-                  href="/spiritual-yatra"
+                  href="/spiritual"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/spiritual-yatra'
+                    pathname === '/spiritual'
                       ? 'bg-amber-950/60 border-amber-500 text-white shadow-lg shadow-amber-950/50'
                       : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
                   }`}
@@ -315,7 +407,7 @@ export default function Header() {
                     <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
                       <span className="material-symbols-outlined text-[18px]">temple_hindu</span>
                     </span>
-                    {pathname === '/spiritual-yatra' && (
+                    {pathname === '/spiritual' && (
                       <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] font-bold">Active</span>
                     )}
                   </div>
@@ -324,19 +416,19 @@ export default function Header() {
                 </Link>
 
                 <Link
-                  href="/international-packages"
+                  href="/international"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/international-packages'
+                    pathname === '/international'
                       ? 'bg-teal-950/60 border-teal-500 text-white shadow-lg shadow-teal-950/50'
                       : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center">
+                    <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                       <span className="material-symbols-outlined text-[18px]">flight_takeoff</span>
                     </span>
-                    {pathname === '/international-packages' && (
+                    {pathname === '/international' && (
                       <span className="px-2 py-0.5 rounded-full bg-teal-500 text-white text-[9px] font-bold">Active</span>
                     )}
                   </div>
@@ -345,23 +437,23 @@ export default function Header() {
                 </Link>
 
                 <Link
-                  href="/india-local-packages"
+                  href="/domestic"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/india-local-packages'
+                    pathname === '/domestic'
                       ? 'bg-emerald-950/60 border-emerald-500 text-white shadow-lg shadow-emerald-950/50'
                       : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <span className="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
                       <span className="material-symbols-outlined text-[18px]">landscape</span>
                     </span>
-                    {pathname === '/india-local-packages' && (
+                    {pathname === '/domestic' && (
                       <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold">Active</span>
                     )}
                   </div>
-                  <span className="text-xs font-bold">India Local</span>
+                  <span className="text-xs font-bold">Domestic</span>
                   <span className="text-[10px] text-slate-400">Weekend Escapes</span>
                 </Link>
               </div>
@@ -398,30 +490,6 @@ export default function Header() {
                 </Link>
 
                 <Link
-                  href={getHashHref('#hospitalitySection')}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-emerald-400">hotel</span>
-                    <span>Hospitality &amp; Stays</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
-
-                <Link
-                  href={getHashHref('#advantageSection')}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-teal-400">verified</span>
-                    <span>Why YatraBus (0% Surcharge)</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
-
-                <Link
                   href="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
@@ -440,7 +508,7 @@ export default function Header() {
                 >
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-[18px] text-cyan-400">help_center</span>
-                    <span>FAQ &amp; Help Desk</span>
+                    <span>FAQs</span>
                   </div>
                   <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
                 </Link>

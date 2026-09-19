@@ -30,7 +30,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section className="w-full py-6 sm:py-10 bg-slate-50" id="contactSection">
+    <section className="w-full py-6 sm:py-10 bg-slate-50 scroll-mt-28 sm:scroll-mt-32" id="contactSection">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
           
@@ -137,7 +137,7 @@ export default function ContactForm() {
                       <option value="Bus Ticket Reservation">Bus Ticket Reservation</option>
                       <option value="Spiritual Yatra / Devsthan Package">Spiritual Yatra / Devsthan Package</option>
                       <option value="International Holiday Package">International Holiday Package</option>
-                      <option value="India Local Tour & Resort">India Local Tour &amp; Resort</option>
+                      <option value="Domestic Tour & Resort">Domestic Tour &amp; Resort</option>
                       <option value="Group Charter & Private Bus Rental">Group Charter &amp; Private Bus Rental</option>
                       <option value="General Query / Feedback">General Query / Feedback</option>
                     </select>

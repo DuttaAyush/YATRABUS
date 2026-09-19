@@ -39,7 +39,7 @@ export default function FixedDepartures() {
             <div className="flex items-center justify-between pt-3 border-t border-slate-200">
               <div className="text-xs">
                 <span className="text-slate-400 block text-[10px]">BATCH FARE</span>
-                <span className="font-extrabold text-slate-900 text-sm">$749 / person</span>
+                <span className="font-extrabold text-slate-900 text-sm">₹58,999 / person</span>
               </div>
               <button className="px-4 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm active:scale-95 transition-all">
                 Lock Seat
@@ -59,7 +59,7 @@ export default function FixedDepartures() {
             <div className="flex items-center justify-between pt-3 border-t border-slate-200">
               <div className="text-xs">
                 <span className="text-slate-400 block text-[10px]">BATCH FARE</span>
-                <span className="font-extrabold text-slate-900 text-sm">$599 / person</span>
+                <span className="font-extrabold text-slate-900 text-sm">₹44,999 / person</span>
               </div>
               <button className="px-4 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm active:scale-95 transition-all">
                 Lock Seat
@@ -79,7 +79,7 @@ export default function FixedDepartures() {
             <div className="flex items-center justify-between pt-3 border-t border-slate-200">
               <div className="text-xs">
                 <span className="text-slate-400 block text-[10px]">BATCH FARE</span>
-                <span className="font-extrabold text-slate-900 text-sm">$1,699 / person</span>
+                <span className="font-extrabold text-slate-900 text-sm">₹1,49,999 / person</span>
               </div>
               <button className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-teal-700 text-white font-bold text-xs shadow-sm active:scale-95 transition-all">
                 Lock Seat

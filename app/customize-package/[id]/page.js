@@ -95,7 +95,7 @@ export default function CustomizePackagePage({ params }) {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <a
-              href="/spiritual-yatra"
+              href="/packages"
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm"
               title="Back to Catalog"
             >
@@ -364,7 +364,7 @@ export default function CustomizePackagePage({ params }) {
 
             {/* CONFIRM & PROCEED TO CHECKOUT */}
             <a
-              href="/checkout"
+              href={`/packages/checkout?package=${pkg.id}`}
               className="w-full py-4 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-red-600/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span>CONFIRM &amp; BOOK CUSTOMIZED TRIP</span>

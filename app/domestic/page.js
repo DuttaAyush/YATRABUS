@@ -11,11 +11,11 @@ import Testimonials from '@/components/site/Testimonials';
 import IndiaLocalFAQ from '@/components/india-local/IndiaLocalFAQ';
 
 export const metadata = {
-  title: 'YatraBus - India (Local) Holiday & Travel Packages',
+  title: 'YatraBus - Domestic Holiday & Travel Packages',
   description: 'Curated domestic holiday packages across coastal retreats, serene backwaters, and misty Himalayan valleys.'
 };
 
-export default function IndiaLocalPackagesPage() {
+export default function DomesticPackagesPage() {
   return (
     <div className="bg-slate-950 font-sans text-slate-800 antialiased min-h-screen relative flex flex-col">
       <Header />

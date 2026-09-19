@@ -106,7 +106,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
   const badge = pkg.badge || pkg.tag || 'Popular Package';
   const badgeColor = pkg.badgeColor || pkg.tagBg || 'bg-teal-600 text-white';
   const duration = pkg.duration || '7 Days / 6 Nights';
-  const price = pkg.price || '$749';
+  const price = pkg.price || '₹54,999';
   const image = pkg.image || '/images/yatrabus_international_holiday_travel_packages_1.jpg';
   const shortPlan = pkg.shortPlan || pkg.description || 'Complete guided odyssey with luxury stays, sightseeing, and private AC transfers.';
   const itinerary = pkg.itinerary || [
@@ -183,6 +183,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Downsize Card button (Commented out as requested)
               {sheetState === 'expanded' && (
                 <button
                   onClick={handleDownsizeToPeek}
@@ -193,6 +194,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
                   <span className="hidden sm:inline font-sans">Downsize Card</span>
                 </button>
               )}
+              */}
               <button
                 onClick={handleClose}
                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/25 hover:bg-white/40 text-white flex items-center justify-center backdrop-blur-md transition-transform active:scale-90 cursor-pointer"
@@ -236,7 +238,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
                 <span>Customize</span>
               </a>
               <a
-                href={`/checkout?package=${pkg.id || 'chardham'}`}
+                href={`/packages/checkout?package=${pkg.id || 'chardham'}`}
                 className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Book Package</span>
@@ -391,7 +393,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
                 </div>
               )}
 
-              {/* Footer Controls */}
+              {/* Footer Controls (Commented out as requested)
               <div className="flex items-center justify-center gap-4 pt-4 border-t border-slate-100">
                 <button
                   onClick={handleDownsizeToPeek}
@@ -409,6 +411,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
                   <span>Close Card</span>
                 </button>
               </div>
+              */}
             </div>
           )}
         </div>
