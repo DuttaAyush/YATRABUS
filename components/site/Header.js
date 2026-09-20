@@ -372,7 +372,7 @@ export default function Header() {
               <div className="flex items-center gap-2">
                 <div className="px-2 py-1 bg-white/95 rounded-lg border border-white/30 shadow-sm flex items-center justify-center">
                   <img
-                    alt="YatraBus Logo"
+                    alt="VedBus Logo"
                     className="h-5 sm:h-6 w-auto object-contain"
                     src="/images/logo.png"
                   />
@@ -505,7 +505,7 @@ export default function Header() {
               {/* 2. Explore Navigation Links */}
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
-                  Explore YatraBus
+                  Explore VedBus
                 </p>
                 <div className="space-y-1">
                   <Link
