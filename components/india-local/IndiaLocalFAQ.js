@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 const faqs = [
   {
-    question: 'Does YatraBus include intercity bus and local sightseeing transfers?',
+    question: 'Does VedBus include intercity bus and local sightseeing transfers?',
     answer:
       'Yes, our all-inclusive holiday packages bundle intercity premium AC Volvo / BharatBenz coach tickets or flights, along with dedicated private cabs (Dzire/Innova) for all local sightseeing, pickup, and drop-offs as outlined in your selected package blueprint.'
   },
@@ -16,7 +16,7 @@ const faqs = [
   {
     question: 'Are hotel rooms pre-screened and senior-citizen friendly?',
     answer:
-      'Yes. Every property in our portfolio is physically inspected by YatraBus hospitality audits for hygiene, lift access, ground-floor accessibility for senior family members, clean hot water facilities, and responsive room service.'
+      'Yes. Every property in our portfolio is physically inspected by VedBus hospitality audits for hygiene, lift access, ground-floor accessibility for senior family members, clean hot water facilities, and responsive room service.'
   },
   {
     question: 'What is the cancellation and rescheduling policy?',

@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">1. Information We Collect</h2>
               <p>
-                When you book tickets or travel packages with YatraBus, we collect personal information necessary to process your reservation, including full name, mobile number, email address, age, gender, and payment details.
+                When you book tickets or travel packages with VedBus, we collect personal information necessary to process your reservation, including full name, mobile number, email address, age, gender, and payment details.
               </p>
             </section>
 
@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">3. Data Security &amp; Encryption</h2>
               <p>
-                We implement industry-standard 256-bit SSL encryption to safeguard your data during transmission. Payment processing is conducted through PCI-DSS compliant payment gateways, and YatraBus never stores full credit card numbers or UPI PINs.
+                We implement industry-standard 256-bit SSL encryption to safeguard your data during transmission. Payment processing is conducted through PCI-DSS compliant payment gateways, and VedBus never stores full credit card numbers or UPI PINs.
               </p>
             </section>
 
@@ -50,14 +50,14 @@ export default function PrivacyPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">5. Your Privacy Rights</h2>
               <p>
-                You have the right to access, update, or request deletion of your saved passenger profiles at any time through your YatraBus Customer Profile dashboard or by contacting our support team.
+                You have the right to access, update, or request deletion of your saved passenger profiles at any time through your VedBus Customer Profile dashboard or by contacting our support team.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">6. Contact Us</h2>
               <p>
-                For privacy inquiries or data requests, email our Data Protection Officer at <strong>privacy@yatrabus.in</strong>.
+                For privacy inquiries or data requests, email our Data Protection Officer at <strong>privacy@vedbus.in</strong>.
               </p>
             </section>
           </div>

@@ -6,7 +6,7 @@ export default function DevoteeCare() {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-extrabold text-brand-scarlet uppercase tracking-wider bg-amber-100 px-3 py-1 rounded-full border border-amber-200">Devotional Pilgrimage Care</span>
-          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-serif font-bold">The YatraBus Sacred Hospitality Standard</h2>
+          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-serif font-bold">The VedBus Sacred Hospitality Standard</h2>
           <p className="text-sm text-slate-600 mt-2">Specially engineered for elderly parents, joint families, and devout pilgrims seeking a divine atmosphere without logistical exhaustion.</p>
         </div>
 

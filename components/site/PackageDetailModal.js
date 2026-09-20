@@ -107,7 +107,7 @@ export default function PackageDetailModal({ pkg, isOpen, onClose }) {
   const badgeColor = pkg.badgeColor || pkg.tagBg || 'bg-teal-600 text-white';
   const duration = pkg.duration || '7 Days / 6 Nights';
   const price = pkg.price || '₹54,999';
-  const image = pkg.image || '/images/yatrabus_international_holiday_travel_packages_1.jpg';
+  const image = pkg.image || '/images/vedbus_international_holiday_travel_packages_1.jpg';
   const shortPlan = pkg.shortPlan || pkg.description || 'Complete guided odyssey with luxury stays, sightseeing, and private AC transfers.';
   const itinerary = pkg.itinerary || [
     { day: 'Day 1', title: 'Arrival & Welcome Reception', desc: 'Private luxury transfer from airport/station to hotel. Relaxation and evening briefing.' },

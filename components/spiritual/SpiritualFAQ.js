@@ -4,12 +4,12 @@ import { useState } from 'react';
 
 const spiritualFaqs = [
   {
-    q: 'How does VIP Darshan pass assistance work on YatraBus packages?',
-    a: 'Our pilgrimage packages include pre-registered temple trust queue slots (such as Tirumala ₹300 Seeghra Darshan, Kashi Vishwanath Sugam Darshan, and Shirdi Sai VIP entry). A designated YatraBus purohit escort meets your group at the temple gate with physical RFID bands or verified barcode passes, accompanying elderly pilgrims directly to priority queues.'
+    q: 'How does VIP Darshan pass assistance work on VedBus packages?',
+    a: 'Our pilgrimage packages include pre-registered temple trust queue slots (such as Tirumala ₹300 Seeghra Darshan, Kashi Vishwanath Sugam Darshan, and Shirdi Sai VIP entry). A designated VedBus purohit escort meets your group at the temple gate with physical RFID bands or verified barcode passes, accompanying elderly pilgrims directly to priority queues.'
   },
   {
     q: 'Are the meals strictly Satvik and suitable for Ekadashi or fasting (Vrat)?',
-    a: 'Yes! All hotels and kitchen caterers on YatraBus spiritual circuits operate strictly pure-vegetarian kitchens with zero onion and garlic. On auspicious fasting days (Ekadashi, Pradosham, Navratri), special Vrat thalis (Sabudana Khichdi, fresh seasonal fruits, dairy curd, and rock-salt preparations) are served upon advance request at no extra charge.'
+    a: 'Yes! All hotels and kitchen caterers on VedBus spiritual circuits operate strictly pure-vegetarian kitchens with zero onion and garlic. On auspicious fasting days (Ekadashi, Pradosham, Navratri), special Vrat thalis (Sabudana Khichdi, fresh seasonal fruits, dairy curd, and rock-salt preparations) are served upon advance request at no extra charge.'
   },
   {
     q: 'Can senior citizens get wheelchair support or lower-berth bus allocation?',
@@ -21,7 +21,7 @@ const spiritualFaqs = [
   },
   {
     q: 'Is the bus vehicle number and driver contact provided in advance?',
-    a: 'Yes, unlike online aggregators who reveal bus numbers only 30 minutes prior, YatraBus assigns your fleet vehicle registration number right at booking confirmation. Full driver contact and live GPS tracking links are sent via automated WhatsApp 4 hours prior to boarding.'
+    a: 'Yes, unlike online aggregators who reveal bus numbers only 30 minutes prior, VedBus assigns your fleet vehicle registration number right at booking confirmation. Full driver contact and live GPS tracking links are sent via automated WhatsApp 4 hours prior to boarding.'
   }
 ];
 

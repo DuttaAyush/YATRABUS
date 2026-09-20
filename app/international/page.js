@@ -11,7 +11,7 @@ import Testimonials from '@/components/site/Testimonials';
 import InternationalFAQ from '@/components/international/InternationalFAQ';
 
 export const metadata = {
-  title: 'YatraBus - International Holiday & Travel Packages',
+  title: 'VedBus - International Holiday & Travel Packages',
   description: 'Personalized worldwide holiday packages with flights, handpicked stays, visa assistance, and Indian culinary experiences.'
 };
 

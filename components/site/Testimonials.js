@@ -12,7 +12,7 @@ const testimonialData = [
     route: 'Delhi ➔ Leh',
     quote: 'Breathtaking views and super comfortable journey!',
     rating: 5,
-    destImage: '/images/yatrabus_india_local_holiday_travel_packages_4.jpg',
+    destImage: '/images/vedbus_india_local_holiday_travel_packages_4.jpg',
     destLabel: 'Leh',
   },
   {
@@ -22,7 +22,7 @@ const testimonialData = [
     route: 'Delhi ➔ Varanasi',
     quote: 'A soulful journey. Everything was well organised.',
     rating: 5,
-    destImage: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_10.jpg',
+    destImage: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_10.jpg',
     destLabel: 'Varanasi',
   },
   {
@@ -32,7 +32,7 @@ const testimonialData = [
     route: 'Mumbai ➔ Goa',
     quote: 'On-time, clean buses and a great experience throughout!',
     rating: 5,
-    destImage: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_7.jpg',
+    destImage: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_7.jpg',
     destLabel: 'Goa',
   },
   {
@@ -42,7 +42,7 @@ const testimonialData = [
     route: 'Bangalore ➔ Kerala',
     quote: 'Smooth booking, friendly staff. Will travel again!',
     rating: 5,
-    destImage: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_5.jpg',
+    destImage: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_5.jpg',
     destLabel: 'Kerala',
   },
   {
@@ -52,7 +52,7 @@ const testimonialData = [
     route: 'Pune ➔ Jaipur',
     quote: 'Comfortable seats, smooth ride and hassle-free booking.',
     rating: 5,
-    destImage: '/images/yatrabus_india_local_holiday_travel_packages_1.jpg',
+    destImage: '/images/vedbus_india_local_holiday_travel_packages_1.jpg',
     destLabel: 'Jaipur',
   },
 ];

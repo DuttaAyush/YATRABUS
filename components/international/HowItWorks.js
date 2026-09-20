@@ -9,7 +9,7 @@ export default function HowItWorks() {
           Plan Your Dream Holiday in 3 Simple Steps
         </h2>
         <p className="text-sm text-slate-600 max-w-xl mx-auto mb-12">
-          Zero complexity. From customized flight routing to Indian meals on tour, YatraBus takes care of every detail.
+          Zero complexity. From customized flight routing to Indian meals on tour, VedBus takes care of every detail.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 card-lift">

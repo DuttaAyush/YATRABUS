@@ -13,7 +13,7 @@ export default function TravelerStories() {
               Stories From Across The Continents
             </h2>
             <p className="text-sm text-slate-500 mt-2 max-w-xl">
-              Real experiences from Indian globetrotters who trusted YatraBus for seamless visas, 5★ stays, and pure vegetarian &amp; Jain cuisine worldwide.
+              Real experiences from Indian globetrotters who trusted VedBus for seamless visas, 5★ stays, and pure vegetarian &amp; Jain cuisine worldwide.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0 bg-teal-50 border border-teal-200 px-4 py-2.5 rounded-2xl">
@@ -44,7 +44,7 @@ export default function TravelerStories() {
                 "The Jain dining arrangements in Dubai were extraordinary."
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6 font-normal">
-                "Traveling with my elderly parents, finding hot Gujarati and Jain food was our biggest worry. YatraBus handled everything from our 24-hour visa processing to Marriott Marquis check-in and private desert dune banquet. 10/10 experience!"
+                "Traveling with my elderly parents, finding hot Gujarati and Jain food was our biggest worry. VedBus handled everything from our 24-hour visa processing to Marriott Marquis check-in and private desert dune banquet. 10/10 experience!"
               </p>
             </div>
             <div className="pt-4 border-t border-slate-200 flex items-center justify-between">

@@ -58,7 +58,7 @@ export default function SpiritualHero() {
           alt="Spiritual Yatra Sacred Darshan Background"
           className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
           style={{ transform: `scale(${scrollScale})` }}
-          src="/images/yatrabus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_5.jpg"
+          src="/images/vedbus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_5.jpg"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/50 to-amber-950/30 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/35 to-transparent"></div>

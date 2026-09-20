@@ -17,7 +17,7 @@ export default function ContactPage() {
           {/* Background Image & Overlays */}
           <div className="absolute inset-0 z-0">
             <img
-              alt="YatraBus Travel Concierge Support Desk"
+              alt="VedBus Travel Concierge Support Desk"
               className="w-full h-full object-cover object-center"
               src="/images/contact_concierge_bg.jpg"
             />
@@ -77,8 +77,8 @@ export default function ContactPage() {
                 </div>
                 <div className="min-w-0">
                   <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-300 block">Corporate Email</span>
-                  <a href="mailto:support@yatrabus.com" className="text-sm font-bold text-white hover:text-amber-300 transition-colors truncate block">
-                    support@yatrabus.com
+                  <a href="mailto:support@vedbus.com" className="text-sm font-bold text-white hover:text-amber-300 transition-colors truncate block">
+                    support@vedbus.com
                   </a>
                 </div>
               </div>
@@ -105,7 +105,7 @@ export default function ContactPage() {
                 OUR REGIONAL TERMINALS &amp; HUBS
               </span>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-2">
-                Visit YatraBus Regional Operational Offices
+                Visit VedBus Regional Operational Offices
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl mx-auto">
                 Walk into any of our flagship terminal counters for instant physical ticket booking, luggage assistance, and boarding help.
@@ -120,7 +120,7 @@ export default function ContactPage() {
                 </span>
                 <h3 className="text-lg font-serif font-bold text-slate-900">Nagpur Central Terminal</h3>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  YatraBus Fleet House, Opp. Dharampeth College, Chatrapati Square, Nagpur, Maharashtra - 440010
+                  VedBus Fleet House, Opp. Dharampeth College, Chatrapati Square, Nagpur, Maharashtra - 440010
                 </p>
                 <div className="pt-2 text-xs font-bold text-brand-scarlet flex items-center gap-1">
                   <span className="material-symbols-outlined text-[16px]">schedule</span>

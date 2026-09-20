@@ -8,9 +8,11 @@ export default function Footer() {
           <div>
             <Link href="/">
               <img
-                alt="YatraBus Logo"
+                alt="VedBus Logo"
                 className="h-8 w-auto brightness-0 invert mb-3"
                 src="/images/logo.png"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed mb-4">
@@ -42,7 +44,7 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3">Support &amp; Legal</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link className="hover:text-white transition-colors" href="/about">About YatraBus</Link></li>
+              <li><Link className="hover:text-white transition-colors" href="/about">About VedBus</Link></li>
               <li><Link className="hover:text-white transition-colors" href="/terms">Terms &amp; Conditions</Link></li>
               <li><Link className="hover:text-white transition-colors" href="/privacy-policy">Privacy Policy</Link></li>
               <li><Link className="hover:text-white transition-colors" href="/refund-policy">Return &amp; Refunds</Link></li>
@@ -52,7 +54,7 @@ export default function Footer() {
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div className="flex flex-wrap items-center gap-4">
-            <span>© 2025 YatraBus Technologies India Pvt. Ltd. All rights reserved.</span>
+            <span>© 2025 VedBus Technologies India Pvt. Ltd. All rights reserved.</span>
             <span className="hidden sm:inline">•</span>
             <Link className="hover:text-slate-300 transition-colors" href="/terms">Terms</Link>
             <Link className="hover:text-slate-300 transition-colors" href="/privacy-policy">Privacy</Link>

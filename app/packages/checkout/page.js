@@ -12,7 +12,7 @@ const samplePackages = {
     duration: '5 Days / 4 Nights',
     destinations: 'Dubai • Abu Dhabi • Desert Safari',
     price: 48999,
-    image: '/images/yatrabus_international_holiday_travel_packages_1.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_1.jpg',
     badge: '4-Star Marina Hotel & Visa Included',
     inclusions: ['4★ Marina Hotel Stay', 'Burj Khalifa 124th Floor Ticket', '4x4 Desert Safari & BBQ Dinner', 'Dhow Marina Cruise Dinner', 'Express eVisa Assistance'],
     badgeColor: 'bg-teal-600 text-white',
@@ -24,7 +24,7 @@ const samplePackages = {
     duration: '10 Days / 9 Nights',
     destinations: 'Kedarnath • Badrinath • Gangotri • Yamunotri',
     price: 24499,
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
     badge: 'VIP Darshan & Helicopter Assist',
     inclusions: ['2x2 BharatBenz AC Pushback Coach', 'Verified Warm Stays', 'Pure Satvik Dining', 'Har Ki Pauri Aarti Slot', 'VIP Darshan Passes'],
     badgeColor: 'bg-amber-600 text-white',
@@ -36,7 +36,7 @@ const samplePackages = {
     duration: '5 Days / 4 Nights',
     destinations: 'Kochi • Munnar Hills • Alleppey Houseboat',
     price: 11200,
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_14.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_14.jpg',
     badge: 'Private AC Houseboat & Tea Trails',
     inclusions: ['Deluxe Resort Stays', 'Private AC Houseboat Cruise', 'Munnar Tea Plantation Escort', 'Kathakali Show Ticket', 'All Transfers'],
     badgeColor: 'bg-emerald-600 text-white',
@@ -48,7 +48,7 @@ const samplePackages = {
     duration: '7 Days / 6 Nights',
     destinations: 'Singapore • Kuala Lumpur • Genting Highlands',
     price: 62500,
-    image: '/images/yatrabus_international_holiday_travel_packages_2.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_2.jpg',
     badge: 'Universal Studios & Cable Car Pass',
     inclusions: ['Universal Studios Pass', 'Gardens by the Bay Entry', 'Genting Cable Car Ride', '4★ City Center Stays', 'Dual Country Visa Assist'],
     badgeColor: 'bg-teal-600 text-white',
@@ -489,7 +489,7 @@ export default function PackageCheckoutPage({ searchParams }) {
               </div>
 
               <div className="flex justify-between items-center text-emerald-700 font-bold pt-1 border-t border-slate-100">
-                <span>YatraBus Booking Fee</span>
+                <span>VedBus Booking Fee</span>
                 <span className="bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-emerald-800">₹0 (FREE)</span>
               </div>
             </div>

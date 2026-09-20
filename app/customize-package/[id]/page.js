@@ -11,7 +11,7 @@ const samplePackages = {
     subtitle: 'Kedarnath • Badrinath • Gangotri • Yamunotri',
     duration: '10 Days / 9 Nights',
     basePrice: 24499,
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
     category: 'Spiritual Pilgrimage',
     addons: [
       { id: 'heli', label: 'Kedarnath Helicopter Ticket ex-Phata', price: 3500, selected: false },
@@ -26,7 +26,7 @@ const samplePackages = {
     subtitle: 'Calangute • Baga • Mandovi Sunset Cruise',
     duration: '4 Days / 3 Nights',
     basePrice: 6999,
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_15.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_15.jpg',
     category: 'Coastal Getaway',
     addons: [
       { id: 'catamaran', label: 'Private Sunset Catamaran Cruise', price: 1500, selected: true },
@@ -40,7 +40,7 @@ const samplePackages = {
     subtitle: 'Kochi • Munnar Hills • Alleppey Houseboat',
     duration: '5 Days / 4 Nights',
     basePrice: 11200,
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_14.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_14.jpg',
     category: 'Nature & Backwaters',
     addons: [
       { id: 'houseboat-upgrade', label: 'Luxury AC Houseboat Master Suite Upgrade', price: 2500, selected: true },
@@ -352,7 +352,7 @@ export default function CustomizePackagePage({ params }) {
               )}
 
               <div className="flex justify-between text-emerald-700 font-bold">
-                <span>YatraBus Markup</span>
+                <span>VedBus Markup</span>
                 <span>₹0 (FREE)</span>
               </div>
 

@@ -340,7 +340,7 @@ export default function CheckoutPage() {
                     Google Pay, PhonePe, Paytm, or BHIM. Zero processing fee charged.
                   </p>
                   <div className="mt-2 text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md inline-block">
-                    UPI ID: yatrabus@icici
+                    UPI ID: vedbus@icici
                   </div>
                 </div>
               </div>
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex justify-between text-emerald-700 font-bold">
-                <span>YatraBus Aggregator Markup</span>
+                <span>VedBus Aggregator Markup</span>
                 <span>₹0 (FREE)</span>
               </div>
 

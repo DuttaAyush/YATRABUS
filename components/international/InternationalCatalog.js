@@ -7,7 +7,7 @@ const packagesData = [
   {
     id: 1,
     category: 'family',
-    image: '/images/yatrabus_international_holiday_travel_packages_6.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_6.jpg',
     duration: '5 Nights / 6 Days',
     subtitle: 'Return Flights • Visa',
     title: 'Dubai & Abu Dhabi Royal Extravaganza',
@@ -18,7 +18,7 @@ const packagesData = [
   {
     id: 2,
     category: 'honeymoon',
-    image: '/images/yatrabus_international_holiday_travel_packages_8.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_8.jpg',
     duration: '6 Nights / 7 Days',
     subtitle: 'Direct Flights Included',
     title: 'Bali & Southeast Asia Island Odyssey',
@@ -29,7 +29,7 @@ const packagesData = [
   {
     id: 3,
     category: 'europe',
-    image: '/images/yatrabus_international_holiday_travel_packages_9.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_9.jpg',
     duration: '8 Nights / 9 Days',
     subtitle: 'Schengen Visa Concierge',
     title: 'Grand Wonders of Europe: Swiss Alps & Paris',
@@ -40,7 +40,7 @@ const packagesData = [
   {
     id: 4,
     category: 'honeymoon',
-    image: '/images/yatrabus_international_holiday_travel_packages_10.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_10.jpg',
     duration: '5 Nights / 6 Days',
     subtitle: 'Island Flight + Ferry',
     title: 'Santorini Romantic Cyclades Getaway',
@@ -136,6 +136,8 @@ export default function InternationalCatalog() {
                   alt={pkg.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={pkg.image}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
                 <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur text-white font-bold text-xs">

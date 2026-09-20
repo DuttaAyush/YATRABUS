@@ -9,7 +9,7 @@ export default function IndiaLocalHowItWorks() {
           Plan Your Dream Holiday in 3 Simple Steps
         </h2>
         <p className="mt-2 text-slate-500 text-sm max-w-2xl mx-auto">
-          Zero complexity. From customized BharatBenz bus departures to regional Indian meals on tour, YatraBus takes care of every detail.
+          Zero complexity. From customized BharatBenz bus departures to regional Indian meals on tour, VedBus takes care of every detail.
         </p>
 
         <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">

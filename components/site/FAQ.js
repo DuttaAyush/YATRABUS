@@ -21,7 +21,7 @@ export default function FAQ() {
               <span className="">How do I know my assigned bus vehicle number plate?</span>
               <span className="material-symbols-outlined text-brand-scarlet text-[20px] transition-transform duration-200 faq-icon" style={{ transform: openIndex === 0 ? 'rotate(180deg)' : 'rotate(0deg)' }}>expand_more</span>
             </h3>
-            <p className={`text-xs md:text-sm text-slate-600 mt-2 leading-relaxed ${openIndex === 0 ? '' : 'hidden'}`}>Unlike aggregators, YatraBus allocates and prints your exact fleet registration number (e.g. MH-31-AP-4921) right on your digital pass upon booking. If a fleet swap occurs at the depot, an automated SMS alerts you 2 hours before departure.</p>
+            <p className={`text-xs md:text-sm text-slate-600 mt-2 leading-relaxed ${openIndex === 0 ? '' : 'hidden'}`}>Unlike aggregators, VedBus allocates and prints your exact fleet registration number (e.g. MH-31-AP-4921) right on your digital pass upon booking. If a fleet swap occurs at the depot, an automated SMS alerts you 2 hours before departure.</p>
           </div>
           <div className="faq-item bg-white border border-slate-200 rounded-2xl p-5 shadow-sm cursor-pointer transition-all" onClick={() => toggleFaq(1)}>
             <h3 className="font-bold text-slate-900 text-sm md:text-base flex items-center justify-between select-none">

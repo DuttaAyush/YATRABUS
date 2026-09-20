@@ -12,7 +12,7 @@ const packagesData = [
     duration: '10 Days / 9 Nights',
     price: '₹89,999',
     perPerson: 'per person',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_5.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_5.jpg',
     flightInfo: 'Direct Round-Trip Flights ex-Mumbai (BOM), Delhi (DEL), & Pune (PNQ) via Emirates & Singapore Airlines (25kg baggage included).',
     visaDetails: 'UAE Express 30-Day Tourist E-Visa & Singapore E-Visa included with 48-hour fast-track approval (Passport valid min. 6 months required).',
     mealPlan: 'Daily 5★ International Buffet Breakfast + 100% Guaranteed Pure Veg Indian Satvik & Jain Dinners served at curated partner restaurants.',
@@ -103,7 +103,7 @@ const packagesData = [
     duration: '5 Days / 4 Nights',
     price: '₹44,999',
     perPerson: 'per person',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_6.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_6.jpg',
     flightInfo: 'Direct Non-Stop Flights ex-Mumbai & Pune via Air India Express / Indigo (20kg baggage + 7kg cabin).',
     visaDetails: 'UAE 30-Day Single Entry Tourist E-Visa with complimentary COVID-19 & travel health insurance.',
     mealPlan: 'Daily Buffet Breakfast at Downtown Hotel + Unlimited Indian Buffet Dinners (Satvik Veg & Jain options).',
@@ -165,9 +165,9 @@ const packagesData = [
     duration: '7 Days / 6 Nights',
     price: '₹62,500',
     perPerson: 'per person',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_7.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_7.jpg',
     flightInfo: 'Direct Flights to Singapore Changi & Return ex-Kuala Lumpur International via Singapore Airlines & Malaysia Airlines.',
-    visaDetails: 'Singapore E-Visa & Malaysia Digital Arrival Card (MDAC) processed by YatraBus documentation team.',
+    visaDetails: 'Singapore E-Visa & Malaysia Digital Arrival Card (MDAC) processed by VedBus documentation team.',
     mealPlan: 'Daily International Breakfast + Pure Veg South Indian & North Indian thali dinners.',
     cancellationPolicy: '100% Refundable up to 14 days before departure.',
     shortPlan:
@@ -238,7 +238,7 @@ const packagesData = [
     duration: '6 Days / 5 Nights',
     price: '₹38,900',
     perPerson: 'per person',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_8.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_8.jpg',
     flightInfo: 'Round-Trip International Flights ex-India + Internal Domestic Flight (Phuket to Bangkok) included.',
     visaDetails: 'Thailand Visa Waiver / Visa on Arrival Express Clearance Assistance at Phuket International Airport.',
     mealPlan: 'Daily Resort Breakfast + Pure Veg Indian Dinners at Indian Delights Phuket & Bangkok.',
@@ -439,6 +439,8 @@ export default function InternationalPackages() {
               alt="Luxury Dubai & Singapore Escape collage banner"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               src={packagesData[0].image}
+              loading="lazy"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
             <div className="absolute inset-0 p-4 sm:p-6 md:p-10 flex flex-col justify-between text-white">
@@ -482,6 +484,8 @@ export default function InternationalPackages() {
                   alt={pkg.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   src={pkg.image}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg bg-slate-900/80 backdrop-blur-md text-white font-bold text-[9px] sm:text-xs">
                   {pkg.duration}
@@ -551,6 +555,8 @@ export default function InternationalPackages() {
               <img
                 src={selectedPkg.image}
                 alt={selectedPkg.title}
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover will-change-transform transition-all duration-150 ease-out"
                 style={{
                   transform: `scale(${1 + Math.min(cardScrollTop / 600, 0.25)})`,

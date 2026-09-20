@@ -11,7 +11,7 @@ import Testimonials from '@/components/site/Testimonials';
 import IndiaLocalFAQ from '@/components/india-local/IndiaLocalFAQ';
 
 export const metadata = {
-  title: 'YatraBus - Domestic Holiday & Travel Packages',
+  title: 'VedBus - Domestic Holiday & Travel Packages',
   description: 'Curated domestic holiday packages across coastal retreats, serene backwaters, and misty Himalayan valleys.'
 };
 

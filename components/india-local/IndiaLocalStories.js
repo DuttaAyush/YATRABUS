@@ -8,7 +8,7 @@ export default function IndiaLocalStories() {
           <div>
             <span className="text-teal-700 text-xs font-extrabold uppercase tracking-widest">Voices of Our Explorers</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-slate-900 mt-1">Stories From Across Incredible Bharat</h2>
-            <p className="text-slate-500 text-sm mt-1">Real experiences from Indian families &amp; couples who trust YatraBus for seamless holidays.</p>
+            <p className="text-slate-500 text-sm mt-1">Real experiences from Indian families &amp; couples who trust VedBus for seamless holidays.</p>
           </div>
           <div className="bg-teal-50 border border-teal-200 px-4 py-2 rounded-2xl flex items-center gap-2 self-start md:self-auto">
             <div className="flex text-amber-400 text-sm">★★★★★</div>
@@ -29,7 +29,7 @@ export default function IndiaLocalStories() {
                 "The private houseboat in Alleppey was pristine and our parents loved every moment."
               </h4>
               <p className="text-slate-600 text-xs leading-relaxed">
-                Travelling with elderly parents can often be stressful, but YatraBus made it completely smooth. Pure vegetarian freshly cooked food, smooth luxury BharatBenz transfers, and prompt responses on WhatsApp.
+                Travelling with elderly parents can often be stressful, but VedBus made it completely smooth. Pure vegetarian freshly cooked food, smooth luxury BharatBenz transfers, and prompt responses on WhatsApp.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-slate-200 flex items-center gap-3">
@@ -79,7 +79,7 @@ export default function IndiaLocalStories() {
                 "Volvo coach was spotless, heated room in Manali, and friendly coordinator throughout."
               </h4>
               <p className="text-slate-600 text-xs leading-relaxed">
-                We took our kids for their first snow vacation to Solang Valley. Everything from warm snow boots rentals to prompt morning breakfast was handled thoughtfully by the YatraBus coordinator.
+                We took our kids for their first snow vacation to Solang Valley. Everything from warm snow boots rentals to prompt morning breakfast was handled thoughtfully by the VedBus coordinator.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-slate-200 flex items-center gap-3">

@@ -22,14 +22,14 @@ export default function TermsPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">1. Agreement to Terms</h2>
               <p>
-                By accessing or using the YatraBus website, mobile application, or services, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not use our services.
+                By accessing or using the VedBus website, mobile application, or services, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not use our services.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">2. Bus Ticket Reservations</h2>
               <p>
-                YatraBus operates as a direct intercity fleet operator and ticketing platform. Seat bookings are confirmed upon successful payment processing and generation of a valid booking ID with assigned vehicle plate details.
+                VedBus operates as a direct intercity fleet operator and ticketing platform. Seat bookings are confirmed upon successful payment processing and generation of a valid booking ID with assigned vehicle plate details.
               </p>
             </section>
 
@@ -43,21 +43,21 @@ export default function TermsPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">4. Tour &amp; Devsthan Packages</h2>
               <p>
-                Spiritual yatra and holiday tour package itineraries, hotel check-in timings, and temple VIP queue slots are subject to local administrative protocols and weather conditions. YatraBus reserves the right to modify routes in emergency or unavoidable circumstances.
+                Spiritual yatra and holiday tour package itineraries, hotel check-in timings, and temple VIP queue slots are subject to local administrative protocols and weather conditions. VedBus reserves the right to modify routes in emergency or unavoidable circumstances.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">5. Limitation of Liability</h2>
               <p>
-                YatraBus shall not be liable for indirect, incidental, or consequential damages resulting from highway traffic delays, extreme weather events, or individual passenger non-compliance with boarding guidelines.
+                VedBus shall not be liable for indirect, incidental, or consequential damages resulting from highway traffic delays, extreme weather events, or individual passenger non-compliance with boarding guidelines.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">6. Contact Information</h2>
               <p>
-                For questions regarding these Terms &amp; Conditions, please contact us at <strong>support@yatrabus.in</strong> or via toll-free helpline at <strong>1800-209-9287</strong>.
+                For questions regarding these Terms &amp; Conditions, please contact us at <strong>support@vedbus.in</strong> or via toll-free helpline at <strong>1800-209-9287</strong>.
               </p>
             </section>
           </div>

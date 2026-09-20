@@ -1,14 +1,20 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 
 export default function Header() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isBusTicketsActive = pathname === '/';
   const isSpiritualActive = pathname === '/spiritual';
@@ -127,9 +133,11 @@ export default function Header() {
           >
             <div className="px-2 sm:px-2.5 py-1 bg-white/95 backdrop-blur-md rounded-xl border border-white/30 shadow-md flex items-center justify-center">
               <img
-                alt="YatraBus Logo"
+                alt="VedBus Logo"
                 className="h-6 sm:h-7 w-auto object-contain"
                 src="/images/logo.png"
+                fetchPriority="high"
+                decoding="async"
               />
             </div>
           </Link>
@@ -343,206 +351,242 @@ export default function Header() {
         </div>
       </div>
 
-      {/* MOBILE / TABLET SLIDE-DOWN NAVIGATION DRAWER (<1024px) */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-16 sm:top-18 bottom-0 bg-slate-950/95 backdrop-blur-2xl z-40 overflow-y-auto border-t border-white/10 animate-fadeIn">
-          <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
-            {/* User Profile Card Link */}
-            <Link
-              href="/profile"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-white/10 border border-white/15 text-white hover:bg-white/15 transition-all shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  alt="Profile Avatar"
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-scarlet/50 shrink-0"
-                  src="/images/avatar.png"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-white truncate">Rajesh Patel</p>
-                  <p className="text-[10px] text-slate-300 truncate">+91 98765 43210 • View Profile</p>
+      {/* MOBILE / TABLET SLIDE-IN NAVIGATION SIDEBAR (<1024px) */}
+      {mounted && isMobileMenuOpen && createPortal(
+        <div className="lg:hidden fixed inset-0 z-[99999] flex justify-end">
+          {/* Backdrop: Clicking the empty space beside the sidebar closes it */}
+          <div
+            className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close sidebar by clicking outside"
+          />
+
+          {/* Sidebar Panel: Sticks to the right edge with clean layout */}
+          <aside
+            className="relative z-10 w-[86vw] max-w-sm sm:max-w-md h-[100dvh] max-h-[100dvh] bg-slate-950/98 backdrop-blur-2xl border-l border-white/15 shadow-2xl flex flex-col overflow-hidden text-white"
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Mobile navigation sidebar"
+          >
+            {/* 1. Sidebar Header (Logo + Cross/Close Button) */}
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10 shrink-0 bg-slate-900/60">
+              <div className="flex items-center gap-2">
+                <div className="px-2 py-1 bg-white/95 rounded-lg border border-white/30 shadow-sm flex items-center justify-center">
+                  <img
+                    alt="YatraBus Logo"
+                    className="h-5 sm:h-6 w-auto object-contain"
+                    src="/images/logo.png"
+                  />
                 </div>
               </div>
-              <span className="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
-            </Link>
-
-            {/* 1. Travel Categories 2x2 Grid */}
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 px-1">
-                Travel Categories
-              </p>
-              <div className="grid grid-cols-2 gap-2.5">
-                <Link
-                  href="/"
-                  onClick={handleLogoOrBusClick}
-                  className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    isBusTicketsActive
-                      ? 'bg-red-950/60 border-brand-scarlet text-white shadow-lg shadow-red-950/50'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[18px]">directions_bus</span>
-                    </span>
-                    {isBusTicketsActive && (
-                      <span className="px-2 py-0.5 rounded-full bg-brand-scarlet text-white text-[9px] font-bold">Active</span>
-                    )}
-                  </div>
-                  <span className="text-xs font-bold">Bus Tickets</span>
-                  <span className="text-[10px] text-slate-400">Intercity AC Sleepers</span>
-                </Link>
-
-                <Link
-                  href="/spiritual"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/spiritual'
-                      ? 'bg-amber-950/60 border-amber-500 text-white shadow-lg shadow-amber-950/50'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[18px]">temple_hindu</span>
-                    </span>
-                    {pathname === '/spiritual' && (
-                      <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] font-bold">Active</span>
-                    )}
-                  </div>
-                  <span className="text-xs font-bold">Spiritual Yatras</span>
-                  <span className="text-[10px] text-slate-400">Sacred Darshan &amp; Puja</span>
-                </Link>
-
-                <Link
-                  href="/international"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/international'
-                      ? 'bg-teal-950/60 border-teal-500 text-white shadow-lg shadow-teal-950/50'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[18px]">flight_takeoff</span>
-                    </span>
-                    {pathname === '/international' && (
-                      <span className="px-2 py-0.5 rounded-full bg-teal-500 text-white text-[9px] font-bold">Active</span>
-                    )}
-                  </div>
-                  <span className="text-xs font-bold">International</span>
-                  <span className="text-[10px] text-slate-400">Global Holidays</span>
-                </Link>
-
-                <Link
-                  href="/domestic"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex flex-col p-3 rounded-2xl border transition-all ${
-                    pathname === '/domestic'
-                      ? 'bg-emerald-950/60 border-emerald-500 text-white shadow-lg shadow-emerald-950/50'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[18px]">landscape</span>
-                    </span>
-                    {pathname === '/domestic' && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold">Active</span>
-                    )}
-                  </div>
-                  <span className="text-xs font-bold">Domestic</span>
-                  <span className="text-[10px] text-slate-400">Weekend Escapes</span>
-                </Link>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close navigation sidebar"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer active:scale-90"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
             </div>
 
-            {/* 2. Explore Navigation Links */}
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
-                Explore YatraBus
-              </p>
-              <div className="space-y-1">
-                <Link
-                  href={getHashHref('#popularRoutesSection')}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-red-400">alt_route</span>
-                    <span>Popular Routes</span>
+            {/* 2. Scrollable Body Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-5 space-y-6 overscroll-contain">
+              {/* User Profile Card Link */}
+              <Link
+                href="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-between p-3 rounded-2xl bg-white/10 border border-white/15 text-white hover:bg-white/15 transition-all shadow-md"
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    alt="Profile Avatar"
+                    className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-scarlet/50 shrink-0"
+                    src="/images/avatar.png"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-white truncate">Rajesh Patel</p>
+                    <p className="text-[10px] text-slate-300 truncate">+91 98765 43210 • View Profile</p>
                   </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
+                </div>
+                <span className="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+              </Link>
 
-                <Link
-                  href="/packages"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-amber-400">grid_view</span>
-                    <span>Curated Packages</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
+              {/* 1. Travel Categories 2x2 Grid */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 px-1">
+                  Travel Categories
+                </p>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <Link
+                    href="/"
+                    onClick={handleLogoOrBusClick}
+                    className={`flex flex-col p-3 rounded-2xl border transition-all ${
+                      isBusTicketsActive
+                        ? 'bg-red-950/60 border-brand-scarlet text-white shadow-lg shadow-red-950/50'
+                        : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[18px]">directions_bus</span>
+                      </span>
+                      {isBusTicketsActive && (
+                        <span className="px-2 py-0.5 rounded-full bg-brand-scarlet text-white text-[9px] font-bold">Active</span>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold">Bus Tickets</span>
+                    <span className="text-[10px] text-slate-400">Intercity AC Sleepers</span>
+                  </Link>
 
-                <Link
-                  href="/about"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-purple-400">info</span>
-                    <span>About Us</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
+                  <Link
+                    href="/spiritual"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex flex-col p-3 rounded-2xl border transition-all ${
+                      pathname === '/spiritual'
+                        ? 'bg-amber-950/60 border-amber-500 text-white shadow-lg shadow-amber-950/50'
+                        : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[18px]">temple_hindu</span>
+                      </span>
+                      {pathname === '/spiritual' && (
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] font-bold">Active</span>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold">Spiritual Yatras</span>
+                    <span className="text-[10px] text-slate-400">Sacred Darshan &amp; Puja</span>
+                  </Link>
 
-                <Link
-                  href={getHashHref('#faqSection')}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-cyan-400">help_center</span>
-                    <span>FAQs</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
+                  <Link
+                    href="/international"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex flex-col p-3 rounded-2xl border transition-all ${
+                      pathname === '/international'
+                        ? 'bg-teal-950/60 border-teal-500 text-white shadow-lg shadow-teal-950/50'
+                        : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[18px]">flight_takeoff</span>
+                      </span>
+                      {pathname === '/international' && (
+                        <span className="px-2 py-0.5 rounded-full bg-teal-500 text-white text-[9px] font-bold">Active</span>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold">International</span>
+                    <span className="text-[10px] text-slate-400">Global Holidays</span>
+                  </Link>
 
-                <Link
-                  href="/contact"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[18px] text-brand-scarlet">mail</span>
-                    <span>Contact Us</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
-                </Link>
+                  <Link
+                    href="/domestic"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex flex-col p-3 rounded-2xl border transition-all ${
+                      pathname === '/domestic'
+                        ? 'bg-emerald-950/60 border-emerald-500 text-white shadow-lg shadow-emerald-950/50'
+                        : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[18px]">landscape</span>
+                      </span>
+                      {pathname === '/domestic' && (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold">Active</span>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold">Domestic</span>
+                    <span className="text-[10px] text-slate-400">Weekend Escapes</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* 2. Explore Navigation Links */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
+                  Explore YatraBus
+                </p>
+                <div className="space-y-1">
+                  <Link
+                    href={getHashHref('#popularRoutesSection')}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-[18px] text-red-400">alt_route</span>
+                      <span>Popular Routes</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
+                  </Link>
+
+                  <Link
+                    href="/packages"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-[18px] text-amber-400">grid_view</span>
+                      <span>Curated Packages</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
+                  </Link>
+
+                  <Link
+                    href="/about"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-[18px] text-purple-400">info</span>
+                      <span>About Us</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
+                  </Link>
+
+                  <Link
+                    href={getHashHref('#faqSection')}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-[18px] text-cyan-400">help_center</span>
+                      <span>FAQs</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-[18px] text-brand-scarlet">mail</span>
+                      <span>Contact Us</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* 3. Quick Utilities & Support */}
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                <div className="flex items-center justify-between text-xs text-white">
+                  <span className="font-semibold text-slate-300">24/7 Helpline:</span>
+                  <a href="tel:18002099287" className="font-bold text-brand-scarlet hover:underline">
+                    1800-209-9287
+                  </a>
+                </div>
+                <div className="flex items-center justify-between text-xs text-white">
+                  <span className="font-semibold text-slate-300">Fleet Direct:</span>
+                  <span className="text-emerald-400 font-bold">0% Booking Markup</span>
+                </div>
               </div>
             </div>
-
-            {/* 3. Quick Utilities & Support */}
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-              <div className="flex items-center justify-between text-xs text-white">
-                <span className="font-semibold text-slate-300">24/7 Helpline:</span>
-                <a href="tel:18002099287" className="font-bold text-brand-scarlet hover:underline">
-                  1800-209-9287
-                </a>
-              </div>
-              <div className="flex items-center justify-between text-xs text-white">
-                <span className="font-semibold text-slate-300">Fleet Direct:</span>
-                <span className="text-emerald-400 font-bold">0% Booking Markup</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
+          </aside>
+        </div>,
+        document.body
       )}
     </header>
   );

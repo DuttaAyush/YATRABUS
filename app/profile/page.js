@@ -16,7 +16,7 @@ export default function CustomerProfilePage() {
       busType: 'Volvo B11R Multi-Axle AC Sleeper (2+1)',
       busPlate: 'MH-12-QZ-8812',
       from: 'Nagpur',
-      fromStation: 'Dharampeth YatraBus Terminal',
+      fromStation: 'Dharampeth VedBus Terminal',
       depTime: '20:30',
       depDate: 'Tomorrow, 24 Oct',
       to: 'Pune',
@@ -69,7 +69,7 @@ export default function CustomerProfilePage() {
     },
     {
       id: 'YB-661094',
-      operator: 'YatraBus Coastal Tours',
+      operator: 'VedBus Coastal Tours',
       from: 'Mumbai',
       to: 'Goa (Calangute)',
       date: '04 Aug 2026',
@@ -230,7 +230,7 @@ export default function CustomerProfilePage() {
 
               <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 pt-0.5">
                 <span className="material-symbols-outlined text-[16px] text-emerald-600 fill-1">verified</span>
-                <span>Verified YatraBus Account (Assigned Plate Priority)</span>
+                <span>Verified VedBus Account (Assigned Plate Priority)</span>
               </div>
 
               <div className="pt-1">

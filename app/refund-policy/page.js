@@ -35,14 +35,14 @@ export default function RefundPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">2. Zero Markup Guarantee</h2>
               <p>
-                YatraBus charges 0% aggregator markup fees. Refunds are processed directly to your original payment method or instantly credited to your YatraBus Wallet for 100% redemption on future bookings.
+                VedBus charges 0% aggregator markup fees. Refunds are processed directly to your original payment method or instantly credited to your VedBus Wallet for 100% redemption on future bookings.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">3. Operator Cancellations &amp; Delays</h2>
               <p>
-                In the rare event of a bus trip cancellation by YatraBus due to mechanical failure or unavoidable depot circumstances, passengers will receive a <strong>100% Full Refund</strong> or guaranteed free transfer to an equivalent luxury AC coach.
+                In the rare event of a bus trip cancellation by VedBus due to mechanical failure or unavoidable depot circumstances, passengers will receive a <strong>100% Full Refund</strong> or guaranteed free transfer to an equivalent luxury AC coach.
               </p>
             </section>
 
@@ -56,14 +56,14 @@ export default function RefundPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">5. Refund Processing Timeline</h2>
               <p>
-                Approved refunds are initiated immediately and credited to your original bank account, credit card, or UPI within <strong>3 to 5 business days</strong>. Instant YatraBus Wallet credits are available within 60 seconds.
+                Approved refunds are initiated immediately and credited to your original bank account, credit card, or UPI within <strong>3 to 5 business days</strong>. Instant VedBus Wallet credits are available within 60 seconds.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">6. How to Request a Refund</h2>
               <p>
-                You can initiate cancellations directly under your Customer Profile page (`/profile`), or email our refund desk at <strong>refunds@yatrabus.in</strong> with your Booking ID.
+                You can initiate cancellations directly under your Customer Profile page (`/profile`), or email our refund desk at <strong>refunds@vedbus.in</strong> with your Booking ID.
               </p>
             </section>
           </div>

@@ -502,7 +502,7 @@ export default function SearchPage() {
             <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-emerald-800">
                 <span className="material-symbols-outlined text-[16px]">verified</span>
-                <span>YatraBus Guarantee</span>
+                <span>VedBus Guarantee</span>
               </div>
               <p className="text-[11px] leading-relaxed">
                 0% aggregator surcharge markup on all direct fleet tickets with assigned bus plate numbers.

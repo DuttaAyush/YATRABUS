@@ -9,7 +9,7 @@ export default function DayWiseBlueprints() {
             Precision Transit & Ritual Timings
           </span>
           <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-serif font-bold">Detailed Day-Wise Yatra Blueprints</h2>
-          <p className="text-sm text-slate-600 mt-2">See how YatraBus seamlessly synchronizes coach transit, temple VIP queue schedules, hotel check-ins, and Satvik meals so families never rush or wait.</p>
+          <p className="text-sm text-slate-600 mt-2">See how VedBus seamlessly synchronizes coach transit, temple VIP queue schedules, hotel check-ins, and Satvik meals so families never rush or wait.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -29,7 +29,7 @@ export default function DayWiseBlueprints() {
                   <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-bold text-xs flex items-center justify-center absolute left-0 top-0 ring-4 ring-amber-100">1</span>
                   <div className="text-xs font-extrabold text-brand-scarlet uppercase">Day 1 • Pune / Mumbai Departure to Bhimashankar</div>
                   <div className="font-bold text-slate-900 text-sm mt-0.5">AC Coach Boarding & Forest Sanctum Darshan</div>
-                  <p className="text-xs text-slate-600 mt-1">06:00 AM Departure from Swargate / Dadar in AC BharatBenz Coach. 11:30 AM arrival at Bhimashankar. Pre-coordinated VIP darshan through YatraBus purohit. Satvik lunch in the Sahyadri foothills, transit towards Nashik. Night halt at Trimbak.</p>
+                  <p className="text-xs text-slate-600 mt-1">06:00 AM Departure from Swargate / Dadar in AC BharatBenz Coach. 11:30 AM arrival at Bhimashankar. Pre-coordinated VIP darshan through VedBus purohit. Satvik lunch in the Sahyadri foothills, transit towards Nashik. Night halt at Trimbak.</p>
                   <div className="mt-2 text-[10px] text-amber-800 font-mono bg-amber-50 px-2.5 py-1 rounded border border-amber-200 inline-block">Bus MH-14-BT-3321 • Check-in: Hotel Panchavati Trimbak</div>
                 </div>
 

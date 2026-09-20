@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 
 const faqs = [
   {
-    question: 'Does YatraBus handle the Visa application process?',
+    question: 'Does VedBus handle the Visa application process?',
     answer:
       'Yes, our dedicated in-house international visa concierge team assists with document verification, appointment bookings, biometric scheduling (for Schengen/UK/US), and direct e-visa issuance for Dubai, Singapore, Thailand, and Bali.'
   },
   {
     question: 'Is authentic Indian (Veg & Jain) food guaranteed on the trip?',
     answer:
-      'Absolutely. Every YatraBus package is designed keeping Indian dietary preferences at the core. We partner with vetted, authentic Indian restaurants across Europe, UAE, and Southeast Asia offering fresh Gujarati, North Indian, South Indian, and strictly Jain meal spreads.'
+      'Absolutely. Every VedBus package is designed keeping Indian dietary preferences at the core. We partner with vetted, authentic Indian restaurants across Europe, UAE, and Southeast Asia offering fresh Gujarati, North Indian, South Indian, and strictly Jain meal spreads.'
   },
   {
     question: 'Can I customize dates, hotel tiers, or add extra days?',

@@ -47,7 +47,7 @@ export default function Hospitality() {
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-brand-scarlet text-xs font-bold uppercase tracking-wider mb-2 border border-red-100">
               <span className="material-symbols-outlined text-[16px]">hotel</span>
-              <span>YATRABUS HOSPITALITY STANDARD</span>
+              <span>vedbus HOSPITALITY STANDARD</span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight font-serif font-extrabold">
               Comfortable Stays Aligned to Bus Timings

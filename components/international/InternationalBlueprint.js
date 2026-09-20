@@ -38,7 +38,7 @@ export default function InternationalBlueprint() {
                 </span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                Warm airport reception by our local YatraBus liaison; private Mercedes Sprinter transfer to your 5★ hotel in Downtown Dubai. Refresh before embarking on a private sunset cruise across Dubai Marina featuring an international buffet with specialized Jain &amp; North Indian counters and live Tanoura artistry.
+                Warm airport reception by our local VedBus liaison; private Mercedes Sprinter transfer to your 5★ hotel in Downtown Dubai. Refresh before embarking on a private sunset cruise across Dubai Marina featuring an international buffet with specialized Jain &amp; North Indian counters and live Tanoura artistry.
               </p>
               <div className="flex flex-wrap gap-2 text-[11px] text-slate-700 font-semibold">
                 <span>✓ Private Airport Transfer</span> • <span>✓ 5★ Marriott Marquis Check-in</span> •{' '}

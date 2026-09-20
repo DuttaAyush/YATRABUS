@@ -20,7 +20,7 @@ export default function AboutUsPage() {
       desc: 'Reliable intercity journeys with comfortable coaches and carefully planned routes.',
       cta: 'Explore Bus Travel →',
       href: '/search',
-      image: '/images/yatrabus_india_local_holiday_travel_packages_1.jpg',
+      image: '/images/vedbus_india_local_holiday_travel_packages_1.jpg',
     },
     {
       icon: 'temple_hindu',
@@ -29,7 +29,7 @@ export default function AboutUsPage() {
       desc: "Thoughtfully planned yatras that make visiting India's spiritual destinations easier and more comfortable.",
       cta: 'Explore Yatras →',
       href: '/spiritual',
-      image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_3.jpg',
+      image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_3.jpg',
     },
     {
       icon: 'flight_takeoff',
@@ -38,7 +38,7 @@ export default function AboutUsPage() {
       desc: 'Discover new countries with curated holidays, stays, experiences, and itineraries.',
       cta: 'Explore International →',
       href: '/international',
-      image: '/images/yatrabus_international_holiday_travel_packages_9.jpg',
+      image: '/images/vedbus_international_holiday_travel_packages_9.jpg',
     },
     {
       icon: 'landscape',
@@ -47,7 +47,7 @@ export default function AboutUsPage() {
       desc: "Explore India's beaches, mountains, cities, heritage, and hidden escapes.",
       cta: 'Explore India →',
       href: '/domestic',
-      image: '/images/yatrabus_india_local_holiday_travel_packages_5.jpg',
+      image: '/images/vedbus_india_local_holiday_travel_packages_5.jpg',
     },
   ];
 
@@ -87,8 +87,8 @@ export default function AboutUsPage() {
         {/* Background Image & Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/images/yatrabus_india_local_holiday_travel_packages_5.jpg"
-            alt="YatraBus Luxury Coach Fleet & Expressway Network"
+            src="/images/vedbus_india_local_holiday_travel_packages_5.jpg"
+            alt="VedBus Luxury Coach Fleet & Expressway Network"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/85 to-brand-scarlet/50 mix-blend-multiply"></div>
@@ -155,7 +155,7 @@ export default function AboutUsPage() {
 
             <div className="space-y-4 text-base sm:text-lg text-slate-600 font-medium leading-relaxed">
               <p>
-                YatraBus is a travel company built for people who love discovering new places.
+                VedBus is a travel company built for people who love discovering new places.
               </p>
               <p>
                 From everyday intercity journeys to spiritual trips, weekend escapes, and international holidays, we bring different ways of travelling together in one place.
@@ -179,8 +179,8 @@ export default function AboutUsPage() {
           {/* Visual Photograph */}
           <div className="lg:col-span-6 h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 relative group">
             <img
-              src="/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_8.jpg"
-              alt="YatraBus Expressway Journey Across Bharat"
+              src="/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_8.jpg"
+              alt="VedBus Expressway Journey Across Bharat"
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
@@ -205,7 +205,7 @@ export default function AboutUsPage() {
               One Place. Many Ways to Travel.
             </h2>
             <p className="text-base text-slate-600 font-medium">
-              Whether you're travelling across the country or planning your next holiday, YatraBus helps you get there.
+              Whether you're travelling across the country or planning your next holiday, VedBus helps you get there.
             </p>
           </div>
 
@@ -255,8 +255,8 @@ export default function AboutUsPage() {
       <section className="relative bg-slate-950 text-white py-24 sm:py-32 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="/images/yatrabus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_2.jpg"
-            alt="YatraBus Philosophy Highway Travel"
+            src="/images/vedbus_dedicated_spiritual_yatra_sacred_darshan_booking_refined_2.jpg"
+            alt="VedBus Philosophy Highway Travel"
             className="w-full h-full object-cover object-center opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/90 to-slate-950/95"></div>
@@ -280,7 +280,7 @@ export default function AboutUsPage() {
               <span className="block">And the memories you bring back home.</span>
             </p>
             <p className="pt-2 text-amber-300 not-italic font-sans font-semibold text-sm sm:text-base">
-              That's what we want every YatraBus journey to feel like.
+              That's what we want every VedBus journey to feel like.
             </p>
           </div>
 
@@ -340,7 +340,7 @@ export default function AboutUsPage() {
               What began with the idea of making bus journeys better grew into something bigger — a travel platform connecting people with places, experiences, and journeys across India and beyond.
             </p>
             <p>
-              Today, YatraBus brings together bus travel, spiritual journeys, domestic holidays, and international experiences under one roof.
+              Today, VedBus brings together bus travel, spiritual journeys, domestic holidays, and international experiences under one roof.
             </p>
             <p className="text-slate-900 font-serif font-bold text-center">
               And we're still exploring where the road takes us next.
@@ -367,7 +367,7 @@ export default function AboutUsPage() {
         <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl max-w-4xl mx-auto bg-slate-950 p-6 sm:p-10">
           <img
             src="/images/india_map_route.jpg"
-            alt="YatraBus India Route Network Map"
+            alt="VedBus India Route Network Map"
             className="w-full h-80 sm:h-96 object-contain mx-auto opacity-85"
           />
           
@@ -405,7 +405,7 @@ export default function AboutUsPage() {
         <div className="absolute inset-0 z-0">
           <img
             src="/images/testimonials_bg.png"
-            alt="YatraBus Highway Sunset Travel"
+            alt="VedBus Highway Sunset Travel"
             className="w-full h-full object-cover object-center opacity-35"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/80 to-brand-scarlet/50 mix-blend-multiply"></div>

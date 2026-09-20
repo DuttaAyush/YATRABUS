@@ -14,7 +14,7 @@ const spiritualPackagesData = [
     title: 'Char Dham Yatra & Haridwar Special',
     duration: '10 Days / 9 Nights',
     destinations: 'Kedarnath • Badrinath • Gangotri • Yamunotri',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
     badge: 'VIP Darshan & Helicopter Assist',
     badgeColor: 'bg-amber-600 text-white',
     description: 'Complete Himalayan circuit with 2x2 BharatBenz AC Pushback transit, verified warm Himalayan stays, hot Satvik meals, and medical oxygen kit onboard.',
@@ -27,7 +27,7 @@ const spiritualPackagesData = [
     title: 'Ayodhya Shri Ram Mandir & Kashi Corridor',
     duration: '4 Days / 3 Nights',
     destinations: 'Ayodhya • Varanasi • Prayagraj Sangam',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_10.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_10.jpg',
     badge: 'Ram Lalla & Kashi Corridor Pass',
     badgeColor: 'bg-amber-600 text-white',
     description: 'Experience grand Ram Mandir darshan in Ayodhya, holy Triveni Sangam snan in Prayagraj, and private reserved boat for evening Varanasi Ganga Aarti.',
@@ -40,7 +40,7 @@ const spiritualPackagesData = [
     title: 'Tirupati Balaji & Meenakshi Amman',
     duration: '5 Days / 4 Nights',
     destinations: 'Tirupati • Madurai • Rameshwaram',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_11.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_11.jpg',
     badge: '₹300 Seeghra Darshan & Laddu Prasadam',
     badgeColor: 'bg-amber-600 text-white',
     description: 'Pre-booked Tirumala special entry darshan, tonsure assistance, holy snan at 22 teerthams of Rameshwaram, and Madurai Meenakshi temple guide.',
@@ -53,7 +53,7 @@ const spiritualPackagesData = [
     title: 'Maharashtra 5 Jyotirlinga Darshan Circuit',
     duration: '7 Days / 6 Nights',
     destinations: 'Trimbak • Bhimashankar • Grishneshwar • Aundha • Parli',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_6.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_6.jpg',
     badge: 'Complete Maharashtra Shiv Teerth',
     badgeColor: 'bg-amber-600 text-white',
     description: 'Holy circumambulation covering all five sacred Jyotirlingas in Maharashtra with Shirdi Sai Baba darshan included. Pre-booked Rudrabhishek slots.',
@@ -69,7 +69,7 @@ const internationalPackagesData = [
     title: 'Dubai Desert Safari & Marina Skyline',
     duration: '5 Days / 4 Nights',
     destinations: 'Dubai • Abu Dhabi • Desert Safari',
-    image: '/images/yatrabus_international_holiday_travel_packages_1.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_1.jpg',
     badge: '4-Star Marina Hotel & Visa Included',
     badgeColor: 'bg-teal-600 text-white',
     description: 'Bask in luxury with Burj Khalifa 124th floor entry, 4x4 Dune Bashing, BBQ Desert Camp with Tanoura Show, and Dhow Cruise Marina Dinner.',
@@ -82,7 +82,7 @@ const internationalPackagesData = [
     title: 'Singapore Gardens & Genting Highlands',
     duration: '7 Days / 6 Nights',
     destinations: 'Singapore • Kuala Lumpur • Genting Highlands',
-    image: '/images/yatrabus_international_holiday_travel_packages_2.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_2.jpg',
     badge: 'Universal Studios & Cable Car Pass',
     badgeColor: 'bg-teal-600 text-white',
     description: 'Thrilling dual-country expedition featuring Universal Studios Singapore, Gardens by the Bay, Night Safari, Batu Caves, and Genting Cable Car.',
@@ -95,7 +95,7 @@ const internationalPackagesData = [
     title: 'Thailand Phuket & Krabi Beach Getaway',
     duration: '6 Days / 5 Nights',
     destinations: 'Phuket • Phi Phi Islands • Krabi 4-Islands',
-    image: '/images/yatrabus_international_holiday_travel_packages_3.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_3.jpg',
     badge: 'Speedboat Island Hopping & Coral Reefs',
     badgeColor: 'bg-teal-600 text-white',
     description: 'Tropical getaway to Phi Phi Islands by speedboat, Maya Bay snorkeling, James Bond Island tour, beachfront pool resort, and authentic Thai dining.',
@@ -108,7 +108,7 @@ const internationalPackagesData = [
     title: 'Swiss Alps & Paris Eiffel Highlights',
     duration: '8 Days / 7 Nights',
     destinations: 'Paris • Zurich • Lucerne • Mt. Titlis',
-    image: '/images/yatrabus_international_holiday_travel_packages_4.jpg',
+    image: '/images/vedbus_international_holiday_travel_packages_4.jpg',
     badge: 'Eiffel Tower Pass & Mt. Titlis Cable Car',
     badgeColor: 'bg-teal-600 text-white',
     description: 'Romantic European dream journey combining Paris Eiffel Tower 2nd level, Seine river cruise, Mount Titlis revolving cable car, and Lucerne lake tour.',
@@ -124,7 +124,7 @@ const domesticPackagesData = [
     title: 'Himachal Manali & Solang Valley Snow Special',
     duration: '5 Days / 4 Nights',
     destinations: 'Shimla • Kullu • Manali • Solang Valley',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_4.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_4.jpg',
     badge: 'Atal Tunnel & Snow Activity Pass',
     badgeColor: 'bg-emerald-600 text-white',
     description: 'Snowy Himalayan retreat with Volvo AC sleeper Delhi-Manali transit, Solang Valley sports pass, Atal Tunnel excursion, and bonfire night dinner.',
@@ -137,7 +137,7 @@ const domesticPackagesData = [
     title: 'Kerala Munnar Tea Hills & Alleppey Houseboat',
     duration: '6 Days / 5 Nights',
     destinations: 'Kochi • Munnar • Thekkady • Alleppey',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_5.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_5.jpg',
     badge: 'Private Deluxe Houseboat & All Meals',
     badgeColor: 'bg-emerald-600 text-white',
     description: 'God’s Own Country experience featuring Munnar tea garden estate stays, spice plantation walk, Periyar jungle safari, and private Alleppey houseboat cruise.',
@@ -150,7 +150,7 @@ const domesticPackagesData = [
     title: 'Goa Coastal Beaches & Mandovi Sunset Cruise',
     duration: '4 Days / 3 Nights',
     destinations: 'North Goa • South Goa • Dudhsagar Waterfalls',
-    image: '/images/yatrabus_all_india_spiritual_darshan_bus_tickets_holiday_packages_7.jpg',
+    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_7.jpg',
     badge: 'Beach Resort & Mandovi Cruise Pass',
     badgeColor: 'bg-emerald-600 text-white',
     description: 'Sun, sand & sea getaway with Calangute beach resort stay, Dudhsagar waterfall jeep safari, Old Goa churches tour, and Mandovi river sunset cruise with DJ.',
@@ -163,7 +163,7 @@ const domesticPackagesData = [
     title: 'Kashmir Paradise Valley & Gulmarg Gondola',
     duration: '6 Days / 5 Nights',
     destinations: 'Srinagar • Gulmarg • Pahalgam • Sonmarg',
-    image: '/images/yatrabus_india_local_holiday_travel_packages_1.jpg',
+    image: '/images/vedbus_india_local_holiday_travel_packages_1.jpg',
     badge: 'Luxury Dal Lake Houseboat Stay',
     badgeColor: 'bg-emerald-600 text-white',
     description: 'Heaven on Earth journey with Shikara rides on Dal Lake, Phase 1 & 2 Gondola ride in snow-clad Gulmarg, and Betaab Valley pony rides.',
@@ -241,7 +241,7 @@ export default function CuratedPackagesMasterPage() {
         {/* HERO BACKGROUND IMAGE WITH SCROLL SCALE ZOOM */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
-            alt="YatraBus Curated Travel Highway Banner"
+            alt="VedBus Curated Travel Highway Banner"
             src="/images/screen.png"
             className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
             style={{ transform: `scale(${scrollScale})` }}
@@ -263,7 +263,7 @@ export default function CuratedPackagesMasterPage() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 font-bold text-xs uppercase tracking-wider mb-3 sm:mb-4 border border-white/15 shadow-sm">
             <span className="material-symbols-outlined text-[16px]">explore</span>
-            YatraBus Curated Travel Portal
+            VedBus Curated Travel Portal
           </span>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight mb-3 sm:mb-4 max-w-4xl mx-auto leading-tight">
             Explore All Curated Travel Packages

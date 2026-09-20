@@ -15,7 +15,7 @@ const destinationsData = [
     price: '₹44,999',
     priceLabel: 'STARTING FROM',
     description: 'Private pool villa in Seminyak, rice terrace jungle swing, and Mount Batur sunrise breakfast.',
-    image: '/images/yatrabus_international_holiday_travel_packages_2.jpg'
+    image: '/images/vedbus_international_holiday_travel_packages_2.jpg'
   },
   {
     id: 'santorini',
@@ -28,7 +28,7 @@ const destinationsData = [
     price: '₹89,999',
     priceLabel: 'ALL-INCLUSIVE FLIGHTS + STAY',
     description: 'Whitewashed clifftop villas, private catamaran sunset cruise, and Aegean Mediterranean dining.',
-    image: '/images/yatrabus_international_holiday_travel_packages_3.jpg'
+    image: '/images/vedbus_international_holiday_travel_packages_3.jpg'
   },
   {
     id: 'dubai',
@@ -41,7 +41,7 @@ const destinationsData = [
     price: '₹48,999',
     priceLabel: 'STARTING FROM',
     description: 'Burj Khalifa 124th floor VIP access, red dunes 4x4 safari with BBQ dinner, and luxury Marina yacht tour.',
-    image: '/images/yatrabus_international_holiday_travel_packages_5.jpg'
+    image: '/images/vedbus_international_holiday_travel_packages_5.jpg'
   },
   {
     id: 'singapore',
@@ -54,7 +54,7 @@ const destinationsData = [
     price: '₹64,999',
     priceLabel: 'FLIGHTS + STAY INCLUDED',
     description: 'Marina Bay Sands sky park, Universal Studios Sentosa, and Genting Cable Car highland getaway.',
-    image: '/images/yatrabus_international_holiday_travel_packages_1.jpg'
+    image: '/images/vedbus_international_holiday_travel_packages_1.jpg'
   },
   {
     id: 'swiss',
@@ -67,7 +67,7 @@ const destinationsData = [
     price: '₹1,39,999',
     priceLabel: 'ALL-INCLUSIVE GRAND TOUR',
     description: 'Mt. Titlis cable car, Eiffel Tower dinner cruise, and panoramic Glacier Express train ride.',
-    image: '/images/yatrabus_international_holiday_travel_packages_3.jpg'
+    image: '/images/vedbus_international_holiday_travel_packages_3.jpg'
   },
   {
     id: 'thailand',
@@ -80,7 +80,7 @@ const destinationsData = [
     price: '₹34,999',
     priceLabel: 'STARTING FROM',
     description: 'Phi Phi Island speed boat tour, James Bond Island canoeing, and luxury beachfront resort stay.',
-    image: '/images/yatrabus_international_holiday_travel_packages_2.jpg'
+    image: '/images/vedbus_international_holiday_travel_packages_2.jpg'
   }
 ];
 
@@ -283,6 +283,8 @@ export default function SpotlightDestinations({ rotating = true }) {
                   alt={item.title}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 pointer-events-none"
                   src={item.image}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-black/20 z-10 pointer-events-none"></div>
 

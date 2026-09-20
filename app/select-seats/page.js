@@ -92,7 +92,7 @@ const sleeperUpperDeck = [
 ];
 
 const boardingPointsData = [
-  { id: 'b1', location: 'Dharampeth - YatraBus Terminal', time: '20:30' },
+  { id: 'b1', location: 'Dharampeth - VedBus Terminal', time: '20:30' },
   { id: 'b2', location: 'Chatrapati Sq - Flyover Gate', time: '20:50' },
   { id: 'b3', location: 'Wadi - National Highway Junction', time: '21:15' },
 ];
@@ -100,7 +100,7 @@ const boardingPointsData = [
 const droppingPointsData = [
   { id: 'd1', location: 'Viman Nagar - Hyatt Regency Stop', time: '06:15' },
   { id: 'd2', location: 'Wakad Bridge - Ginger Hotel', time: '06:45' },
-  { id: 'd3', location: 'Swargate - YatraBus Express Bay', time: '07:00' },
+  { id: 'd3', location: 'Swargate - VedBus Express Bay', time: '07:00' },
 ];
 
 export default function CinemaSeatBookingPage() {
@@ -461,7 +461,7 @@ export default function CinemaSeatBookingPage() {
                 <span className="font-bold text-slate-900">₹{taxes}</span>
               </div>
               <div className="flex justify-between text-emerald-700 font-bold">
-                <span>YatraBus Markup</span>
+                <span>VedBus Markup</span>
                 <span>₹0 (FREE)</span>
               </div>
               <div className="pt-2 border-t border-slate-100 flex justify-between text-lg font-extrabold text-slate-900">

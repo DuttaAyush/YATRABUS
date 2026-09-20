@@ -73,6 +73,9 @@ export default function BusHero() {
           className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
           style={{ transform: `scale(${scrollScale})` }}
           src="/images/domestic-hero.jpg"
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
         />
         {/* Subtle Bottom Fade */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-950/80 to-transparent pointer-events-none" />
