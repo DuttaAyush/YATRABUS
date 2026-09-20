@@ -1,66 +1,30 @@
 'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
-
-const samplePackages = {
-  'chardham': {
-    id: 'chardham',
-    title: 'Char Dham Yatra & Haridwar Special',
-    subtitle: 'Kedarnath • Badrinath • Gangotri • Yamunotri',
-    duration: '10 Days / 9 Nights',
-    basePrice: 24499,
-    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
-    category: 'Spiritual Pilgrimage',
-    addons: [
-      { id: 'heli', label: 'Kedarnath Helicopter Ticket ex-Phata', price: 3500, selected: false },
-      { id: 'vip-pass', label: 'VIP Priority Queue Pass for Badrinath', price: 999, selected: true },
-      { id: 'ganga-aarti', label: 'Har Ki Pauri Reserved Ganga Aarti Seat', price: 499, selected: true },
-      { id: 'rafting', label: 'Rishikesh River Rafting Excursion', price: 1200, selected: false },
-    ]
-  },
-  'goa-coastal': {
-    id: 'goa-coastal',
-    title: 'Goa Coastal & Heritage Villa Escape',
-    subtitle: 'Calangute • Baga • Mandovi Sunset Cruise',
-    duration: '4 Days / 3 Nights',
-    basePrice: 6999,
-    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_15.jpg',
-    category: 'Coastal Getaway',
-    addons: [
-      { id: 'catamaran', label: 'Private Sunset Catamaran Cruise', price: 1500, selected: true },
-      { id: 'water-sports', label: '5-in-1 Water Sports Combo (Parasailing/JetSki)', price: 1200, selected: true },
-      { id: 'scooter', label: 'Self-Drive Scooter Rental with Fuel', price: 800, selected: false },
-    ]
-  },
-  'kerala-backwaters': {
-    id: 'kerala-backwaters',
-    title: 'Kerala Backwaters & Munnar Tea Trails',
-    subtitle: 'Kochi • Munnar Hills • Alleppey Houseboat',
-    duration: '5 Days / 4 Nights',
-    basePrice: 11200,
-    image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_14.jpg',
-    category: 'Nature & Backwaters',
-    addons: [
-      { id: 'houseboat-upgrade', label: 'Luxury AC Houseboat Master Suite Upgrade', price: 2500, selected: true },
-      { id: 'kathakali', label: 'Kathakali Dance & Martial Arts Show Pass', price: 450, selected: true },
-      { id: 'spice-tour', label: 'Munnar Spice Plantation Guided Walk & Lunch', price: 750, selected: false },
-    ]
-  }
-};
+import { allPackagesData } from '@/lib/data/packagesData';
 
 export default function CustomizePackagePage({ params }) {
+  const router = useRouter();
   // Unwrap params using React.use() for Next.js App Router dynamic routes
   const resolvedParams = use(params);
   const packageId = resolvedParams?.id || 'chardham';
-  const pkg = samplePackages[packageId] || samplePackages['chardham'];
+  const pkg = allPackagesData[packageId] || allPackagesData['chardham'];
 
   const [hotelTier, setHotelTier] = useState('4star'); // '3star' | '4star' | '5star'
   const [transportMode, setTransportMode] = useState('coach'); // 'coach' | 'private-suv' | 'private-sedan'
   const [mealPlan, setMealPlan] = useState('satvik'); // 'satvik' | 'standard'
   const [travelerCount, setTravelerCount] = useState(2);
-  const [activeAddons, setActiveAddons] = useState(pkg.addons);
+  const [activeAddons, setActiveAddons] = useState(pkg.addons || []);
+
+  useEffect(() => {
+    if (pkg && pkg.addons) {
+      setActiveAddons(pkg.addons);
+    }
+  }, [pkg]);
 
   const getHotelCost = () => {
     if (hotelTier === '4star') return 4500;
@@ -86,6 +50,41 @@ export default function CustomizePackagePage({ params }) {
   const transportTotal = getTransportCost();
   const grandTotal = (pricePerPerson * travelerCount) + transportTotal;
 
+  const handleConfirmAndBook = (e) => {
+    e.preventDefault();
+    const packagePayload = {
+      pkgId: pkg.id,
+      title: pkg.title,
+      subtitle: pkg.subtitle,
+      duration: pkg.duration,
+      image: pkg.image,
+      category: pkg.category,
+      badge: pkg.badge,
+      badgeColor: pkg.badgeColor,
+      inclusions: pkg.inclusions || [],
+      basePrice: pkg.basePrice,
+      hotelTier,
+      hotelCostPerPerson: getHotelCost(),
+      transportMode,
+      transportTotal: getTransportCost(),
+      mealPlan,
+      travelerCount,
+      selectedAddons: activeAddons.filter(a => a.selected),
+      addonsTotalPerPerson: calculateAddonsTotal(),
+      pricePerPerson,
+      grandTotal,
+    };
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('vedbus_pending_package', JSON.stringify(packagePayload));
+      } catch (err) {
+        console.error('Failed to store pending package:', err);
+      }
+    }
+    router.push(`/packages/checkout?package=${pkg.id}`);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
       <Header />
@@ -94,13 +93,13 @@ export default function CustomizePackagePage({ params }) {
       <div className="bg-white border-b border-slate-200/90 shadow-sm py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/packages"
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm"
               title="Back to Catalog"
             >
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-            </a>
+            </Link>
             <div>
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="text-xs font-extrabold text-brand-scarlet uppercase tracking-widest">{pkg.category}</span>
@@ -363,13 +362,14 @@ export default function CustomizePackagePage({ params }) {
             </div>
 
             {/* CONFIRM & PROCEED TO CHECKOUT */}
-            <a
-              href={`/packages/checkout?package=${pkg.id}`}
+            <button
+              type="button"
+              onClick={handleConfirmAndBook}
               className="w-full py-4 rounded-2xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-red-600/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
             >
               <span>CONFIRM &amp; BOOK CUSTOMIZED TRIP</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </a>
+            </button>
 
             <p className="text-[11px] text-slate-400 text-center">
               🔒 Lock your custom hotel &amp; VIP passes with zero booking fees.
