@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 
 export default function CheckoutPage() {
+  const [bookingData, setBookingData] = useState(null);
   const [passengers, setPassengers] = useState([
     { seat: '3A', name: 'Rajesh Patel', age: '34', gender: 'male' },
     { seat: '3B', name: 'Sneha Patel', age: '31', gender: 'female' },
@@ -18,8 +20,34 @@ export default function CheckoutPage() {
   const [includeSatvikMeal, setIncludeSatvikMeal] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('upi'); // 'upi' | 'card' | 'netbanking'
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [createdTicketId, setCreatedTicketId] = useState('YB-994821');
+  const [shareToast, setShareToast] = useState('');
 
-  const baseFare = 900;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vedbus_pending_booking');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setBookingData(parsed);
+          if (parsed.selectedSeats && parsed.selectedSeats.length > 0) {
+            setPassengers(
+              parsed.selectedSeats.map((s, idx) => ({
+                seat: s.name,
+                name: idx === 0 ? 'Rajesh Patel' : '',
+                age: idx === 0 ? '34' : '',
+                gender: idx === 0 ? 'male' : 'female',
+              }))
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load pending booking:', err);
+      }
+    }
+  }, []);
+
+  const baseFare = bookingData?.baseFare || 900;
   const insuranceCost = includeInsurance ? 15 * passengers.length : 0;
   const cabCost = includeCabPickup ? 199 : 0;
   const mealCost = includeSatvikMeal ? 149 * passengers.length : 0;
@@ -35,7 +63,74 @@ export default function CheckoutPage() {
 
   const handlePayNow = (e) => {
     e.preventDefault();
+    const newId = `YB-${Math.floor(100000 + Math.random() * 900000)}`;
+    setCreatedTicketId(newId);
+
+    if (typeof window !== 'undefined') {
+      const newTrip = {
+        id: newId,
+        operator: bookingData?.operator || 'VRL Travels Express',
+        busType: bookingData?.busType || 'Volvo B11R AC Sleeper',
+        busPlate: bookingData?.busPlate || 'MH-12-QZ-8812',
+        from: bookingData?.from || 'Nagpur',
+        fromStation: bookingData?.boardingPoint?.location || 'Dharampeth VedBus Terminal',
+        depTime: bookingData?.depTime || '20:30',
+        depDate: bookingData?.date || 'Tomorrow, 24 Oct',
+        to: bookingData?.to || 'Pune',
+        toStation: bookingData?.droppingPoint?.location || 'Swargate Express Terminal',
+        arrTime: bookingData?.arrTime || '07:00',
+        arrDate: 'Next Day',
+        seats: passengers.map(p => p.seat),
+        passengerCount: passengers.length,
+        passengers: passengers,
+        totalFare: grandTotal,
+        driverName: 'Sunil Sharma',
+        driverPhone: '+91 98220 11223',
+        currentLocation: 'Terminal Bay (Scheduled)',
+        speed: '0 km/h',
+        nextStop: 'Departure Scheduled',
+        status: 'Confirmed',
+        bookedAt: new Date().toISOString(),
+      };
+
+      try {
+        const existing = JSON.parse(localStorage.getItem('vedbus_user_trips') || '[]');
+        localStorage.setItem('vedbus_user_trips', JSON.stringify([newTrip, ...existing]));
+      } catch (err) {
+        console.error('Failed to save trip to localStorage:', err);
+      }
+    }
+
     setIsSuccessModalOpen(true);
+  };
+
+  const handleShareTicket = async () => {
+    const routeTitle = `${bookingData?.from || 'Nagpur'} ➔ ${bookingData?.to || 'Pune'}`;
+    const seatList = passengers.map(p => p.seat).join(', ');
+    const shareText = `🎟️ VedBus Boarding Pass #${createdTicketId}\nRoute: ${routeTitle}\nDate: ${bookingData?.date || 'Tomorrow, 24 Oct'}\nSeats: ${seatList}\nBus: ${bookingData?.busPlate || 'MH-12-QZ-8812'} (${bookingData?.operator || 'VRL Travels Express'})\nTotal Paid: ₹${grandTotal}`;
+    const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${createdTicketId}` : '';
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `VedBus Ticket #${createdTicketId}`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // User dismissed share dialog
+      }
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\nTrack: ${shareUrl}`);
+        setShareToast('Ticket details copied to clipboard!');
+        setTimeout(() => setShareToast(''), 3000);
+      } catch (err) {
+        alert(shareText);
+      }
+    } else {
+      alert(shareText);
+    }
   };
 
   return (
@@ -46,23 +141,25 @@ export default function CheckoutPage() {
       <div className="bg-white border-b border-slate-200/90 shadow-sm py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <a
+            <Link
               href="/select-seats"
               className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm"
               title="Back to Seat Picker"
             >
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-            </a>
+            </Link>
             <div>
               <h1 className="text-lg font-serif font-bold text-slate-900">Checkout &amp; Booking Confirmation</h1>
-              <p className="text-xs text-slate-500">Nagpur ➔ Pune • Volvo B11R AC (MH-12-QZ-8812)</p>
+              <p className="text-xs text-slate-500">
+                {bookingData?.from || 'Nagpur'} ➔ {bookingData?.to || 'Pune'} • {bookingData?.busType || 'Volvo B11R AC'} ({bookingData?.busPlate || 'MH-12-QZ-8812'})
+              </p>
             </div>
           </div>
 
           {/* Stepper Pills */}
           <div className="flex items-center gap-2 text-xs font-extrabold">
             <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-              ✓ Seats Selected (3A, 3B)
+              ✓ Seats Selected ({passengers.map(p => p.seat).join(', ')})
             </span>
             <span className="text-slate-300">➔</span>
             <span className="px-3 py-1 rounded-full bg-brand-scarlet text-white shadow-sm">
@@ -82,16 +179,18 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-extrabold text-brand-scarlet uppercase tracking-wider">VRL Travels Express</span>
+                <span className="text-sm font-extrabold text-brand-scarlet uppercase tracking-wider">
+                  {bookingData?.operator || 'VRL Travels Express'}
+                </span>
                 <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-mono font-bold">
-                  MH-12-QZ-8812
+                  {bookingData?.busPlate || 'MH-12-QZ-8812'}
                 </span>
               </div>
               <div className="text-base font-serif font-bold text-slate-900">
-                Nagpur (20:30, Dharampeth) ➔ Pune (07:00, Swargate)
+                {bookingData?.from || 'Nagpur'} ({bookingData?.depTime || '20:30'}, {bookingData?.boardingPoint?.location || 'Dharampeth'}) ➔ {bookingData?.to || 'Pune'} ({bookingData?.arrTime || '07:00'}, {bookingData?.droppingPoint?.location || 'Swargate'})
               </div>
               <div className="text-xs text-slate-500 mt-1">
-                Thursday, 24 Oct • Reserved Seats: <strong className="text-slate-900">3A, 3B</strong>
+                {bookingData?.date || 'Thursday, 24 Oct'} • Reserved Seats: <strong className="text-slate-900">{passengers.map(p => p.seat).join(', ')}</strong>
               </div>
             </div>
 
@@ -153,12 +252,14 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setPassengers([
-                    { seat: '3A', name: 'Rajesh Patel', age: '34', gender: 'male' },
-                    { seat: '3B', name: 'Sneha Patel', age: '31', gender: 'female' },
-                  ]);
+                  const autofilled = passengers.map((p, i) => {
+                    if (i === 0) return { ...p, name: 'Rajesh Patel', age: '34', gender: 'male' };
+                    if (i === 1) return { ...p, name: 'Sneha Patel', age: '31', gender: 'female' };
+                    return { ...p, name: `Traveler ${i + 1}`, age: '28', gender: 'male' };
+                  });
+                  setPassengers(autofilled);
                 }}
-                className="text-[11px] font-bold text-brand-scarlet hover:underline"
+                className="text-[11px] font-bold text-brand-scarlet hover:underline cursor-pointer"
               >
                 Autofill Saved Profile
               </button>
@@ -171,7 +272,9 @@ export default function CheckoutPage() {
                     <span className="text-xs font-extrabold text-brand-scarlet bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
                       Passenger {idx + 1} — Seat {p.seat}
                     </span>
-                    <span className="text-[11px] text-slate-500 font-semibold">Primary Traveler</span>
+                    <span className="text-[11px] text-slate-500 font-semibold">
+                      {idx === 0 ? 'Primary Traveler' : 'Co-Traveler'}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
@@ -404,20 +507,20 @@ export default function CheckoutPage() {
 
             <div className="space-y-2.5 text-xs text-slate-600">
               <div className="flex justify-between">
-                <span>Base Seats Fare (2 Seats)</span>
+                <span>Base Seats Fare ({passengers.length} {passengers.length === 1 ? 'Seat' : 'Seats'})</span>
                 <span className="font-bold text-slate-900">₹{baseFare}</span>
               </div>
 
               {includeInsurance && (
                 <div className="flex justify-between">
-                  <span>Travel Insurance (2x ₹15)</span>
+                  <span>Travel Insurance ({passengers.length}x ₹15)</span>
                   <span className="font-bold text-slate-900">₹{insuranceCost}</span>
                 </div>
               )}
 
               {includeSatvikMeal && (
                 <div className="flex justify-between">
-                  <span>Pure Satvik Dinner Box (2x ₹149)</span>
+                  <span>Pure Satvik Dinner Box ({passengers.length}x ₹149)</span>
                   <span className="font-bold text-slate-900">₹{mealCost}</span>
                 </div>
               )}
@@ -473,9 +576,9 @@ export default function CheckoutPage() {
 
             <div>
               <span className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest block">Booking Confirmed!</span>
-              <h2 className="text-2xl font-serif font-bold text-slate-900 mt-1">Ticket #YB-994821 Locked</h2>
+              <h2 className="text-2xl font-serif font-bold text-slate-900 mt-1">Ticket #{createdTicketId} Locked</h2>
               <p className="text-xs text-slate-500 mt-1">
-                Your luxury berths <strong>3A, 3B</strong> on Volvo B11R AC (<strong className="text-slate-800">MH-12-QZ-8812</strong>) have been reserved.
+                Your luxury berths <strong>{passengers.map(p => p.seat).join(', ')}</strong> on {bookingData?.busType || 'Volvo B11R AC'} (<strong className="text-slate-800">{bookingData?.busPlate || 'MH-12-QZ-8812'}</strong>) have been reserved.
               </p>
             </div>
 
@@ -483,15 +586,17 @@ export default function CheckoutPage() {
             <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-left space-y-1.5 font-semibold text-slate-700">
               <div className="flex justify-between">
                 <span>Bus Operator:</span>
-                <span className="text-slate-900 font-bold">VRL Travels Express</span>
+                <span className="text-slate-900 font-bold">{bookingData?.operator || 'VRL Travels Express'}</span>
               </div>
               <div className="flex justify-between">
                 <span>Assigned Plate:</span>
-                <span className="font-mono text-brand-scarlet font-bold">MH-12-QZ-8812</span>
+                <span className="font-mono text-brand-scarlet font-bold">{bookingData?.busPlate || 'MH-12-QZ-8812'}</span>
               </div>
               <div className="flex justify-between">
                 <span>Boarding Time:</span>
-                <span className="text-slate-900 font-bold">Tomorrow, 20:30 (Dharampeth)</span>
+                <span className="text-slate-900 font-bold">
+                  {bookingData?.date || 'Tomorrow'}, {bookingData?.depTime || '20:30'} ({bookingData?.boardingPoint?.location || 'Dharampeth'})
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Total Paid:</span>
@@ -499,42 +604,49 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {shareToast && (
+              <div className="py-1 px-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold animate-fadeIn">
+                {shareToast}
+              </div>
+            )}
+
             {/* DISPATCH & NAVIGATION ACTION BUTTONS */}
             <div className="space-y-2 pt-2">
-              <a
+              <Link
                 href="/profile"
                 className="w-full py-3 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-red-600/20 transition-all cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[18px]">confirmation_number</span>
                 <span>VIEW MY JOURNEYS &amp; TICKETS</span>
-              </a>
+              </Link>
 
               <div className="grid grid-cols-2 gap-2">
-                <a
+                <Link
                   href="/"
                   className="py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[16px]">home</span>
                   <span>Go to Home Page</span>
-                </a>
+                </Link>
 
-                <a
-                  href="/track-bus/YB-994821"
+                <Link
+                  href={`/track-bus/${createdTicketId}`}
                   className="py-2.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold text-xs flex items-center justify-center gap-1.5 border border-emerald-300 transition-all cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[16px] text-emerald-600">my_location</span>
                   <span>Track Bus Live</span>
-                </a>
+                </Link>
               </div>
 
               <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-3 text-[11px] text-slate-500 font-semibold">
                 <button
                   type="button"
-                  onClick={() => alert(`Ticket dispatched to WhatsApp number ${contactPhone}!`)}
-                  className="hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                  onClick={handleShareTicket}
+                  className="hover:text-brand-scarlet text-slate-700 flex items-center gap-1.5 cursor-pointer font-bold transition-colors"
+                  title="Share ticket details"
                 >
-                  <span className="material-symbols-outlined text-[14px] text-emerald-600">send_to_mobile</span>
-                  <span>Resend WhatsApp</span>
+                  <span className="material-symbols-outlined text-[16px] text-brand-scarlet">share</span>
+                  <span>Share Ticket</span>
                 </button>
                 <span>•</span>
                 <button

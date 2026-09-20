@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState, useEffect, use } from 'react';
+import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 
@@ -32,7 +33,44 @@ export default function LiveTrackPage({ params }) {
   // Unwrap params using React.use() for Next.js App Router dynamic routes
   const resolvedParams = use(params);
   const ticketId = resolvedParams?.id || 'YB-994821';
-  const track = sampleTrackerData[ticketId] || sampleTrackerData['YB-994821'];
+  const [userTrip, setUserTrip] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('vedbus_user_trips');
+        if (stored) {
+          const trips = JSON.parse(stored);
+          const found = trips.find(t => t.id === ticketId);
+          if (found) setUserTrip(found);
+        }
+      } catch (err) {
+        console.error('Failed to load tracking trip:', err);
+      }
+    }
+  }, [ticketId]);
+
+  const defaultTrack = sampleTrackerData[ticketId] || sampleTrackerData['YB-994821'];
+  const track = userTrip ? {
+    ticketId: userTrip.id,
+    operator: userTrip.operator,
+    busPlate: userTrip.busPlate,
+    busType: userTrip.busType,
+    route: `${userTrip.from} ➔ ${userTrip.to}`,
+    seats: userTrip.seats,
+    driverName: userTrip.driverName || 'Sunil Sharma',
+    driverPhone: userTrip.driverPhone || '+91 98220 11223',
+    speed: '76 km/h',
+    progressPercent: 45,
+    onTimeStatus: 'On Time (Highway Express Route)',
+    milestones: [
+      { location: `${userTrip.from} (${userTrip.fromStation || 'Depot Terminal'})`, time: userTrip.depTime, status: 'completed', label: 'Departed' },
+      { location: 'Highway Expressway Toll (Km 65)', time: '21:30', status: 'completed', label: 'Passed' },
+      { location: 'Expressway Food Plaza Rest Stop', time: '23:45', status: 'current', label: 'Arriving in 15 mins' },
+      { location: 'Regional Interchange Bypass', time: '03:15', status: 'upcoming', label: 'Scheduled' },
+      { location: `${userTrip.to} (${userTrip.toStation || 'Arrival Point'})`, time: userTrip.arrTime, status: 'upcoming', label: 'Destination' },
+    ]
+  } : defaultTrack;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
@@ -42,13 +80,13 @@ export default function LiveTrackPage({ params }) {
       <div className="bg-white border-b border-slate-200/90 shadow-sm py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/profile"
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm"
               title="Back to Bookings"
             >
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-            </a>
+            </Link>
             <div>
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">

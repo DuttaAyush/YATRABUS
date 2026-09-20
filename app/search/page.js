@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 import DatePickerPopover from '@/components/ui/DatePickerPopover';
@@ -120,18 +122,23 @@ const sampleBuses = [
   },
 ];
 
-export default function SearchPage() {
+function SearchContent() {
+  const searchParams = useSearchParams();
+  const initialFrom = searchParams.get('from') || 'Nagpur';
+  const initialTo = searchParams.get('to') || 'Pune';
+  const initialDate = searchParams.get('date') || 'Tomorrow, 24 Oct';
+
   const [buses, setBuses] = useState(sampleBuses);
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState('cheapest');
 
-  const [fromCity, setFromCity] = useState('Nagpur');
-  const [toCity, setToCity] = useState('Pune');
+  const [fromCity, setFromCity] = useState(initialFrom);
+  const [toCity, setToCity] = useState(initialTo);
   const [selectedDate, setSelectedDate] = useState({
-    mainText: 'Tomorrow, 24 Oct',
-    subText: 'Thursday',
+    mainText: initialDate,
+    subText: 'Scheduled Journey',
   });
   const [passengerCount, setPassengerCount] = useState(1);
 
@@ -649,13 +656,13 @@ export default function SearchPage() {
                       <span className="text-xs font-extrabold text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-200">
                         {bus.seatsLeft} Seats Left
                       </span>
-                      <a
-                        href="/select-seats"
-                        className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5"
+                      <Link
+                        href={`/select-seats?busId=${bus.id}&operator=${encodeURIComponent(bus.operator)}&busPlate=${encodeURIComponent(bus.busPlate)}&busType=${encodeURIComponent(bus.busType)}&price=${bus.price}&category=${bus.category}&from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&date=${encodeURIComponent(selectedDate.mainText)}&depTime=${encodeURIComponent(bus.depTime)}&arrTime=${encodeURIComponent(bus.arrTime)}&depLocation=${encodeURIComponent(bus.depLocation)}&arrLocation=${encodeURIComponent(bus.arrLocation)}`}
+                        className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 active:scale-95"
                       >
                         <span>SELECT SEATS</span>
                         <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -667,5 +674,22 @@ export default function SearchPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="text-center space-y-3">
+            <div className="w-10 h-10 border-4 border-brand-scarlet border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-sm font-bold text-slate-700">Loading Available Buses...</p>
+          </div>
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }

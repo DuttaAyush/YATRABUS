@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 
@@ -103,20 +105,49 @@ const droppingPointsData = [
   { id: 'd3', location: 'Swargate - VedBus Express Bay', time: '07:00' },
 ];
 
-export default function CinemaSeatBookingPage() {
-  const [layoutMode, setLayoutMode] = useState('seater'); // 'seater' | 'sleeper'
-  const [sleeperDeck, setSleeperDeck] = useState('lower'); // 'lower' | 'upper'
+function CinemaSeatBookingContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const busInfo = {
+    id: searchParams.get('busId') || '1',
+    operator: searchParams.get('operator') || 'VRL Travels & Logistics',
+    busPlate: searchParams.get('busPlate') || 'MH-31-AP-4921',
+    busType: searchParams.get('busType') || 'BharatBenz AC Sleeper (2+1)',
+    category: searchParams.get('category') || 'sleeper',
+    price: parseInt(searchParams.get('price')) || 850,
+    from: searchParams.get('from') || 'Nagpur',
+    to: searchParams.get('to') || 'Pune',
+    date: searchParams.get('date') || 'Tomorrow, 24 Oct',
+    depTime: searchParams.get('depTime') || '20:30',
+    arrTime: searchParams.get('arrTime') || '07:00',
+    depLocation: searchParams.get('depLocation') || 'Dharampeth, Nagpur',
+    arrLocation: searchParams.get('arrLocation') || 'Wakad, Pune',
+  };
+
+  const isSleeper = busInfo.category === 'sleeper';
+  const [layoutMode, setLayoutMode] = useState(isSleeper ? 'sleeper' : 'seater');
+  const [sleeperDeck, setSleeperDeck] = useState('lower');
   const [filterLadiesOnly, setFilterLadiesOnly] = useState(false);
   const [filterSoloWindow, setFilterSoloWindow] = useState(false);
 
-  // Pre-select 3A, 3B, 4A as shown in the user's reference image
-  const [selectedSeats, setSelectedSeats] = useState([
-    seater2x2Seats.find(s => s.id === '3A'),
-    seater2x2Seats.find(s => s.id === '3B'),
-    seater2x2Seats.find(s => s.id === '4A'),
-  ]);
-  const [boardingPoint, setBoardingPoint] = useState(boardingPointsData[0]);
-  const [droppingPoint, setDroppingPoint] = useState(droppingPointsData[2]);
+  // Pre-select first available seats based on bus type
+  const [selectedSeats, setSelectedSeats] = useState(
+    isSleeper
+      ? [sleeperLowerDeck.find(s => s.id === 'L1') || sleeperLowerDeck[0]]
+      : [seater2x2Seats.find(s => s.id === '3A') || seater2x2Seats[0]]
+  );
+
+  const [boardingPoint, setBoardingPoint] = useState({
+    id: 'b1',
+    location: `${busInfo.depLocation} - VedBus Terminal`,
+    time: busInfo.depTime,
+  });
+  const [droppingPoint, setDroppingPoint] = useState({
+    id: 'd1',
+    location: `${busInfo.arrLocation} - VedBus Drop Bay`,
+    time: busInfo.arrTime,
+  });
 
   const seatsData =
     layoutMode === 'seater'
@@ -140,6 +171,34 @@ export default function CinemaSeatBookingPage() {
   const taxes = selectedSeats.length > 0 ? Math.round(calculateSubtotal() * 0.05) : 0;
   const totalAmount = calculateSubtotal() + taxes;
 
+  const handleProceedToCheckout = () => {
+    if (selectedSeats.length === 0) return;
+    const bookingPayload = {
+      busId: busInfo.id,
+      operator: busInfo.operator,
+      busPlate: busInfo.busPlate,
+      busType: busInfo.busType,
+      category: layoutMode,
+      from: busInfo.from,
+      to: busInfo.to,
+      date: busInfo.date,
+      depTime: busInfo.depTime,
+      arrTime: busInfo.arrTime,
+      depLocation: busInfo.depLocation,
+      arrLocation: busInfo.arrLocation,
+      boardingPoint: boardingPoint,
+      droppingPoint: droppingPoint,
+      selectedSeats: selectedSeats.map(s => ({ id: s.id, name: s.name, price: s.price, isWindow: s.isWindow })),
+      baseFare: calculateSubtotal(),
+      taxes: taxes,
+      totalAmount: totalAmount,
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vedbus_pending_booking', JSON.stringify(bookingPayload));
+    }
+    router.push('/checkout');
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
       <Header />
@@ -148,22 +207,22 @@ export default function CinemaSeatBookingPage() {
       <div className="bg-white border-b border-slate-200/90 shadow-sm py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <a
-              href="/"
+            <Link
+              href={`/search?from=${encodeURIComponent(busInfo.from)}&to=${encodeURIComponent(busInfo.to)}&date=${encodeURIComponent(busInfo.date)}`}
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm"
               title="Back to Bus Search"
             >
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-            </a>
+            </Link>
             <div>
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-xs font-extrabold text-brand-scarlet uppercase tracking-widest">Nagpur ⇄ Pune</span>
-                <span className="text-xs text-slate-400">• Thursday, 24 Oct</span>
+                <span className="text-xs font-extrabold text-brand-scarlet uppercase tracking-widest">{busInfo.from} ⇄ {busInfo.to}</span>
+                <span className="text-xs text-slate-400">• {busInfo.date}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 flex items-center gap-2">
-                <span>Volvo B11R Multi-Axle AC Seater &amp; Sleeper</span>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 flex flex-wrap items-center gap-2">
+                <span>{busInfo.operator} ({busInfo.busType})</span>
                 <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  MH-12-QZ-8812
+                  {busInfo.busPlate}
                 </span>
               </h1>
             </div>
@@ -471,17 +530,19 @@ export default function CinemaSeatBookingPage() {
             </div>
 
             {/* PROCEED TO CHECKOUT BUTTON */}
-            <a
-              href="/checkout"
+            <button
+              type="button"
+              onClick={handleProceedToCheckout}
+              disabled={selectedSeats.length === 0}
               className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 ${
                 selectedSeats.length > 0
                   ? 'bg-brand-scarlet hover:bg-brand-hover text-white cursor-pointer shadow-red-600/20 active:scale-[0.99]'
                   : 'bg-slate-200 text-slate-400 pointer-events-none'
               }`}
             >
-              <span>PROCEED TO CHECKOUT</span>
+              <span>PROCEED TO CHECKOUT ({selectedSeats.length} {selectedSeats.length === 1 ? 'Seat' : 'Seats'})</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </a>
+            </button>
           </div>
         </div>
       </main>
@@ -575,5 +636,22 @@ export default function CinemaSeatBookingPage() {
       </button>
     );
   }
+}
+
+export default function CinemaSeatBookingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="text-center space-y-3">
+            <div className="w-10 h-10 border-4 border-brand-scarlet border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-sm font-bold text-slate-700">Loading Bus Layout...</p>
+          </div>
+        </div>
+      }
+    >
+      <CinemaSeatBookingContent />
+    </Suspense>
+  );
 }
 

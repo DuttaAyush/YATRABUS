@@ -1,60 +1,80 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
+
+const defaultUpcomingTrips = [
+  {
+    id: 'YB-994821',
+    operator: 'VRL Travels & Logistics',
+    busType: 'Volvo B11R Multi-Axle AC Sleeper (2+1)',
+    busPlate: 'MH-12-QZ-8812',
+    from: 'Nagpur',
+    fromStation: 'Dharampeth VedBus Terminal',
+    depTime: '20:30',
+    depDate: 'Tomorrow, 24 Oct',
+    to: 'Pune',
+    toStation: 'Swargate Express Terminal',
+    arrTime: '07:00',
+    arrDate: 'Friday, 25 Oct',
+    seats: ['3A', '3B'],
+    passengerCount: 2,
+    totalFare: 1273,
+    driverName: 'Sunil Sharma',
+    driverPhone: '+91 98220 11223',
+    currentLocation: 'Samruddhi Mahamarg (Km 142)',
+    speed: '78 km/h',
+    nextStop: 'Jalna Rest Stop (ETA 22:45)',
+  },
+  {
+    id: 'YB-883102',
+    operator: 'Hans Travels Devsthan Express',
+    busType: 'BharatBenz 2+1 AC Sleeper',
+    busPlate: 'UK-07-PA-1008',
+    from: 'Delhi',
+    fromStation: 'Majnu Ka Tilla Gate 3',
+    depTime: '06:00',
+    depDate: '15 Nov 2026',
+    to: 'Haridwar',
+    toStation: 'Har Ki Pauri Yatra Stand',
+    arrTime: '11:30',
+    arrDate: '15 Nov 2026',
+    seats: ['L4'],
+    passengerCount: 1,
+    totalFare: 850,
+    driverName: 'Rajinder Singh',
+    driverPhone: '+91 98110 44556',
+    currentLocation: 'Delhi Terminal (Scheduled)',
+    speed: '0 km/h',
+    nextStop: 'Departure in 6 Days',
+  },
+];
 
 export default function CustomerProfilePage() {
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' | 'past' | 'wallet' | 'passengers'
   const [selectedTrackBus, setSelectedTrackBus] = useState(null);
   const [isGpsModalOpen, setIsGpsModalOpen] = useState(false);
+  const [upcomingTrips, setUpcomingTrips] = useState(defaultUpcomingTrips);
 
-  const upcomingTrips = [
-    {
-      id: 'YB-994821',
-      operator: 'VRL Travels & Logistics',
-      busType: 'Volvo B11R Multi-Axle AC Sleeper (2+1)',
-      busPlate: 'MH-12-QZ-8812',
-      from: 'Nagpur',
-      fromStation: 'Dharampeth VedBus Terminal',
-      depTime: '20:30',
-      depDate: 'Tomorrow, 24 Oct',
-      to: 'Pune',
-      toStation: 'Swargate Express Terminal',
-      arrTime: '07:00',
-      arrDate: 'Friday, 25 Oct',
-      seats: ['3A', '3B'],
-      passengerCount: 2,
-      totalFare: 1273,
-      driverName: 'Sunil Sharma',
-      driverPhone: '+91 98220 11223',
-      currentLocation: 'Samruddhi Mahamarg (Km 142)',
-      speed: '78 km/h',
-      nextStop: 'Jalna Rest Stop (ETA 22:45)',
-    },
-    {
-      id: 'YB-883102',
-      operator: 'Hans Travels Devsthan Express',
-      busType: 'BharatBenz 2+1 AC Sleeper',
-      busPlate: 'UK-07-PA-1008',
-      from: 'Delhi',
-      fromStation: 'Majnu Ka Tilla Gate 3',
-      depTime: '06:00',
-      depDate: '15 Nov 2026',
-      to: 'Haridwar',
-      toStation: 'Har Ki Pauri Yatra Stand',
-      arrTime: '11:30',
-      arrDate: '15 Nov 2026',
-      seats: ['L4'],
-      passengerCount: 1,
-      totalFare: 850,
-      driverName: 'Rajinder Singh',
-      driverPhone: '+91 98110 44556',
-      currentLocation: 'Delhi Terminal (Scheduled)',
-      speed: '0 km/h',
-      nextStop: 'Departure in 6 Days',
-    },
-  ];
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('vedbus_user_trips');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const storedIds = new Set(parsed.map(t => t.id));
+            const filteredDefaults = defaultUpcomingTrips.filter(t => !storedIds.has(t.id));
+            setUpcomingTrips([...parsed, ...filteredDefaults]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load trips from localStorage:', err);
+      }
+    }
+  }, []);
 
   const pastTrips = [
     {
@@ -421,13 +441,13 @@ export default function CustomerProfilePage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => openGpsTracker(trip)}
+                      <Link
+                        href={`/track-bus/${trip.id}`}
                         className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                       >
                         <span className="material-symbols-outlined text-[16px] text-emerald-400">my_location</span>
                         <span>Live GPS Bus Tracking</span>
-                      </button>
+                      </Link>
 
                       <button
                         onClick={() => alert(`Downloading PDF Ticket for #${trip.id}...`)}
@@ -438,11 +458,27 @@ export default function CustomerProfilePage() {
                       </button>
 
                       <button
-                        onClick={() => alert(`Ticket #${trip.id} resent to your WhatsApp (+91 98765 43210)!`)}
-                        className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 flex items-center justify-center transition-all cursor-pointer"
-                        title="Resend WhatsApp Ticket"
+                        type="button"
+                        onClick={() => {
+                          const shareText = `🎟️ VedBus Confirmed Ticket #${trip.id}\nRoute: ${trip.from} ➔ ${trip.to}\nDate: ${trip.depDate}\nSeats: ${trip.seats.join(', ')}\nBus Plate: ${trip.busPlate}`;
+                          const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${trip.id}` : '';
+                          if (typeof navigator !== 'undefined' && navigator.share) {
+                            navigator.share({
+                              title: `VedBus Ticket #${trip.id}`,
+                              text: shareText,
+                              url: shareUrl,
+                            }).catch(() => {});
+                          } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                            navigator.clipboard.writeText(`${shareText}\nTrack: ${shareUrl}`);
+                            alert('Ticket details copied to clipboard!');
+                          } else {
+                            alert(shareText);
+                          }
+                        }}
+                        className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 hover:bg-brand-scarlet hover:text-white border border-slate-200 flex items-center justify-center transition-all cursor-pointer"
+                        title="Share Ticket"
                       >
-                        <span className="material-symbols-outlined text-[18px]">send_to_mobile</span>
+                        <span className="material-symbols-outlined text-[18px]">share</span>
                       </button>
                     </div>
                   </div>

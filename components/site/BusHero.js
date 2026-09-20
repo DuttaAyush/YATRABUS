@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import DatePickerPopover from '@/components/ui/DatePickerPopover';
 
 export default function BusHero() {
+  const router = useRouter();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState({
     mainText: 'Tomorrow, 24 Oct',
@@ -134,7 +136,12 @@ export default function BusHero() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                window.location.href = '/search';
+                const params = new URLSearchParams({
+                  from: fromCity.trim() || 'Nagpur',
+                  to: toCity.trim() || 'Pune',
+                  date: selectedDate.mainText,
+                });
+                router.push(`/search?${params.toString()}`);
               }}
               className="flex flex-row items-center justify-between w-full"
             >
