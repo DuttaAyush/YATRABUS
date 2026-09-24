@@ -376,42 +376,36 @@ export default function DashboardPage() {
   return (
     <AdminShell>
       {/* ── Greeting row ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem" }}>
-        <div>
-          <p style={{ fontSize: "0.875rem", color: "#64748B", marginBottom: 2 }}>{greeting}</p>
-          <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.15, margin: "0 0 0.25rem" }}>
+      <div className="dashboard-header-row" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem", gap: "0.75rem" }}>
+        <div className="dashboard-greeting-text">
+          <p className="dashboard-greeting-sub" style={{ fontSize: "0.875rem", color: "#64748B", marginBottom: 2 }}>{greeting}</p>
+          <h1 className="dashboard-title" style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.15, margin: "0 0 0.25rem" }}>
             Welcome back, Admin!
           </h1>
-          <p style={{ fontSize: "0.875rem", color: "#94A3B8" }}>Here's what's happening with VedBus today.</p>
+          <p className="dashboard-subtitle" style={{ fontSize: "0.875rem", color: "#94A3B8" }}>Here's what's happening with VedBus today.</p>
         </div>
-        <div style={{
-          display: "flex", alignItems: "center", gap: "0.5rem",
-          background: "#fff", border: "1px solid #E2E8F0",
-          borderRadius: 10, padding: "0.625rem 1rem",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-          flexShrink: 0,
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C" }}>calendar_today</span>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#0F172A" }}>{dateStr}</div>
-            <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Have a productive day!</div>
+        <div className="dashboard-date-badge">
+          <span className="material-symbols-outlined dashboard-date-icon">calendar_today</span>
+          <div className="dashboard-date-content">
+            <div className="dashboard-date-text">{dateStr}</div>
+            <div className="dashboard-date-sub">Have a productive day!</div>
           </div>
         </div>
       </div>
 
       {/* ── KPI Cards ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
+      <div className="dashboard-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
         {KPI_DATA.map((k) => (
-          <div key={k.id} style={{
+          <div key={k.id} className="dashboard-kpi-card" style={{
             background: "#fff", borderRadius: 12,
             padding: "1.125rem 1.25rem",
             boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
             border: "1px solid #F1F5F9",
           }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.35rem" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 {/* Icon */}
-                <div style={{
+                <div className="kpi-icon-wrap" style={{
                   width: 38, height: 38, borderRadius: "50%",
                   backgroundColor: k.iconBg,
                   display: "flex", alignItems: "center", justifyContent: "center",
@@ -419,39 +413,39 @@ export default function DashboardPage() {
                 }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20, color: k.iconColor }}>{k.icon}</span>
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#94A3B8", fontWeight: 500, marginBottom: "0.25rem" }}>{k.label}</div>
-                <div style={{ fontSize: "1.4375rem", fontWeight: 700, color: "#0F172A", lineHeight: 1, letterSpacing: "-0.02em" }}>{k.value}</div>
+                <div className="kpi-label" style={{ fontSize: "0.75rem", color: "#94A3B8", fontWeight: 500, marginBottom: "0.25rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{k.label}</div>
+                <div className="kpi-value" style={{ fontSize: "1.4375rem", fontWeight: 700, color: "#0F172A", lineHeight: 1, letterSpacing: "-0.02em" }}>{k.value}</div>
               </div>
               {/* Sparkline */}
-              <div style={{ paddingTop: "0.125rem", flexShrink: 0 }}>
+              <div className="kpi-sparkline" style={{ paddingTop: "0.125rem", flexShrink: 0 }}>
                 <Sparkline data={k.sparkData} color={k.sparkColor} id={k.id} />
               </div>
             </div>
             {/* Trend */}
-            <div style={{ marginTop: "0.625rem", display: "flex", alignItems: "center", gap: "0.2rem" }}>
+            <div className="kpi-trend" style={{ marginTop: "0.625rem", display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap" }}>
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: k.up ? "#16A34A" : "#DC2626" }}>
                 {k.up ? "trending_up" : "trending_down"}
               </span>
               <span style={{ fontSize: "0.75rem", fontWeight: 700, color: k.up ? "#16A34A" : "#DC2626" }}>{k.change}</span>
-              <span style={{ fontSize: "0.75rem", color: "#94A3B8", marginLeft: 2 }}>{k.comparison}</span>
+              <span className="kpi-comparison" style={{ fontSize: "0.75rem", color: "#94A3B8", marginLeft: 2 }}>{k.comparison}</span>
             </div>
           </div>
         ))}
       </div>
 
       {/* ── Charts Row ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+      <div className="dashboard-charts-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
         {/* Revenue Overview */}
-        <div style={{ background: "#fff", borderRadius: 12, padding: "1.25rem", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+        <div className="dashboard-chart-card" style={{ background: "#fff", borderRadius: 12, padding: "1.25rem", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "0.75rem", gap: "0.25rem" }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>show_chart</span>
-                <span style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Revenue Overview</span>
+                <span className="chart-title" style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Revenue Overview</span>
               </div>
-              <p style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 2 }}>Total revenue from bus bookings and package bookings</p>
+              <p className="chart-sub" style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 2 }}>Total revenue from bus bookings and package bookings</p>
             </div>
-            <select style={{
+            <select className="chart-select" style={{
               fontSize: "0.75rem", color: "#475569",
               border: "1px solid #E2E8F0", borderRadius: 6,
               padding: "0.25rem 0.5rem", background: "#fff", cursor: "pointer",
@@ -466,17 +460,17 @@ export default function DashboardPage() {
         </div>
 
         {/* Booking Volume */}
-        <div style={{ background: "#fff", borderRadius: 12, padding: "1.25rem", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+        <div className="dashboard-chart-card" style={{ background: "#fff", borderRadius: 12, padding: "1.25rem", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "0.75rem", gap: "0.25rem" }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>bar_chart</span>
-                <span style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Booking Volume</span>
+                <span className="chart-title" style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Booking Volume</span>
               </div>
-              <p style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 2 }}>Bus vs Package bookings</p>
+              <p className="chart-sub" style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 2 }}>Bus vs Package bookings</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.375rem" }}>
-              <select style={{
+              <select className="chart-select" style={{
                 fontSize: "0.75rem", color: "#475569",
                 border: "1px solid #E2E8F0", borderRadius: 6,
                 padding: "0.25rem 0.5rem", background: "#fff", cursor: "pointer",
@@ -484,14 +478,14 @@ export default function DashboardPage() {
               }}>
                 <option>Last 30 Days</option>
               </select>
-              <div style={{ display: "flex", gap: "0.75rem" }}>
+              <div className="chart-legend" style={{ display: "flex", gap: "0.75rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
                   <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#B91C1C", display: "inline-block", flexShrink: 0 }} />
-                  <span style={{ fontSize: "0.7rem", color: "#64748B" }}>Bus Bookings</span>
+                  <span style={{ fontSize: "0.7rem", color: "#64748B" }}>Bus</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
                   <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#0D9488", display: "inline-block", flexShrink: 0 }} />
-                  <span style={{ fontSize: "0.7rem", color: "#64748B" }}>Package Bookings</span>
+                  <span style={{ fontSize: "0.7rem", color: "#64748B" }}>Package</span>
                 </div>
               </div>
             </div>

@@ -113,26 +113,26 @@ export default function UserDetailPage({ params }) {
       </div>
 
       {/* Profile card */}
-      <div style={{
+      <div className="user-profile-card" style={{
         background: "#fff", borderRadius: 12,
         padding: "1.5rem",
         boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
         border: "1px solid #F1F5F9",
         marginBottom: "1.25rem",
       }}>
-        <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
+        <div className="user-profile-inner" style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
 
           {/* Left: Avatar + contact */}
-          <div style={{ display: "flex", gap: "1.5rem", flex: 1, alignItems: "flex-start" }}>
+          <div className="user-profile-left" style={{ display: "flex", gap: "1.5rem", flex: 1, alignItems: "flex-start" }}>
             {/* Avatar */}
             <div style={{ position: "relative", flexShrink: 0 }}>
-              <div style={{
+              <div className="user-avatar-circle" style={{
                 width: 120, height: 120, borderRadius: "50%",
                 backgroundColor: USER.color + "18",
                 border: `3px solid ${USER.color}35`,
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                <span style={{ fontSize: "2.25rem", fontWeight: 700, color: USER.color }}>{initials}</span>
+                <span className="user-avatar-initials" style={{ fontSize: "2.25rem", fontWeight: 700, color: USER.color }}>{initials}</span>
               </div>
               {/* Online dot */}
               <div style={{
@@ -144,7 +144,7 @@ export default function UserDetailPage({ params }) {
             </div>
 
             {/* Info */}
-            <div style={{ paddingTop: "0.25rem" }}>
+            <div style={{ paddingTop: "0.25rem", flex: 1, minWidth: 0 }}>
               {/* Name + ID */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "0.875rem", flexWrap: "wrap" }}>
                 <h2 style={{ fontSize: "1.3125rem", fontWeight: 700, color: "#0F172A", margin: 0 }}>{USER.name}</h2>
@@ -176,10 +176,10 @@ export default function UserDetailPage({ params }) {
           </div>
 
           {/* Divider */}
-          <div style={{ width: 1, alignSelf: "stretch", backgroundColor: "#F1F5F9", flexShrink: 0 }} />
+          <div className="user-profile-divider" style={{ width: 1, alignSelf: "stretch", backgroundColor: "#F1F5F9", flexShrink: 0 }} />
 
           {/* Right: Additional info */}
-          <div style={{ width: 340, flexShrink: 0 }}>
+          <div className="user-profile-right" style={{ width: 340, flexShrink: 0 }}>
             {/* Buttons row */}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.625rem", marginBottom: "1rem" }}>
               <button style={{
@@ -234,21 +234,21 @@ export default function UserDetailPage({ params }) {
       </div>
 
       {/* Mini stats row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
+      <div className="user-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
         {[
           { icon: "directions_bus", iconBg: "#FEF2F2", iconColor: "#B91C1C", value: USER.busBookings,      label: "Bus Bookings" },
           { icon: "luggage",        iconBg: "#ECFDF5", iconColor: "#059669", value: USER.packageBookings,  label: "Package Bookings" },
           { icon: "currency_rupee", iconBg: "#F5F3FF", iconColor: "#7C3AED", value: USER.totalSpent,       label: "Total Spent" },
           { icon: "calendar_today", iconBg: "#FFF7ED", iconColor: "#EA580C", value: USER.lastBooking,      label: "Last Booking" },
         ].map((s) => (
-          <div key={s.label} style={{
+          <div key={s.label} className="user-stat-card" style={{
             background: "#fff", borderRadius: 12,
             padding: "1rem 1.25rem",
             boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
             border: "1px solid #F1F5F9",
             display: "flex", alignItems: "center", gap: "0.875rem",
           }}>
-            <div style={{
+            <div className="user-stat-icon-wrap" style={{
               width: 44, height: 44, borderRadius: "50%",
               backgroundColor: s.iconBg,
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -257,8 +257,8 @@ export default function UserDetailPage({ params }) {
               <span className="material-symbols-outlined" style={{ fontSize: 22, color: s.iconColor }}>{s.icon}</span>
             </div>
             <div>
-              <div style={{ fontSize: "1.3125rem", fontWeight: 700, color: "#0F172A", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
-              <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "0.2rem" }}>{s.label}</div>
+              <div className="user-stat-value" style={{ fontSize: "1.3125rem", fontWeight: 700, color: "#0F172A", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
+              <div className="user-stat-label" style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: "0.2rem" }}>{s.label}</div>
             </div>
           </div>
         ))}
