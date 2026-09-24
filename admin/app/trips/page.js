@@ -112,6 +112,10 @@ const TH = {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function TripsPage() {
+  const [viewMode, setViewMode] = useState("table"); // 'table' | 'operations'
+  const [opTimeframe, setOpTimeframe] = useState("day"); // 'day' | 'week'
+  const [manifestTrip, setManifestTrip] = useState(null);
+
   const [dateFilter,   setDateFilter]   = useState("2026-09-15");
   const [routeFilter,  setRouteFilter]  = useState("All Routes");
   const [busFilter,    setBusFilter]    = useState("All Buses");
@@ -133,26 +137,61 @@ export default function TripsPage() {
         <span style={{ color: "#0F172A", fontWeight: 500 }}>Trips</span>
       </div>
 
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+      {/* Header with View Switcher */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2, margin: 0 }}>
-            Trips
+            Trips & Operations
           </h1>
           <p style={{ fontSize: "0.875rem", color: "#64748B", marginTop: "0.375rem" }}>
-            Manage bus trips, view seat availability, and track operations.
+            Manage bus trips, view seat availability, print manifests and track live dispatch.
           </p>
         </div>
-        <Link href="/trips/new" style={{
-          display: "inline-flex", alignItems: "center", gap: "0.375rem",
-          padding: "0.5625rem 1.125rem",
-          backgroundColor: "#B91C1C", color: "#fff",
-          border: "none", borderRadius: 8,
-          fontSize: "0.875rem", fontWeight: 600, textDecoration: "none",
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 17 }}>add</span>
-          Create New Trip
-        </Link>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          {/* Table vs Live Operations Switcher */}
+          <div style={{ display: "flex", backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: 8, padding: 3 }}>
+            <button
+              type="button"
+              onClick={() => setViewMode("table")}
+              style={{
+                display: "flex", alignItems: "center", gap: "0.35rem",
+                padding: "0.45rem 0.875rem", borderRadius: 6, border: "none",
+                backgroundColor: viewMode === "table" ? "#B91C1C" : "transparent",
+                color: viewMode === "table" ? "#fff" : "#475569",
+                fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer"
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>table_chart</span>
+              Trips Table
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("operations")}
+              style={{
+                display: "flex", alignItems: "center", gap: "0.35rem",
+                padding: "0.45rem 0.875rem", borderRadius: 6, border: "none",
+                backgroundColor: viewMode === "operations" ? "#B91C1C" : "transparent",
+                color: viewMode === "operations" ? "#fff" : "#475569",
+                fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer"
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>calendar_view_week</span>
+              Live Operations
+            </button>
+          </div>
+
+          <Link href="/trips/new" style={{
+            display: "inline-flex", alignItems: "center", gap: "0.375rem",
+            padding: "0.5625rem 1.125rem",
+            backgroundColor: "#B91C1C", color: "#fff",
+            border: "none", borderRadius: 8,
+            fontSize: "0.875rem", fontWeight: 600, textDecoration: "none",
+          }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 17 }}>add</span>
+            Create New Trip
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}
@@ -178,6 +217,7 @@ export default function TripsPage() {
       </div>
 
       {/* Table card */}
+      {viewMode === "table" && (
       <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9", overflow: "hidden" }}>
         {/* Filter toolbar */}
         <div style={{ padding: "1rem 1.25rem", display: "flex", alignItems: "flex-end", gap: "0.75rem", borderBottom: "1px solid #F1F5F9", flexWrap: "wrap" }}>
@@ -303,6 +343,7 @@ export default function TripsPage() {
                     <td style={{ padding: "0.75rem 0.875rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
                         <ActionBtn icon="event_seat" label="View Seats" variant="primary" disabled={cancelled} href={`/trips/${t.id}/seats`} />
+                        <ActionBtn icon="description" label="Manifest" variant="default" disabled={cancelled} onClick={() => setManifestTrip(t)} />
                         <ActionBtn icon="edit"       label="Edit"       variant="default" disabled={cancelled} href={`/trips/${t.id}/edit`} />
                         <ActionBtn icon="cancel"     label="Cancel"     variant="danger"  disabled={cancelled} />
                       </div>
@@ -332,6 +373,231 @@ export default function TripsPage() {
           </div>
         </div>
       </div>
+      )}
+
+      {/* ── LIVE OPERATIONS / TIMELINE CALENDAR VIEW ── */}
+      {viewMode === "operations" && (
+        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "1.25rem" }}>
+          
+          {/* Operations Toolbar */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <span style={{ fontSize: "1rem", fontWeight: 700, color: "#0F172A" }}>
+                {opTimeframe === "day" ? "Today's Schedule — 15 Sep 2026" : "Weekly Dispatch Board (15 Sep – 21 Sep)"}
+              </span>
+              <span style={{ padding: "0.2rem 0.5rem", borderRadius: 4, backgroundColor: "#DCFCE7", color: "#166534", fontSize: "0.72rem", fontWeight: 700 }}>
+                18 Active Trips
+              </span>
+            </div>
+
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <div style={{ display: "flex", border: "1px solid #E2E8F0", borderRadius: 6, overflow: "hidden" }}>
+                <button
+                  type="button"
+                  onClick={() => setOpTimeframe("day")}
+                  style={{
+                    padding: "0.35rem 0.75rem", border: "none", cursor: "pointer",
+                    backgroundColor: opTimeframe === "day" ? "#0F172A" : "#fff",
+                    color: opTimeframe === "day" ? "#fff" : "#475569",
+                    fontSize: "0.75rem", fontWeight: 600
+                  }}
+                >
+                  Day View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOpTimeframe("week")}
+                  style={{
+                    padding: "0.35rem 0.75rem", border: "none", cursor: "pointer",
+                    backgroundColor: opTimeframe === "week" ? "#0F172A" : "#fff",
+                    color: opTimeframe === "week" ? "#fff" : "#475569",
+                    fontSize: "0.75rem", fontWeight: 600
+                  }}
+                >
+                  Week View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Timeline Cards Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: opTimeframe === "day" ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: "1rem" }}>
+            {TRIPS.slice(0, opTimeframe === "day" ? 6 : 9).map(trip => (
+              <div
+                key={trip.id}
+                style={{
+                  border: "1px solid #E2E8F0", borderRadius: 10, padding: "1rem",
+                  backgroundColor: trip.status === "Cancelled" ? "#FAFAFA" : "#fff",
+                  display: "flex", flexDirection: "column", gap: "0.75rem",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.03)"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "0.875rem", fontWeight: 800, color: "#B91C1C" }}>{trip.time}</span>
+                    <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>• {trip.day}, {trip.date}</span>
+                  </div>
+                  <StatusBadge status={trip.status} />
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0F172A" }}>
+                    {trip.from} <span style={{ color: "#B91C1C" }}>→</span> {trip.to}
+                  </div>
+                  <div style={{ fontSize: "0.72rem", color: "#64748B", marginTop: 2 }}>{trip.via}</div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.78rem", backgroundColor: "#F8FAFC", padding: "0.5rem 0.75rem", borderRadius: 6 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: "#0F172A" }}>{trip.plate}</div>
+                    <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>{trip.busType}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontWeight: 700, color: "#166534" }}>{trip.avail} seats open</div>
+                    <div style={{ fontSize: "0.6875rem", color: "#64748B" }}>Total {trip.total}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "auto" }}>
+                  <button
+                    type="button"
+                    onClick={() => setManifestTrip(trip)}
+                    style={{
+                      flex: 1, padding: "0.35rem", borderRadius: 6, border: "1px solid #E2E8F0",
+                      backgroundColor: "#fff", fontSize: "0.72rem", fontWeight: 600, color: "#0F172A",
+                      cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem"
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>description</span>
+                    Manifest
+                  </button>
+                  <Link
+                    href={`/trips/${trip.id}/seats`}
+                    style={{
+                      flex: 1, padding: "0.35rem", borderRadius: 6, border: "none",
+                      backgroundColor: "#EFF6FF", color: "#1D4ED8", fontSize: "0.72rem", fontWeight: 600,
+                      textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem"
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>event_seat</span>
+                    Seat Map
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      )}
+
+      {/* ── PRINTABLE PASSENGER MANIFEST MODAL ── */}
+      {manifestTrip && (
+        <div style={{
+          position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.6)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "1rem"
+        }}>
+          <div style={{
+            backgroundColor: "#fff", borderRadius: 12, maxWidth: 680, width: "100%",
+            maxHeight: "90vh", overflowY: "auto", padding: "1.5rem",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.2)"
+          }}>
+            {/* Modal Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "2px solid #0F172A", paddingBottom: "1rem", marginBottom: "1rem" }}>
+              <div>
+                <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.01em" }}>
+                  <span style={{ color: "#B91C1C" }}>VEDBUS</span> PASSENGER MANIFEST
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748B", marginTop: 2 }}>
+                  Official Boarding & Conductor Passenger Roll
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setManifestTrip(null)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#94A3B8" }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 22 }}>close</span>
+              </button>
+            </div>
+
+            {/* Trip Meta Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", backgroundColor: "#F8FAFC", padding: "0.875rem", borderRadius: 8, marginBottom: "1.25rem", fontSize: "0.78rem" }}>
+              <div>
+                <div style={{ color: "#94A3B8", fontSize: "0.68rem" }}>TRIP & ROUTE</div>
+                <div style={{ fontWeight: 700, color: "#0F172A" }}>{manifestTrip.id}</div>
+                <div>{manifestTrip.from} → {manifestTrip.to}</div>
+              </div>
+              <div>
+                <div style={{ color: "#94A3B8", fontSize: "0.68rem" }}>BUS & DRIVER</div>
+                <div style={{ fontWeight: 700, color: "#0F172A" }}>{manifestTrip.plate}</div>
+                <div>Driver: Ramesh Patil (+91 98221 44556)</div>
+              </div>
+              <div>
+                <div style={{ color: "#94A3B8", fontSize: "0.68rem" }}>DEPARTURE</div>
+                <div style={{ fontWeight: 700, color: "#0F172A" }}>{manifestTrip.date}</div>
+                <div>{manifestTrip.time}</div>
+              </div>
+            </div>
+
+            {/* Passenger Manifest Roll */}
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", marginBottom: "1.25rem" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#0F172A", color: "#fff", textAlign: "left" }}>
+                  <th style={{ padding: "0.5rem 0.75rem" }}>Seat</th>
+                  <th style={{ padding: "0.5rem 0.75rem" }}>Passenger Name</th>
+                  <th style={{ padding: "0.5rem 0.75rem" }}>Gender / Age</th>
+                  <th style={{ padding: "0.5rem 0.75rem" }}>Pickup Point</th>
+                  <th style={{ padding: "0.5rem 0.75rem" }}>Phone</th>
+                  <th style={{ padding: "0.5rem 0.75rem", textAlign: "center" }}>Check-in</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { seat: "L1", name: "Rahul Sharma", gender: "M / 28", stop: "Zero Mile Stand", phone: "+91 98765 43210" },
+                  { seat: "L2", name: "Sneha Sharma", gender: "F / 26", stop: "Zero Mile Stand", phone: "+91 98765 43210" },
+                  { seat: "L5", name: "Abhishek Verma", gender: "M / 32", stop: "Dharampeth Stop", phone: "+91 98234 56789" },
+                  { seat: "L7", name: "Pooja Deshmukh", gender: "F / 24", stop: "Wadi Naka", phone: "+91 99876 54321" },
+                  { seat: "L13", name: "Karan Mehta", gender: "M / 45", stop: "Amravati Bypass", phone: "+91 91234 56789" },
+                ].map((row, i) => (
+                  <tr key={row.seat} style={{ borderBottom: "1px solid #E2E8F0" }}>
+                    <td style={{ padding: "0.5rem 0.75rem", fontWeight: 700, color: "#B91C1C" }}>{row.seat}</td>
+                    <td style={{ padding: "0.5rem 0.75rem", fontWeight: 600, color: "#0F172A" }}>{row.name}</td>
+                    <td style={{ padding: "0.5rem 0.75rem", color: "#475569" }}>{row.gender}</td>
+                    <td style={{ padding: "0.5rem 0.75rem", color: "#475569" }}>{row.stop}</td>
+                    <td style={{ padding: "0.5rem 0.75rem", color: "#475569" }}>{row.phone}</td>
+                    <td style={{ padding: "0.5rem 0.75rem", textAlign: "center" }}>
+                      <input type="checkbox" style={{ accentColor: "#B91C1C", width: 16, height: 16, cursor: "pointer" }} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Actions footer */}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+              <button
+                type="button"
+                onClick={() => setManifestTrip(null)}
+                style={{ padding: "0.5rem 1rem", border: "1px solid #E2E8F0", borderRadius: 6, backgroundColor: "#fff", cursor: "pointer", fontSize: "0.8125rem" }}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                style={{
+                  padding: "0.5rem 1.25rem", border: "none", borderRadius: 6,
+                  backgroundColor: "#0F172A", color: "#fff", fontWeight: 700,
+                  cursor: "pointer", fontSize: "0.8125rem", display: "inline-flex", alignItems: "center", gap: "0.35rem"
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>print</span>
+                Print Manifest
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminShell>
   );
 }

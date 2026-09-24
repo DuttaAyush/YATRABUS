@@ -4,19 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", icon: "home",                label: "Dashboard" },
-  { href: "/users",     icon: "person",              label: "Users" },
-  { href: "/routes",    icon: "route",               label: "Routes" },
-  { href: "/buses",     icon: "directions_bus",      label: "Buses" },
-  { href: "/trips",     icon: "calendar_today",      label: "Trips" },
-  { href: "/bookings",  icon: "confirmation_number", label: "Bookings" },
-  { href: "/package-bookings", icon: "luggage",      label: "Package Bookings" },
-  { href: "/packages",  icon: "travel_explore",      label: "Packages" },
-  { href: "/analytics", icon: "bar_chart",           label: "Analytics" },
-  { href: "/settings",  icon: "settings",            label: "Settings" },
+  { href: "/dashboard",        icon: "home",                label: "Dashboard" },
+  { href: "/users",            icon: "person",              label: "Users" },
+  { href: "/routes",           icon: "route",               label: "Routes" },
+  { href: "/buses",            icon: "directions_bus",      label: "Buses" },
+  { href: "/trips",            icon: "calendar_today",      label: "Trips" },
+  { href: "/bookings",         icon: "confirmation_number", label: "Bookings" },
+  { href: "/package-bookings", icon: "luggage",              label: "Package Bookings" },
+  { href: "/packages",         icon: "travel_explore",      label: "Packages" },
+  { href: "/support",          icon: "headset_mic",         label: "Support & Leads" },
+  { href: "/offers",           icon: "local_offer",         label: "Offers" },
+  { href: "/analytics",        icon: "bar_chart",           label: "Analytics" },
+  { href: "/settings",         icon: "settings",            label: "Settings" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   const isActive = (href) => {
@@ -25,40 +27,64 @@ export default function Sidebar() {
   };
 
   return (
-    <aside
-      style={{
-        width: 220,
-        minHeight: "100vh",
-        backgroundColor: "#0F172A",
-        display: "flex",
-        flexDirection: "column",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 50,
-      }}
-    >
-      {/* Logo */}
-      <div style={{ padding: "1.25rem 1rem 1.125rem", borderBottom: "1px solid #1E293B" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 8,
-            background: "linear-gradient(135deg, #B91C1C, #991B1B)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#fff" }}>directions_bus</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "1rem", fontWeight: 800, color: "#FFFFFF", lineHeight: 1.1, letterSpacing: "-0.01em" }}>
-              <span style={{ color: "#B91C1C" }}>Ved</span>Bus
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          style={{
+            position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: 49, transition: "opacity 200ms"
+          }}
+        />
+      )}
+
+      <aside
+        className={`admin-sidebar ${isOpen ? "open" : ""}`}
+        style={{
+          width: 220,
+          minHeight: "100vh",
+          backgroundColor: "#0F172A",
+          display: "flex",
+          flexDirection: "column",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 50,
+        }}
+      >
+        {/* Logo & Mobile Close */}
+        <div style={{ padding: "1.25rem 1rem 1.125rem", borderBottom: "1px solid #1E293B", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 8,
+              background: "linear-gradient(135deg, #B91C1C, #991B1B)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#fff" }}>directions_bus</span>
             </div>
-            <div style={{ fontSize: "0.625rem", color: "#475569", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>
-              Admin Portal
+            <div>
+              <div style={{ fontSize: "1rem", fontWeight: 800, color: "#FFFFFF", lineHeight: 1.1, letterSpacing: "-0.01em" }}>
+                <span style={{ color: "#B91C1C" }}>Ved</span>Bus
+              </div>
+              <div style={{ fontSize: "0.625rem", color: "#475569", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>
+                Admin Portal
+              </div>
             </div>
           </div>
+
+          {/* Close button on mobile */}
+          <button
+            onClick={onClose}
+            style={{
+              background: "none", border: "none", color: "#94A3B8", cursor: "pointer",
+              display: "flex", padding: 4
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
+          </button>
         </div>
-      </div>
 
       {/* Nav */}
       <nav style={{ flex: 1, paddingTop: "0.5rem", overflowY: "auto" }}>
@@ -68,6 +94,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => { if (onClose) onClose(); }}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -112,5 +139,6 @@ export default function Sidebar() {
         <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.3, marginTop: 2 }}>A Brighter Bharat</div>
       </div>
     </aside>
+    </>
   );
 }

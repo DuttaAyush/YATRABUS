@@ -1,6 +1,6 @@
 "use client";
 
-export default function Topbar() {
+export default function Topbar({ onToggleSidebar }) {
   return (
     <header style={{
       height: 64,
@@ -16,8 +16,15 @@ export default function Topbar() {
       boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
     }}>
       {/* Hamburger */}
-      <button style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#475569", display: "flex" }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 22 }}>menu</span>
+      <button
+        type="button"
+        onClick={onToggleSidebar}
+        style={{
+          background: "none", border: "none", cursor: "pointer",
+          padding: 6, color: "#475569", display: "flex", borderRadius: 6
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
       </button>
 
       {/* Search */}
