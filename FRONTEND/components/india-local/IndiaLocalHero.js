@@ -1,14 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import DatePickerPopover from '@/components/ui/DatePickerPopover';
 
+const domesticPackagesList = [
+  { id: 'himachal-manali', title: 'Himachal & Manali Mountain Escape', duration: '5 Days / 4 Nights', price: '₹9,499', badge: 'Hill Station', highlight: 'Rohtang Pass • Solang Valley • Kasol' },
+  { id: 'kerala-backwaters', title: 'Kerala Backwaters & Munnar Hills', duration: '6 Days / 5 Nights', price: '₹12,850', badge: 'Serene Nature', highlight: 'Alleppey Houseboat • Tea Gardens • Kochi' },
+  { id: 'goa-beach', title: 'Goa Beachfront Villa & Catamaran Cruise', duration: '4 Days / 3 Nights', price: '₹7,999', badge: 'Coastal Getaway', highlight: 'Baga & Calangute • Mandovi Cruise • Old Goa' },
+  { id: 'jim-corbett', title: 'Jim Corbett & Nainital Lake Paradise', duration: '4 Days / 3 Nights', price: '₹6,999', badge: 'Wildlife Safari', highlight: 'Jeep Safari • Naini Lake Boating • Viewpoint' },
+  { id: 'kashmir-paradise', title: 'Kashmir Valley & Dal Lake Shikara', duration: '6 Days / 5 Nights', price: '₹14,499', badge: 'Paradise on Earth', highlight: 'Srinagar Houseboat • Gulmarg Gondola • Pahalgam' },
+  { id: 'rajasthan-royal', title: 'Royal Rajasthan Jaipur & Udaipur Forts', duration: '6 Days / 5 Nights', price: '₹11,999', badge: 'Heritage & Palaces', highlight: 'Amber Fort • Lake Pichola • Desert Culture' },
+  { id: 'andaman-island', title: 'Andaman Radhanagar Beach & Scuba', duration: '5 Days / 4 Nights', price: '₹19,999', badge: 'Island Paradise', highlight: 'Havelock Island • Cellular Jail • Water Sports' },
+  { id: 'meghalaya-hills', title: 'Meghalaya Living Roots & Shillong Hills', duration: '5 Days / 4 Nights', price: '₹13,500', badge: 'Hidden Gem', highlight: 'Cherrapunji Waterfalls • Dawki River • Mawlynnong' },
+];
+
+const domesticDepartureCities = [
+  { city: 'Mumbai', state: 'Maharashtra', desc: 'Direct Coach & Flight' },
+  { city: 'Delhi', state: 'NCR', desc: 'North India Gateway' },
+  { city: 'Pune', state: 'Maharashtra', desc: 'Express Corridor' },
+  { city: 'Nagpur', state: 'Maharashtra', desc: 'Central Hub' },
+  { city: 'Bengaluru', state: 'Karnataka', desc: 'South India Transit' },
+  { city: 'Hyderabad', state: 'Telangana', desc: 'Deccan Gateway' },
+  { city: 'Ahmedabad', state: 'Gujarat', desc: 'Western Fleet' },
+  { city: 'Kolkata', state: 'West Bengal', desc: 'Eastern Gateway' },
+];
+
 export default function IndiaLocalHero() {
   const router = useRouter();
-  const [destination, setDestination] = useState('Goa');
+  const searchContainerRef = useRef(null);
+  const [destination, setDestination] = useState('Goa Beachfront Villa & Catamaran Cruise');
   const [departureFrom, setDepartureFrom] = useState('Mumbai');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isDestinationOpen, setIsDestinationOpen] = useState(false);
+  const [isDepartureOpen, setIsDepartureOpen] = useState(false);
+  const [isPassengerOpen, setIsPassengerOpen] = useState(false);
+  const [passengers, setPassengers] = useState(2);
   const [selectedDate, setSelectedDate] = useState({
     mainText: 'Nov - Dec 2026',
     subText: 'Winter Getaway'
@@ -17,6 +44,18 @@ export default function IndiaLocalHero() {
   const [textY, setTextY] = useState(0);
   const [textOpacity, setTextOpacity] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+        setIsDestinationOpen(false);
+        setIsDepartureOpen(false);
+        setIsPassengerOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 60);
@@ -55,106 +94,19 @@ export default function IndiaLocalHero() {
     });
   };
 
-  return (
-    <>
-      {/* HERO BANNER */}
-      <section className="relative min-h-screen flex items-center justify-center text-white overflow-hidden pb-28 pt-12 sticky top-0 z-0" data-purpose="hero-banner">
-        <div className="absolute inset-0 z-0">
-          <img
-            alt="Breathtaking cinematic travel photography of an iconic Indian coastal temple shore at sunrise"
-            className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
-            style={{ transform: `scale(${scrollScale})` }}
-            src="/images/vedbus_india_local_holiday_travel_packages_1.jpg"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/50 to-emerald-900/30 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/35 to-transparent"></div>
-        </div>
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-          <div
-            style={{
-              transform: `translateY(${isLoaded ? textY * 0.7 : 20}px)`,
-              opacity: isLoaded ? textOpacity : 0,
-              transition: isLoaded && textY > 0
-                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-                : 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.8s ease-out 0.05s'
-            }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-amber-200 text-xs font-semibold tracking-wider uppercase mb-5 shadow-lg shadow-teal-950/30"
-          >
-            <span className="text-amber-300 animate-pulse">✨</span> Explore Incredible Bharat • Curated Domestic Getaways
-          </div>
-          <h1
-            style={{
-              transform: `translateY(${isLoaded ? textY : 35}px)`,
-              opacity: isLoaded ? textOpacity : 0,
-              transition: isLoaded && textY > 0
-                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
-            }}
-            className="font-serif text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-white max-w-5xl leading-[1.15] drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
-          >
-            Discover India. Unpack Wonders.
-            <span className="block italic font-serif font-normal bg-gradient-to-r from-emerald-100 via-teal-200 to-cyan-100 bg-clip-text text-transparent drop-shadow-md mt-1">
-              Memories Last Forever.
-            </span>
-          </h1>
-          <p
-            style={{
-              transform: `translateY(${isLoaded ? textY * 0.85 : 35}px)`,
-              opacity: isLoaded ? textOpacity : 0,
-              transition: isLoaded && textY > 0
-                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
-            }}
-            className="mt-5 text-base sm:text-lg text-slate-200 max-w-3xl font-light leading-relaxed drop-shadow-md"
-          >
-            Curated domestic holiday packages across coastal retreats, serene backwaters, and misty Himalayan valleys. Direct BharatBenz &amp; Volvo coach transfers, handpicked 4★ &amp; 5★ luxury stays, and regional culinary excellence.
-          </p>
-          <div
-            style={{
-              transform: `translateY(${isLoaded ? textY * 0.7 : 35}px)`,
-              opacity: isLoaded ? textOpacity : 0,
-              transition: isLoaded && textY > 0
-                ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
-                : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s, opacity 0.9s ease-out 0.45s'
-            }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4"
-          >
-            <a
-              className="px-7 py-3.5 bg-teal-700 hover:bg-teal-600 text-white font-bold rounded-full shadow-lg hover:shadow-teal-700/40 transition duration-200 flex items-center gap-2 text-sm tracking-wide"
-              href="#curated-packages"
-            >
-              Explore Domestic Getaways
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-              </svg>
-            </a>
-            <a
-              className="px-6 py-3.5 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold rounded-full border border-white/30 transition duration-200 flex items-center gap-2 text-sm"
-              href="#how-it-works"
-            >
-              <svg className="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path>
-              </svg>
-              How It Works
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* FLOATING SEARCH WIDGET */}
-      <div
-        style={{
-          transform: `translateY(${isLoaded ? 0 : 45}px)`,
-          opacity: isLoaded ? 1 : 0,
-          transition: 'transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s, opacity 1s ease-out 0.55s'
-        }}
-        className="relative -mt-20 z-30 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-        data-purpose="search-and-fixed-departures"
-      >
   const handleSearch = (e) => {
     if (e) e.preventDefault();
+    setIsDestinationOpen(false);
+    setIsDepartureOpen(false);
+    setIsPassengerOpen(false);
     const query = destination.trim() || 'Goa';
-    router.push(`/packages?category=Domestic&q=${encodeURIComponent(query)}`);
+    const params = new URLSearchParams({
+      category: 'Domestic',
+      q: query,
+      from: departureFrom,
+      travelers: String(passengers),
+    });
+    router.push(`/packages?${params.toString()}`);
   };
 
   return (
@@ -224,81 +176,170 @@ export default function IndiaLocalHero() {
                 ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
                 : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s, opacity 0.9s ease-out 0.45s'
             }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4"
+            className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-teal-200/90"
           >
-            <a
-              className="px-7 py-3.5 bg-teal-700 hover:bg-teal-600 text-white font-bold rounded-full shadow-lg hover:shadow-teal-700/40 transition duration-200 flex items-center gap-2 text-sm tracking-wide"
-              href="#curated-packages"
-            >
-              Explore Domestic Getaways
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-              </svg>
-            </a>
-            <a
-              className="px-6 py-3.5 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold rounded-full border border-white/30 transition duration-200 flex items-center gap-2 text-sm"
-              href="#how-it-works"
-            >
-              <svg className="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path>
-              </svg>
-              How It Works
-            </a>
+            <div className="flex items-center gap-1.5 bg-slate-950/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-teal-500/20">
+              <span className="text-teal-400">✓</span> 100% Guaranteed Departures
+            </div>
+            <div className="flex items-center gap-1.5 bg-slate-950/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-teal-500/20">
+              <span className="text-teal-400">✓</span> BharatBenz &amp; Volvo AC Coaches
+            </div>
+            <div className="flex items-center gap-1.5 bg-slate-950/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-teal-500/20">
+              <span className="text-teal-400">✓</span> Handpicked 4★ &amp; 5★ Stays
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FLOATING SEARCH WIDGET */}
-      <div
-        style={{
-          transform: `translateY(${isLoaded ? 0 : 45}px)`,
-          opacity: isLoaded ? 1 : 0,
-          transition: 'transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s, opacity 1s ease-out 0.55s'
-        }}
-        className="relative -mt-20 z-30 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-        data-purpose="search-and-fixed-departures"
-      >
-        <div className="bg-white rounded-2xl shadow-custom-card border border-slate-100 p-4 sm:p-6 lg:p-7 backdrop-blur">
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="border border-slate-200 rounded-xl p-3 hover:border-teal-600 focus-within:border-teal-600 transition flex items-center gap-3">
-              <div className="text-teal-700 text-xl pl-1">📍</div>
-              <div className="flex-1 min-w-0">
-                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Destination</span>
+      {/* 2. FLOATING SEARCH & FILTER WIDGET */}
+      <div className="relative z-20 mx-auto px-4 sm:px-6 -mt-14 mb-12 max-w-7xl lg:px-8 w-full">
+        <div ref={searchContainerRef} className="bg-white rounded-3xl shadow-2xl p-3 md:p-4 border border-slate-200/80 relative z-30">
+          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            {/* 1. DESTINATION / DOMESTIC PACKAGE */}
+            <div className="relative md:col-span-4 flex items-center bg-slate-50 rounded-2xl px-3.5 py-2.5 border border-slate-200 focus-within:border-teal-600 transition-colors">
+              <span className="material-symbols-outlined text-teal-600 text-[20px] mr-2.5 shrink-0">landscape</span>
+              <div className="flex-1 min-w-0 text-left">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer">Curated Package / Destination</label>
                 <input
-                  className="w-full text-xs font-bold text-slate-800 p-0 border-0 focus:ring-0 truncate bg-transparent outline-none"
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 focus:outline-none truncate"
+                  placeholder="Select Package (Goa, Manali, Kerala...)"
+                  type="text"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  placeholder="Goa, Kerala, Himachal..."
-                  type="text"
+                  onFocus={() => {
+                    setIsDestinationOpen(true);
+                    setIsDepartureOpen(false);
+                    setIsPassengerOpen(false);
+                    setIsDatePickerOpen(false);
+                  }}
+                  onChange={(e) => {
+                    setDestination(e.target.value);
+                    setIsDestinationOpen(true);
+                  }}
                 />
               </div>
+
+              {/* DOMESTIC PACKAGE DROPDOWN */}
+              {isDestinationOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-full left-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 p-2 z-50 text-left animate-fadeIn"
+                >
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-teal-700 px-3 py-1.5 border-b border-slate-100 flex items-center justify-between">
+                    <span>Curated Bharat Holidays</span>
+                    <span className="text-[9px] text-slate-400">Direct Fleets</span>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto py-1 space-y-1 custom-scrollbar">
+                    {domesticPackagesList
+                      .filter(p =>
+                        p.title.toLowerCase().includes(destination.toLowerCase().trim()) ||
+                        p.highlight.toLowerCase().includes(destination.toLowerCase().trim())
+                      )
+                      .map((pkg) => (
+                        <button
+                          key={pkg.id}
+                          type="button"
+                          onClick={() => {
+                            setDestination(pkg.title);
+                            setIsDestinationOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-start justify-between gap-2 cursor-pointer ${
+                            destination.toLowerCase() === pkg.title.toLowerCase()
+                              ? 'bg-teal-50 text-teal-900 border border-teal-200'
+                              : 'hover:bg-slate-50 text-slate-800'
+                          }`}
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-900 text-xs truncate">{pkg.title}</div>
+                            <div className="text-[10px] text-slate-500 truncate">{pkg.highlight}</div>
+                            <div className="text-[9px] text-teal-600 font-semibold mt-0.5">{pkg.duration}</div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-[10px] font-extrabold text-teal-700 block">{pkg.price}</span>
+                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-teal-100/80 text-teal-800">{pkg.badge}</span>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="border border-slate-200 rounded-xl p-3 hover:border-teal-600 focus-within:border-teal-600 transition flex items-center gap-3">
-              <div className="text-teal-700 text-xl pl-1">🚌</div>
-              <div className="flex-1 min-w-0">
-                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Departure From</span>
+
+            {/* 2. DEPARTURE CITY */}
+            <div className="relative md:col-span-3 flex items-center bg-slate-50 rounded-2xl px-3.5 py-2.5 border border-slate-200 focus-within:border-teal-600 transition-colors">
+              <span className="material-symbols-outlined text-teal-600 text-[20px] mr-2.5 shrink-0">location_on</span>
+              <div className="flex-1 min-w-0 text-left">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer">Departure Hub</label>
                 <input
-                  className="w-full text-xs font-bold text-slate-800 p-0 border-0 focus:ring-0 truncate bg-transparent outline-none"
-                  value={departureFrom}
-                  onChange={(e) => setDepartureFrom(e.target.value)}
-                  placeholder="Mumbai, Pune, Delhi..."
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 focus:outline-none truncate"
                   type="text"
+                  value={departureFrom}
+                  onFocus={() => {
+                    setIsDepartureOpen(true);
+                    setIsDestinationOpen(false);
+                    setIsPassengerOpen(false);
+                    setIsDatePickerOpen(false);
+                  }}
+                  onChange={(e) => {
+                    setDepartureFrom(e.target.value);
+                    setIsDepartureOpen(true);
+                  }}
                 />
               </div>
+
+              {/* DEPARTURE CITY DROPDOWN */}
+              {isDepartureOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 p-2 z-50 text-left animate-fadeIn"
+                >
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-teal-700 px-3 py-1.5 border-b border-slate-100">
+                    Select Departure Hub
+                  </div>
+                  <div className="max-h-48 overflow-y-auto py-1 space-y-0.5 custom-scrollbar">
+                    {domesticDepartureCities
+                      .filter(c => c.city.toLowerCase().includes(departureFrom.toLowerCase().trim()) || c.state.toLowerCase().includes(departureFrom.toLowerCase().trim()))
+                      .map((c) => (
+                        <button
+                          key={c.city}
+                          type="button"
+                          onClick={() => {
+                            setDepartureFrom(c.city);
+                            setIsDepartureOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+                            departureFrom.toLowerCase() === c.city.toLowerCase()
+                              ? 'bg-teal-50 text-teal-900 font-bold'
+                              : 'hover:bg-slate-50 text-slate-700'
+                          }`}
+                        >
+                          <div>
+                            <span className="block text-xs font-bold text-slate-900">{c.city}</span>
+                            <span className="text-[10px] text-slate-400">{c.desc}</span>
+                          </div>
+                          <span className="text-[10px] text-teal-600 font-bold">{c.state}</span>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* DATE PICKER TRIGGER WITH FLOATING SPEECH BUBBLE */}
+            {/* 3. TRAVEL DATES PICKER */}
             <div
-              className={`relative border border-slate-200 hover:border-teal-600 rounded-xl p-3 transition flex items-center gap-3 cursor-pointer hover:bg-teal-50/50 ${isDatePickerOpen ? 'z-[9999]' : 'z-10'}`}
-              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+              className="md:col-span-2 flex items-center bg-slate-50 rounded-2xl px-3.5 py-2.5 border border-slate-200 focus-within:border-teal-600 transition-colors cursor-pointer relative select-none"
+              onClick={() => {
+                setIsDatePickerOpen(!isDatePickerOpen);
+                setIsDestinationOpen(false);
+                setIsDepartureOpen(false);
+                setIsPassengerOpen(false);
+              }}
             >
-              <div className="text-teal-700 text-xl pl-1">🗓️</div>
-              <div className="flex-1 min-w-0">
-                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider cursor-pointer">Travel Month</span>
-                <div className="text-xs font-bold text-slate-800 truncate">{selectedDate.mainText}</div>
+              <span className="material-symbols-outlined text-teal-600 text-[20px] mr-2 shrink-0">calendar_month</span>
+              <div className="flex-1 min-w-0 text-left">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer">Dates</label>
+                <div className="text-xs font-bold text-slate-900 truncate">{selectedDate.mainText}</div>
               </div>
 
-              {/* Floating Speech Bubble */}
               <DatePickerPopover
                 isOpen={isDatePickerOpen}
                 onClose={() => setIsDatePickerOpen(false)}
@@ -310,24 +351,89 @@ export default function IndiaLocalHero() {
               />
             </div>
 
-            <div className="border border-slate-200 rounded-xl p-3 hover:border-teal-600 transition flex items-center gap-3">
-              <div className="text-teal-700 text-xl pl-1">👥</div>
-              <div className="flex-1 min-w-0">
-                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Travelers</span>
-                <input
-                  className="w-full text-xs font-bold text-slate-800 p-0 border-0 focus:ring-0 truncate bg-transparent outline-none"
-                  readOnly
-                  type="text"
-                  defaultValue="2 Adults, 1 Room"
-                />
+            {/* 4. TRAVELERS SELECTOR */}
+            <div
+              className="relative md:col-span-2 flex items-center bg-slate-50 hover:bg-teal-50/50 rounded-2xl px-3 py-2.5 border border-slate-200 text-center cursor-pointer transition-all select-none"
+              onClick={() => {
+                setIsPassengerOpen(!isPassengerOpen);
+                setIsDestinationOpen(false);
+                setIsDepartureOpen(false);
+                setIsDatePickerOpen(false);
+              }}
+            >
+              <div className="flex-1 min-w-0 text-left">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer">Travelers</label>
+                <div className="text-xs font-bold text-slate-900 truncate">
+                  {passengers} {passengers === 1 ? 'Adult' : 'Adults'}{passengers <= 2 ? ', 1 Room' : `, ${Math.ceil(passengers / 2)} Rooms`}
+                </div>
               </div>
+
+              {/* TRAVELERS POPUP */}
+              {isPassengerOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-64 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-200 p-3 z-50 text-left animate-fadeIn"
+                >
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-teal-700 pb-2 border-b border-slate-100 flex items-center justify-between">
+                    <span>Number of Travelers</span>
+                    <span className="text-[10px] text-slate-400">Hotel &amp; Transit</span>
+                  </div>
+
+                  <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block">Adults</span>
+                      <span className="text-[10px] text-slate-500">12+ years</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-slate-100 px-2 py-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setPassengers(Math.max(1, passengers - 1))}
+                        className="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-900 flex items-center justify-center font-bold text-sm shadow-sm transition-colors cursor-pointer"
+                      >
+                        -
+                      </button>
+                      <span className="font-extrabold text-sm text-teal-700 w-5 text-center">{passengers}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPassengers(Math.min(10, passengers + 1))}
+                        className="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-900 flex items-center justify-center font-bold text-sm shadow-sm transition-colors cursor-pointer"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5 pt-2">
+                    {[1, 2, 3, 4, 5, 6].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => {
+                          setPassengers(num);
+                          setIsPassengerOpen(false);
+                        }}
+                        className={`py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                          passengers === num
+                            ? 'bg-teal-600 text-white shadow-sm'
+                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {num} {num === 1 ? 'Adult' : 'Adults'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex items-center">
-              <button type="submit" className="w-full h-full min-h-[52px] bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition cursor-pointer">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5"></path>
-                </svg>
-                <span className="text-sm">Search Holidays</span>
+
+            {/* 5. SEARCH BUTTON */}
+            <div className="md:col-span-1">
+              <button
+                type="submit"
+                className="w-full min-h-[52px] bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-2xl flex items-center justify-center gap-1 shadow-lg shadow-teal-700/30 active:scale-[0.98] transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">search</span>
+                <span className="hidden md:inline text-xs">GO</span>
               </button>
             </div>
           </form>

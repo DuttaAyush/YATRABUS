@@ -1,9 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { href: "/dashboard",        icon: "home",                label: "Dashboard" },
   { href: "/users",            icon: "person",              label: "Users" },
   { href: "/routes",           icon: "route",               label: "Routes" },
@@ -20,6 +21,32 @@ const NAV_ITEMS = [
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const u = JSON.parse(localStorage.getItem("vedbus_admin_user") || "{}");
+        if (
+          u.role === "SUPER_ADMIN" ||
+          u.email === "admin@vedbus.in" ||
+          u.email === "superadmin@vedbus.in" ||
+          u.email === "admin@vedbus.com"
+        ) {
+          setIsSuperAdmin(true);
+        }
+      } catch {}
+    }
+  }, []);
+
+  const navItems = isSuperAdmin
+    ? [
+        BASE_NAV_ITEMS[0], // Dashboard
+        BASE_NAV_ITEMS[1], // Users
+        { href: "/admins", icon: "shield_person", label: "Admins", badge: "Super" },
+        ...BASE_NAV_ITEMS.slice(2),
+      ]
+    : BASE_NAV_ITEMS;
 
   const isActive = (href) => {
     if (href === "/dashboard") return pathname === "/" || pathname === "/dashboard";
@@ -107,7 +134,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Nav */}
       <nav style={{ flex: 1, paddingTop: "0.5rem", overflowY: "auto" }}>
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = isActive(item.href);
           return (
             <Link
@@ -117,7 +144,7 @@ export default function Sidebar({ isOpen, onClose }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0.625rem",
+                justifyContent: "space-between",
                 padding: "0.625rem 1rem",
                 color: active ? "#FFFFFF" : "#94A3B8",
                 backgroundColor: active ? "#B91C1C" : "transparent",
@@ -131,8 +158,25 @@ export default function Sidebar({ isOpen, onClose }) {
               onMouseEnter={e => { if (!active) e.currentTarget.style.backgroundColor = "#1E293B"; e.currentTarget.style.color = "#FFFFFF"; }}
               onMouseLeave={e => { if (!active) { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#94A3B8"; } }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 19, flexShrink: 0 }}>{item.icon}</span>
-              <span>{item.label}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 19, flexShrink: 0 }}>{item.icon}</span>
+                <span>{item.label}</span>
+              </div>
+              {item.badge && (
+                <span style={{
+                  fontSize: "0.5625rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  padding: "1px 6px",
+                  borderRadius: 4,
+                  backgroundColor: active ? "rgba(255,255,255,0.25)" : "rgba(245, 158, 11, 0.2)",
+                  color: active ? "#FFFFFF" : "#FBBF24",
+                  border: active ? "none" : "1px solid rgba(245, 158, 11, 0.4)",
+                }}>
+                  {item.badge}
+                </span>
+              )}
             </Link>
           );
         })}

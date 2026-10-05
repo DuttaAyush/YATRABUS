@@ -8,7 +8,7 @@ export default function DayWiseBlueprints() {
           <span className="text-xs font-extrabold text-brand-scarlet uppercase tracking-wider bg-amber-100 px-3 py-1 rounded-full border border-amber-200">
             Precision Transit & Ritual Timings
           </span>
-          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-serif font-bold">Detailed Day-Wise Yatra Blueprints</h2>
+          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-spiritual font-normal not-italic">Detailed Day-Wise Yatra Blueprints</h2>
           <p className="text-sm text-slate-600 mt-2">See how VedBus seamlessly synchronizes coach transit, temple VIP queue schedules, hotel check-ins, and Satvik meals so families never rush or wait.</p>
         </div>
 

@@ -107,7 +107,40 @@ export default function PopularRoutes({ onOpenSeatDrawer, rotating = true }) {
   const isAnimatingButtonRef = useRef(false);
   const [isHovered, setIsHovered] = useState(false);
   const [touchStartX, setTouchStartX] = useState(null);
-  const routesTrack = [...popularRoutesData, ...popularRoutesData, ...popularRoutesData];
+  const [routes, setRoutes] = useState(popularRoutesData);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/buses/search')
+      .then(res => res.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : data.data || [];
+        if (items.length > 0) {
+          const mapped = items.map(t => ({
+            id: t.id,
+            route: `${t.depLocation} ⇄ ${t.arrLocation}`,
+            frequency: 'Daily Express',
+            busType: t.busType,
+            plate: t.busPlate,
+            price: `₹${t.price}`,
+            depTime: t.depTime,
+            depStation: `${t.depLocation} Terminal`,
+            duration: t.duration,
+            via: t.routeVia,
+            arrTime: t.arrTime,
+            arrStation: `${t.arrLocation} Bay`,
+            badge: t.badge || 'Verified Plate',
+            badgeColor: 'bg-brand-scarlet text-white',
+            statusText: `Only ${t.seatsLeft} seats left!`,
+            statusBg: 'bg-red-50 text-brand-scarlet',
+            perk: 'Free Water & GPS Live',
+          }));
+          setRoutes(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const routesTrack = [...routes, ...routes, ...routes];
 
   useEffect(() => {
     let animationFrameId;

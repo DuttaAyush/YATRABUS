@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PackageDetailModal from '@/components/site/PackageDetailModal';
+import { apiFetch } from '@/lib/api';
 
 const yatraPackages = [
   {
@@ -82,10 +83,36 @@ export default function YatraCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [modalPkg, setModalPkg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [packages, setPackages] = useState(yatraPackages);
 
-  const filteredPackages = yatraPackages.filter(pkg => {
+  useEffect(() => {
+    apiFetch('/api/packages?category=Spiritual')
+      .then(res => res.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : data.data || [];
+        if (items.length > 0) {
+          const mapped = items.map(p => ({
+            ...p,
+            tags: (Array.isArray(p.tags) && p.tags.length > 0)
+              ? p.tags
+              : (Array.isArray(p.highlights) && p.highlights.length > 0)
+                ? p.highlights
+                : ['Verified Darshan', 'Satvik Meals', 'AC Transit'],
+            destinations: p.destinations || p.subtitle || 'Sacred Teerth Circuit',
+            badge: p.badge || 'VIP Darshan Pass Included',
+            price: p.price || (p.pricePerPerson ? `₹${Number(p.pricePerPerson).toLocaleString('en-IN')}` : '₹6,499'),
+            duration: p.duration || `${p.durationDays || 4} Days / ${(p.durationDays || 4) - 1} Nights`,
+            image: p.image || '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
+          }));
+          setPackages(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const filteredPackages = packages.filter(pkg => {
     if (activeFilter === 'all') return true;
-    return pkg.category.includes(activeFilter);
+    return String(pkg.category || '').toLowerCase().includes(activeFilter) || String(pkg.title || '').toLowerCase().includes(activeFilter);
   });
 
   const handleOpenModal = (pkg) => {
@@ -101,7 +128,7 @@ export default function YatraCatalog() {
             <span className="material-symbols-outlined text-[16px] text-brand-scarlet">temple_hindu</span>
             DEVSTHAN & TEERTH YATRA CATALOG
           </div>
-          <h2 className="text-3xl md:text-4xl text-slate-900 tracking-tight font-serif font-bold">Curated Spiritual Darshan Circuits</h2>
+          <h2 className="text-3xl md:text-4xl text-slate-900 tracking-tight font-spiritual font-normal not-italic">Curated Spiritual Darshan Circuits</h2>
           <p className="text-sm text-slate-600 mt-2">Multi-day hassle-free devotional yatras with AC coach transfers, verified stays within 500m of temple sanctums, pre-booked VIP lines, and Satvik cuisine.</p>
 
           {/* FILTER BUTTONS */}
@@ -159,7 +186,7 @@ export default function YatraCatalog() {
                   <h3 className="text-lg text-slate-900 mb-2 font-semibold">{pkg.title}</h3>
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">{pkg.description}</p>
                   <div className="flex flex-wrap gap-1.5 text-[11px] mb-4">
-                    {pkg.tags.map((t, idx) => (
+                    {(Array.isArray(pkg.tags) ? pkg.tags : (Array.isArray(pkg.highlights) ? pkg.highlights : [])).map((t, idx) => (
                       <span key={idx} className="px-2.5 py-1 rounded-md bg-amber-50 text-amber-900 font-bold border border-amber-200">
                         {t}
                       </span>

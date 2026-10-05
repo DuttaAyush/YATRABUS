@@ -20,6 +20,18 @@ export default function Topbar({ onToggleSidebar }) {
   // Admin dropdown state
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("vedbus_admin_user");
+        if (stored) {
+          setCurrentUser(JSON.parse(stored));
+        }
+      } catch {}
+    }
+  }, []);
 
   const NOTIFICATIONS = [
     { id: 1, title: "New Booking Confirmed", desc: "Booking #VB250915001 • Pune → Nagpur", time: "5m ago", icon: "confirmation_number", color: "#16A34A" },
@@ -315,17 +327,35 @@ export default function Topbar({ onToggleSidebar }) {
           {/* Avatar Icon */}
           <div style={{
             width: 34, height: 34, borderRadius: "50%",
-            background: "linear-gradient(135deg, #B91C1C, #991B1B)",
+            background: currentUser?.role === "SUPER_ADMIN"
+              ? "linear-gradient(135deg, #D97706, #B45309)"
+              : "linear-gradient(135deg, #B91C1C, #991B1B)",
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
-            boxShadow: "0 2px 4px rgba(185, 28, 28, 0.2)",
+            boxShadow: currentUser?.role === "SUPER_ADMIN"
+              ? "0 2px 5px rgba(217, 119, 6, 0.3)"
+              : "0 2px 4px rgba(185, 28, 28, 0.2)",
           }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#fff" }}>person</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#fff" }}>
+              {currentUser?.role === "SUPER_ADMIN" ? "shield_person" : "person"}
+            </span>
           </div>
 
           <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#0F172A", lineHeight: 1.2 }}>Admin</div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8", lineHeight: 1.2 }}>Super Admin</div>
+            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2 }}>
+              {currentUser?.name || "Admin"}
+            </div>
+            <div style={{
+              fontSize: "0.65rem",
+              fontWeight: 600,
+              color: currentUser?.role === "SUPER_ADMIN" ? "#B45309" : "#64748B",
+              lineHeight: 1.2,
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+            }}>
+              {currentUser?.role === "SUPER_ADMIN" ? "★ Super Admin" : "Admin"}
+            </div>
           </div>
 
           <span
@@ -336,6 +366,36 @@ export default function Topbar({ onToggleSidebar }) {
           </span>
         </Link>
       </div>
+
+      {/* Logout Button */}
+      <button
+        type="button"
+        onClick={() => {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("vedbus_admin_token");
+            localStorage.removeItem("vedbus_admin_user");
+            window.location.href = "/login";
+          }
+        }}
+        title="Sign Out of Admin"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.35rem",
+          backgroundColor: "#FEF2F2",
+          border: "1px solid #FECACA",
+          color: "#DC2626",
+          padding: "0.4rem 0.75rem",
+          borderRadius: 8,
+          fontSize: "0.75rem",
+          fontWeight: 600,
+          cursor: "pointer",
+          transition: "all 150ms",
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
+        <span>Logout</span>
+      </button>
     </header>
   );
 }

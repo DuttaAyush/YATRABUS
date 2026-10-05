@@ -5,16 +5,47 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
+import AuthModal from './AuthModal';
+import { getStoredUser, logoutUser, getUserAvatar } from '@/lib/auth';
 
 export default function Header() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalInitialMode, setAuthModalInitialMode] = useState('login');
 
   useEffect(() => {
     setMounted(true);
+    const loadUser = () => {
+      setCurrentUser(getStoredUser());
+    };
+    loadUser();
+
+    const handleOpenAuth = (e) => {
+      if (e?.detail?.mode) {
+        setAuthModalInitialMode(e.detail.mode);
+      }
+      setIsAuthModalOpen(true);
+    };
+
+    window.addEventListener('vedbus-auth-change', loadUser);
+    window.addEventListener('storage', loadUser);
+    window.addEventListener('open-auth-modal', handleOpenAuth);
+    return () => {
+      window.removeEventListener('vedbus-auth-change', loadUser);
+      window.removeEventListener('storage', loadUser);
+      window.removeEventListener('open-auth-modal', handleOpenAuth);
+    };
   }, []);
+
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    logoutUser('/');
+  };
+
 
   const isBusTicketsActive = pathname === '/';
   const isSpiritualActive = pathname === '/spiritual';
@@ -244,97 +275,109 @@ export default function Header() {
 
         {/* Right Side: Profile Action Pill & Mobile Hamburger */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Profile Action Pill with Hover/Click Dropdown (Visible >=1024px) */}
-          <div
-            ref={profileRef}
-            className="hidden lg:block relative shrink-0 py-1"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <Link
-              href="/profile"
-              onClick={() => setIsProfileOpen(false)}
-              aria-expanded={isProfileOpen}
-              aria-label="User profile and account menu"
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-full border border-white/30 bg-white/15 hover:bg-white/25 text-white backdrop-blur-xl font-bold text-[11px] sm:text-xs transition-all duration-200 shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
+          {/* Profile Action Pill or Login Button */}
+          {currentUser ? (
+            <div
+              ref={profileRef}
+              className="hidden lg:block relative shrink-0 py-1"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
-              <img
-                alt="Profile Avatar"
-                className="w-5 h-5 rounded-full object-cover ring-1 ring-white/40 shrink-0"
-                src="/images/avatar.png"
-              />
-              <span className="hidden sm:inline">Profile</span>
-              <span className={`material-symbols-outlined text-[14px] text-white/70 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`}>
-                expand_more
-              </span>
-            </Link>
+              <Link
+                href="/profile"
+                onClick={() => setIsProfileOpen(false)}
+                aria-expanded={isProfileOpen}
+                aria-label="User profile and account menu"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-full border border-white/30 bg-white/15 hover:bg-white/25 text-white backdrop-blur-xl font-bold text-[11px] sm:text-xs transition-all duration-200 shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
+              >
+                <img
+                  alt="Profile Avatar"
+                  className="w-5 h-5 rounded-full object-cover ring-1 ring-white/40 shrink-0"
+                  src={getUserAvatar(currentUser)}
+                />
+                <span className="hidden sm:inline">{currentUser.name ? currentUser.name.split(' ')[0] : 'Profile'}</span>
+                <span className={`material-symbols-outlined text-[14px] text-white/70 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`}>
+                  expand_more
+                </span>
+              </Link>
 
-            {/* PROFILE DROPDOWN MENU */}
-            {isProfileOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-60 sm:w-64 bg-slate-900/95 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-2xl p-2 z-50 animate-fadeIn space-y-1">
-                {/* Profile User Badge Header */}
-                <div className="px-3 py-2.5 border-b border-white/10 flex items-center gap-3">
-                  <img
-                    alt="Profile Avatar"
-                    className="w-9 h-9 rounded-full object-cover ring-2 ring-brand-scarlet/50 shrink-0"
-                    src="/images/avatar.png"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">Rajesh Patel</p>
-                    <p className="text-[10px] text-slate-400 truncate">+91 98765 43210</p>
+              {/* PROFILE DROPDOWN MENU */}
+              {isProfileOpen && (
+                <div className="absolute right-0 top-full mt-1.5 w-60 sm:w-64 bg-slate-900/95 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-2xl p-2 z-50 animate-fadeIn space-y-1">
+                  {/* Profile User Badge Header */}
+                  <div className="px-3 py-2.5 border-b border-white/10 flex items-center gap-3">
+                    <img
+                      alt="Profile Avatar"
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-brand-scarlet/50 shrink-0"
+                      src={getUserAvatar(currentUser)}
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-white truncate">{currentUser.name || 'VedBus Traveler'}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{currentUser.email || currentUser.phone || '+91 98765 43210'}</p>
+                    </div>
                   </div>
+
+                  {/* Menu Links */}
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-amber-400">directions_bus</span>
+                    <span>Upcoming Trips</span>
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-teal-400">confirmation_number</span>
+                    <span>View Tickets &amp; Bookings</span>
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-cyan-400">group</span>
+                    <span>Saved Passengers</span>
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-purple-400">manage_accounts</span>
+                    <span>Edit Profile &amp; Settings</span>
+                  </Link>
+
+                  <div className="border-t border-white/10 my-1" />
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all text-left cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">logout</span>
+                    <span>Logout</span>
+                  </button>
                 </div>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsAuthModalOpen(true)}
+              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/30 bg-white/15 hover:bg-brand-scarlet text-white backdrop-blur-xl font-bold text-xs transition-all duration-200 shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">account_circle</span>
+              <span>Sign In / Register</span>
+            </button>
+          )}
 
-                {/* Menu Links */}
-                <Link
-                  href="/profile"
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
-                >
-                  <span className="material-symbols-outlined text-[18px] text-amber-400">directions_bus</span>
-                  <span>Upcoming Trips</span>
-                </Link>
-
-                <Link
-                  href="/profile"
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
-                >
-                  <span className="material-symbols-outlined text-[18px] text-teal-400">confirmation_number</span>
-                  <span>View Tickets &amp; Bookings</span>
-                </Link>
-
-                <Link
-                  href="/profile"
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
-                >
-                  <span className="material-symbols-outlined text-[18px] text-cyan-400">group</span>
-                  <span>Saved Passengers</span>
-                </Link>
-
-                <Link
-                  href="/profile"
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all"
-                >
-                  <span className="material-symbols-outlined text-[18px] text-purple-400">manage_accounts</span>
-                  <span>Edit Profile &amp; Settings</span>
-                </Link>
-
-                <div className="border-t border-white/10 my-1" />
-
-                <button
-                  type="button"
-                  onClick={() => setIsProfileOpen(false)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all text-left cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px]">logout</span>
-                  <span>Logout</span>
-                </button>
-              </div>
-            )}
-          </div>
 
           {/* Mobile & Tablet Hamburger Button (<1024px) */}
           <button
@@ -400,11 +443,11 @@ export default function Header() {
                   <img
                     alt="Profile Avatar"
                     className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-scarlet/50 shrink-0"
-                    src="/images/avatar.png"
+                    src={getUserAvatar(currentUser)}
                   />
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">Rajesh Patel</p>
-                    <p className="text-[10px] text-slate-300 truncate">+91 98765 43210 • View Profile</p>
+                    <p className="text-xs font-bold text-white truncate">{currentUser?.name || 'VedBus Traveler'}</p>
+                    <p className="text-[10px] text-slate-300 truncate">{currentUser?.email || currentUser?.phone || 'View Profile'}</p>
                   </div>
                 </div>
                 <span className="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
@@ -588,7 +631,23 @@ export default function Header() {
         </div>,
         document.body
       )}
+
+      {/* Login & Sign Up Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        initialMode={authModalInitialMode}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          if (typeof window !== 'undefined') {
+            try {
+              const u = localStorage.getItem('vedbus_user');
+              if (u) setCurrentUser(JSON.parse(u));
+            } catch {}
+          }
+        }}
+      />
     </header>
   );
 }
+
 

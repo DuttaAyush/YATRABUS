@@ -10,7 +10,7 @@ export default function DevsthanRoutes() {
               <span className="material-symbols-outlined text-[16px] text-brand-scarlet">route</span>
               DIRECT SACRED CORRIDORS
             </div>
-            <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-serif font-bold">Popular Devsthan Express Routes</h2>
+            <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-spiritual font-normal not-italic">Popular Devsthan Express Routes</h2>
             <p className="text-sm text-slate-600 mt-1">Guaranteed seats with assigned vehicle registration numbers, synchronized with temple Kakad Aarti & Abhishek timings.</p>
           </div>
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200 shadow-sm">

@@ -1,64 +1,55 @@
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Router, Request, Response } from 'express';
+import { prisma } from '../prisma';
+import { sendSuccess, sendError } from '../utils/response';
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const router = Router();
 
-// Get real-time or mocked tracking data for a specific trip
-router.get('/:tripId', async (req, res) => {
+// ── GET /api/tracking/:tripId ─────────────────────────────────────
+// Public — returns trip status + simulated progress (real GPS deferred)
+router.get('/:tripId', async (req: Request, res: Response) => {
   try {
-    const { tripId } = req.params;
+    const tripId = String(req.params.tripId);
 
     const trip = await prisma.trip.findUnique({
       where: { id: tripId },
-      include: {
-        bus: true,
-        route: true
-      }
+      include: { bus: true, route: true },
     });
 
-    if (!trip) {
-      return res.status(404).json({ error: 'Trip not found' });
-    }
+    if (!trip) return sendError(res, 'Trip not found.', 404);
 
-    // Mock live GPS tracking based on current time
-    const now = new Date();
+    const now       = Date.now();
     const startTime = new Date(trip.departureDatetime).getTime();
-    const endTime = new Date(trip.arrivalDatetime).getTime();
-    const currentTime = now.getTime();
+    const endTime   = new Date(trip.arrivalDatetime).getTime();
 
     let progress = 0;
-    if (currentTime > startTime && currentTime < endTime) {
-      progress = (currentTime - startTime) / (endTime - startTime);
-    } else if (currentTime >= endTime) {
+    if (now > startTime && now < endTime) {
+      progress = (now - startTime) / (endTime - startTime);
+    } else if (now >= endTime) {
       progress = 1;
     }
 
-    // Generate mock coordinates between origin and destination
-    // For simplicity, we just return a progress percentage and some mock coordinates.
-    const startCoord = { lat: 21.1458, lng: 79.0882 }; // Nagpur
-    const endCoord = { lat: 18.5204, lng: 73.8567 };   // Pune
-
-    const currentLat = startCoord.lat + (endCoord.lat - startCoord.lat) * progress;
-    const currentLng = startCoord.lng + (endCoord.lng - startCoord.lng) * progress;
-
-    const trackingData = {
+    // NOTE: GPS coordinates are simulated until client provides GPS provider.
+    const tracking = {
       tripId,
-      busPlateNumber: trip.bus.plateNumber,
-      status: trip.status,
+      busPlate:           trip.bus.plateNumber,
+      busType:            trip.bus.type,
+      status:             trip.status,
+      origin:             trip.route.originCity,
+      destination:        trip.route.destinationCity,
       progressPercentage: Math.round(progress * 100),
-      currentLocation: {
-        latitude: currentLat,
-        longitude: currentLng,
+      departureDatetime:  trip.departureDatetime,
+      arrivalDatetime:    trip.arrivalDatetime,
+      lastUpdated:        new Date().toISOString(),
+      gps: {
+        simulated: true,
+        note: 'Live GPS pending integration with client GPS provider.',
       },
-      estimatedArrival: trip.arrivalDatetime,
-      lastUpdated: new Date()
     };
 
-    res.json(trackingData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch tracking data' });
+    return sendSuccess(res, tracking);
+  } catch (err) {
+    console.error('[tracking/:tripId]', err);
+    return sendError(res, 'Failed to fetch tracking data.', 500);
   }
 });
 

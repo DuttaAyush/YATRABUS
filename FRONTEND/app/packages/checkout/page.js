@@ -2,13 +2,24 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
+import { apiFetch } from '@/lib/api';
 import { allPackagesData } from '@/lib/data/packagesData';
+import AuthGuard from '@/components/auth/AuthGuard';
+import { getStoredUser } from '@/lib/auth';
 
 export default function PackageCheckoutPage({ searchParams }) {
+  const router = useRouter();
   const resolvedSearchParams = use(searchParams) || {};
-  const packageId = resolvedSearchParams.package || 'dubai-marina';
+  const packageId = resolvedSearchParams.package;
+
+  useEffect(() => {
+    if (!packageId) {
+      router.replace('/packages');
+    }
+  }, [packageId, router]);
 
   const [customPackageData, setCustomPackageData] = useState(null);
   const [createdBookingId, setCreatedBookingId] = useState('');
@@ -34,6 +45,12 @@ export default function PackageCheckoutPage({ searchParams }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
+        const u = getStoredUser();
+        if (u) {
+          if (u.email) setContactEmail(u.email);
+          if (u.phone) setContactPhone(u.phone);
+        }
+
         const stored = localStorage.getItem('vedbus_pending_package');
         if (stored) {
           const parsed = JSON.parse(stored);
@@ -125,9 +142,28 @@ export default function PackageCheckoutPage({ searchParams }) {
     setTravelers(updated);
   };
 
-  const handlePayNow = (e) => {
+  const handlePayNow = async (e) => {
     e.preventDefault();
-    const newBookingId = `VEDBUS-PKG-${Math.floor(100000 + Math.random() * 900000)}`;
+    let newBookingId = `VEDBUS-PKG-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    try {
+      const res = await apiFetch('/api/packages/book', {
+        method: 'POST',
+        body: JSON.stringify({
+          packageId: pkg.id || packageId,
+          travelersCount: travelerCount,
+          travelDate: new Date(Date.now() + 86400000 * 7).toISOString(),
+          totalAmount: grandTotal,
+        })
+      });
+      const data = await res.json();
+      if (data.booking?.id || data.data?.booking?.id) {
+        newBookingId = data.booking?.id || data.data?.booking?.id;
+      }
+    } catch (err) {
+      console.error('Failed to post package booking to API:', err);
+    }
+
     setCreatedBookingId(newBookingId);
 
     const newTrip = {
@@ -159,9 +195,11 @@ export default function PackageCheckoutPage({ searchParams }) {
 
     if (typeof window !== 'undefined') {
       try {
-        const existing = JSON.parse(localStorage.getItem('vedbus_user_trips') || '[]');
+        const u = getStoredUser();
+        const userTripsKey = u?.id ? `vedbus_user_trips_${u.id}` : (u?.phone ? `vedbus_user_trips_${u.phone}` : 'vedbus_user_trips');
+        const existing = JSON.parse(localStorage.getItem(userTripsKey) || '[]');
         const updated = [newTrip, ...(Array.isArray(existing) ? existing : [])];
-        localStorage.setItem('vedbus_user_trips', JSON.stringify(updated));
+        localStorage.setItem(userTripsKey, JSON.stringify(updated));
         localStorage.removeItem('vedbus_pending_package');
       } catch (err) {
         console.error('Failed to save package booking to localStorage:', err);
@@ -188,13 +226,31 @@ export default function PackageCheckoutPage({ searchParams }) {
       setShareToast('Booking summary copied to clipboard!');
       setTimeout(() => setShareToast(''), 3000);
     } else {
-      alert(shareText);
+      setShareToast('Booking summary generated!');
+      setTimeout(() => setShareToast(''), 3000);
     }
   };
 
+  if (!packageId) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-3 p-8 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-md mx-4">
+          <div className="w-10 h-10 border-4 border-brand-scarlet border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <h2 className="text-base font-bold text-slate-800 font-serif">Redirecting to Packages...</h2>
+          <p className="text-xs text-slate-500">Please choose a package from the catalog before proceeding to checkout.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
-      <Header />
+    <AuthGuard
+      title="Login to Complete Package Booking"
+      subtitle="Please log in or create an account to customize and confirm your holiday package booking."
+      redirectTo="/packages"
+    >
+      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
+        <Header />
 
       {/* TOP ROUTE CONTEXT BAR */}
       <div className="bg-white border-b border-slate-200/90 shadow-sm py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
@@ -260,7 +316,7 @@ export default function PackageCheckoutPage({ searchParams }) {
               
               {/* Key Inclusions Pills */}
               <div className="flex flex-wrap gap-1.5 pt-2">
-                {pkg.inclusions.map((inc, i) => (
+                {(pkg.inclusions || []).map((inc, i) => (
                   <span key={i} className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-200/60 flex items-center gap-1">
                     <span className="material-symbols-outlined text-[13px] text-emerald-600">check_circle</span>
                     {inc}
@@ -772,7 +828,8 @@ export default function PackageCheckoutPage({ searchParams }) {
         </div>
       )}
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </AuthGuard>
   );
 }

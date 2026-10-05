@@ -1,19 +1,4 @@
-import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
 
 export const metadata = {
   title: "VedBus - India's Dedicated Intercity Bus & Curated Travel Packages",
@@ -26,13 +11,18 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${playfair.variable} scroll-smooth`}
+      className="scroll-smooth"
+      style={{
+        "--font-inter": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "--font-playfair": "'Playfair Display', Georgia, serif",
+        "--font-spiritual": "'Marcellus', 'Cinzel', serif",
+      }}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Marcellus&family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
       </head>

@@ -2,10 +2,11 @@
 
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 import DatePickerPopover from '@/components/ui/DatePickerPopover';
+import { apiFetch } from '@/lib/api';
 
 const popularCities = [
   'Nagpur',
@@ -19,116 +20,15 @@ const popularCities = [
   'Bengaluru',
 ];
 
-const sampleBuses = [
-  {
-    id: 1,
-    operator: 'VRL Travels & Logistics',
-    rating: '4.8',
-    reviews: '1,420',
-    busType: 'BharatBenz AC Sleeper (2+1)',
-    busPlate: 'MH-31-AP-4921',
-    badge: 'Most Popular',
-    depTime: '20:30',
-    depLocation: 'Dharampeth, Nagpur',
-    duration: '10h 30m',
-    arrTime: '07:00',
-    arrLocation: 'Wakad, Pune',
-    routeVia: 'Samruddhi Mahamarg',
-    seatsLeft: 4,
-    price: 850,
-    category: 'sleeper',
-    timeSlot: 'night',
-    amenities: ['wifi', 'blanket', 'charging', 'water', 'gps'],
-  },
-  {
-    id: 2,
-    operator: 'Purple Metrolink Luxury Lines',
-    rating: '4.9',
-    reviews: '2,180',
-    busType: 'Multi-Axle Volvo B11R AC Seater (2+2)',
-    busPlate: 'MH-12-QZ-8812',
-    badge: 'High Speed Express',
-    depTime: '06:00',
-    depLocation: 'Chatrapati Sq, Nagpur',
-    duration: '9h 45m',
-    arrTime: '15:45',
-    arrLocation: 'Swargate, Pune',
-    routeVia: 'Expressway Direct',
-    seatsLeft: 14,
-    price: 450,
-    category: 'seater',
-    timeSlot: 'morning',
-    amenities: ['wifi', 'charging', 'water', 'gps'],
-  },
-  {
-    id: 3,
-    operator: 'Orange Tours & Travels',
-    rating: '4.7',
-    reviews: '950',
-    busType: 'Volvo AC Sleeper Multi-Axle (2+1)',
-    busPlate: 'MH-14-BT-9900',
-    badge: 'Top Safety Rated',
-    depTime: '21:15',
-    depLocation: 'Wadi Naka, Nagpur',
-    duration: '10h 15m',
-    arrTime: '07:30',
-    arrLocation: 'Viman Nagar, Pune',
-    routeVia: 'Samruddhi Mahamarg',
-    seatsLeft: 8,
-    price: 950,
-    category: 'sleeper',
-    timeSlot: 'night',
-    amenities: ['wifi', 'blanket', 'charging', 'water', 'sos', 'gps'],
-  },
-  {
-    id: 4,
-    operator: 'Hans Travels & Devsthan Express',
-    rating: '4.6',
-    reviews: '670',
-    busType: 'BharatBenz Executive AC Seater (2+2)',
-    busPlate: 'MH-31-EX-5544',
-    badge: 'Budget Choice',
-    depTime: '14:00',
-    depLocation: 'Dharampeth, Nagpur',
-    duration: '10h 00m',
-    arrTime: '00:00',
-    arrLocation: 'Shivajinagar, Pune',
-    routeVia: 'NH-6 Highway',
-    seatsLeft: 18,
-    price: 599,
-    category: 'seater',
-    timeSlot: 'afternoon',
-    amenities: ['charging', 'water', 'gps'],
-  },
-  {
-    id: 5,
-    operator: 'Neeta Tours & Travels',
-    rating: '4.8',
-    reviews: '1,890',
-    busType: 'Scania Metrolink AC Sleeper (2+1)',
-    busPlate: 'MH-12-NT-3321',
-    badge: 'Premium Comfort',
-    depTime: '22:00',
-    depLocation: 'Chatrapati Sq, Nagpur',
-    duration: '9h 30m',
-    arrTime: '07:30',
-    arrLocation: 'Wakad Bridge, Pune',
-    routeVia: 'Samruddhi Mahamarg',
-    seatsLeft: 3,
-    price: 1199,
-    category: 'sleeper',
-    timeSlot: 'night',
-    amenities: ['wifi', 'blanket', 'charging', 'water', 'sos', 'gps'],
-  },
-];
-
 function SearchContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialFrom = searchParams.get('from') || 'Nagpur';
   const initialTo = searchParams.get('to') || 'Pune';
   const initialDate = searchParams.get('date') || 'Tomorrow, 24 Oct';
 
-  const [buses, setBuses] = useState(sampleBuses);
+  const [buses, setBuses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [minRating, setMinRating] = useState(0);
@@ -142,22 +42,47 @@ function SearchContent() {
   });
   const [passengerCount, setPassengerCount] = useState(1);
 
-  const fetchBuses = async () => {
+  const getDayOfWeek = (rawDepDate, fallback) => {
+    if (rawDepDate) {
+      try {
+        const d = new Date(rawDepDate);
+        if (!isNaN(d.getTime())) {
+          return d.toLocaleDateString('en-IN', { weekday: 'long' });
+        }
+      } catch (e) {}
+    }
+    if (fallback && typeof fallback === 'string') {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const found = days.find(d => fallback.toLowerCase().includes(d.toLowerCase()));
+      if (found) return found;
+    }
+    return 'Thursday';
+  };
+
+  const fetchBuses = async (queryFrom = fromCity, queryTo = toCity) => {
+    setLoading(true);
+    setBuses([]);
     try {
-      const res = await fetch(`http://localhost:5000/api/buses/search?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}`);
+      const res = await apiFetch(`/api/buses/search?from=${encodeURIComponent(queryFrom)}&to=${encodeURIComponent(queryTo)}`);
       if (res.ok) {
         const data = await res.json();
-        setBuses(data);
+        const items = Array.isArray(data) ? data : data.data || [];
+        setBuses(items);
+      } else {
+        setBuses([]);
       }
     } catch (err) {
-      console.error('Failed to fetch buses:', err);
+      console.error('Failed to fetch buses from API:', err);
+      setBuses([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   React.useEffect(() => {
-    fetchBuses();
+    fetchBuses(initialFrom, initialTo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialFrom, initialTo]);
 
   const [isFromOpen, setIsFromOpen] = useState(false);
   const [isToOpen, setIsToOpen] = useState(false);
@@ -174,7 +99,6 @@ function SearchContent() {
     const temp = fromCity;
     setFromCity(toCity);
     setToCity(temp);
-    triggerToast(`Swapped: ${toCity} ➔ ${temp}`);
   };
 
   const handleDateSelect = (dateResult) => {
@@ -182,7 +106,19 @@ function SearchContent() {
       mainText: dateResult.mainText,
       subText: dateResult.subText,
     });
-    triggerToast(`Date set to ${dateResult.mainText}`);
+  };
+
+  const handleUpdateSearch = () => {
+    closeAllDropdowns();
+    const params = new URLSearchParams();
+    if (fromCity) params.set('from', fromCity);
+    if (toCity) params.set('to', toCity);
+    if (selectedDate?.mainText) params.set('date', selectedDate.mainText);
+    if (passengerCount > 1) params.set('passengers', passengerCount.toString());
+    const newUri = `/search?${params.toString()}`;
+    router.push(newUri);
+    fetchBuses(fromCity, toCity);
+    triggerToast('Search updated');
   };
 
   const closeAllDropdowns = () => {
@@ -252,7 +188,6 @@ function SearchContent() {
                         onClick={() => {
                           setFromCity(city);
                           setIsFromOpen(false);
-                          triggerToast(`Origin updated: ${city}`);
                         }}
                         className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                           fromCity === city
@@ -305,7 +240,6 @@ function SearchContent() {
                         onClick={() => {
                           setToCity(city);
                           setIsToOpen(false);
-                          triggerToast(`Destination updated: ${city}`);
                         }}
                         className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                           toCity === city
@@ -373,7 +307,6 @@ function SearchContent() {
                         onClick={() => {
                           setPassengerCount(count);
                           setIsPassengerOpen(false);
-                          triggerToast(`Passengers set to ${count}`);
                         }}
                         className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                           passengerCount === count
@@ -400,11 +333,7 @@ function SearchContent() {
             
             <button
               type="button"
-              onClick={() => {
-                closeAllDropdowns();
-                fetchBuses();
-                triggerToast(`Buses refreshed for ${fromCity} ➔ ${toCity}`);
-              }}
+              onClick={handleUpdateSearch}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md active:scale-95 cursor-pointer"
             >
               <span className="material-symbols-outlined text-[16px]">search</span>
@@ -542,7 +471,9 @@ function SearchContent() {
               <span className="text-base font-bold text-slate-900 font-serif">
                 {filteredBuses.length} Buses Available
               </span>
-              <span className="text-xs text-slate-500 block">Nagpur to Pune • Direct Express Fleet</span>
+              <span className="text-xs text-slate-500 block">
+                {fromCity} to {toCity} • <strong className="text-brand-scarlet">{getDayOfWeek(null, selectedDate.subText)}</strong>, {selectedDate.mainText}
+              </span>
             </div>
 
             <div className="flex items-center gap-2 overflow-x-auto">
@@ -568,7 +499,17 @@ function SearchContent() {
           </div>
 
           <div className="space-y-4">
-            {filteredBuses.length === 0 ? (
+            {loading ? (
+              <div className="bg-white rounded-3xl p-16 text-center border border-slate-200/90 shadow-sm flex flex-col items-center justify-center space-y-4">
+                <div className="w-12 h-12 border-4 border-brand-scarlet border-t-transparent rounded-full animate-spin" />
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-slate-900 font-serif">Searching Live Bus Schedules...</h3>
+                  <p className="text-xs text-slate-500">
+                    Fetching direct verified routes from <strong className="text-slate-800">{fromCity}</strong> to <strong className="text-slate-800">{toCity}</strong>
+                  </p>
+                </div>
+              </div>
+            ) : filteredBuses.length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-3">
                 <span className="material-symbols-outlined text-[48px] text-slate-300">directions_bus</span>
                 <h3 className="text-lg font-bold text-slate-800 font-serif">No Buses Match Your Selected Filters</h3>
@@ -587,7 +528,9 @@ function SearchContent() {
                 </button>
               </div>
             ) : (
-              filteredBuses.map((bus) => (
+              filteredBuses.map((bus) => {
+                const dayName = getDayOfWeek(bus.rawDepDate, selectedDate.subText);
+                return (
                 <div
                   key={bus.id}
                   className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
@@ -602,11 +545,12 @@ function SearchContent() {
                           <span>★</span> {bus.rating} <span className="text-slate-400 font-normal">({bus.reviews})</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
                         <span>{bus.busType}</span>
                         <span>•</span>
-                        <span className="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-700">
-                          {bus.busPlate}
+                        <span className="px-2.5 py-0.5 rounded-md bg-amber-50 border border-amber-300 font-mono font-extrabold text-amber-950 text-xs shadow-xs tracking-wider flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[13px] text-amber-800">directions_bus</span>
+                          <span>{bus.busPlate}</span>
                         </span>
                       </div>
                     </div>
@@ -624,8 +568,16 @@ function SearchContent() {
 
                   <div className="py-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div className="md:col-span-4">
-                      <div className="text-xl font-black text-slate-900">{bus.depTime}</div>
-                      <div className="text-xs font-bold text-slate-700">{bus.depLocation}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-xl font-black text-slate-900">{bus.depTime}</div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-red-50 text-brand-scarlet font-extrabold text-[11px] border border-red-200">
+                          {dayName}
+                        </span>
+                      </div>
+                      <div className="text-xs font-bold text-slate-700 mt-0.5">{bus.depLocation}</div>
+                      <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                        🗓️ {dayName}, {selectedDate.mainText}
+                      </div>
                     </div>
 
                     <div className="md:col-span-4 text-center">
@@ -643,6 +595,7 @@ function SearchContent() {
                     <div className="md:col-span-4 text-left md:text-right">
                       <div className="text-xl font-black text-slate-900">{bus.arrTime}</div>
                       <div className="text-xs font-bold text-slate-700">{bus.arrLocation}</div>
+                      <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Arrival</div>
                     </div>
                   </div>
 
@@ -675,7 +628,7 @@ function SearchContent() {
                         {bus.seatsLeft} Seats Left
                       </span>
                       <Link
-                        href={`/select-seats?busId=${bus.id}&operator=${encodeURIComponent(bus.operator)}&busPlate=${encodeURIComponent(bus.busPlate)}&busType=${encodeURIComponent(bus.busType)}&price=${bus.price}&category=${bus.category}&from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&date=${encodeURIComponent(selectedDate.mainText)}&depTime=${encodeURIComponent(bus.depTime)}&arrTime=${encodeURIComponent(bus.arrTime)}&depLocation=${encodeURIComponent(bus.depLocation)}&arrLocation=${encodeURIComponent(bus.arrLocation)}`}
+                        href={`/select-seats?busId=${bus.id}&operator=${encodeURIComponent(bus.operator)}&busPlate=${encodeURIComponent(bus.busPlate)}&busType=${encodeURIComponent(bus.busType)}&price=${bus.price}&category=${bus.category}&from=${encodeURIComponent(bus.depLocation || fromCity)}&to=${encodeURIComponent(bus.arrLocation || toCity)}&date=${encodeURIComponent(selectedDate.mainText)}&depTime=${encodeURIComponent(bus.depTime)}&arrTime=${encodeURIComponent(bus.arrTime)}&depLocation=${encodeURIComponent(bus.depLocation)}&arrLocation=${encodeURIComponent(bus.arrLocation)}`}
                         className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 active:scale-95"
                       >
                         <span>SELECT SEATS</span>
@@ -684,7 +637,8 @@ function SearchContent() {
                     </div>
                   </div>
                 </div>
-              ))
+              );
+            })
             )}
           </div>
         </section>

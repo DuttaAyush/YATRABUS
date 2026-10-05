@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
+import { adminFetch } from "@/lib/api";
 
 // ── Mock Data ─────────────────────────────────────────────────────────────────
 
@@ -192,12 +193,39 @@ const STATUS_MAP = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function PackagesPage() {
+  const [packagesList, setPackagesList] = useState(PACKAGES);
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("Latest First");
 
-  const filtered = PACKAGES.filter(p => {
-    const matchTab = activeTab === "All" || p.category === activeTab;
+  useEffect(() => {
+    adminFetch('/api/admin/packages')
+      .then(res => res.json())
+      .then(data => {
+        const list = Array.isArray(data) ? data : data.data?.packages || data.packages;
+        if (Array.isArray(list) && list.length > 0) {
+          const mapped = list.map((p, i) => ({
+            id: p.id.length > 8 ? p.id.slice(0, 8).toUpperCase() : p.id,
+            title: p.title,
+            location: p.destination || p.location || "India",
+            duration: p.duration || "5 Days 4 Nights",
+            exCity: p.startingCity ? `Ex: ${p.startingCity}` : "Ex: Delhi",
+            price: Number(p.basePrice || p.price || 25000).toLocaleString('en-IN'),
+            category: p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1).toLowerCase() : "Spiritual",
+            catIcon: p.category === 'SPIRITUAL' ? 'temple_hindu' : p.category === 'INTERNATIONAL' ? 'public' : 'landscape',
+            status: p.isActive !== false ? "Active" : "Draft",
+            gradient: "linear-gradient(135deg, #475569 0%, #1E293B 100%)",
+            icon: p.category === 'SPIRITUAL' ? 'temple_hindu' : p.category === 'INTERNATIONAL' ? 'flight' : 'landscape',
+            iconColor: "#F59E0B"
+          }));
+          setPackagesList(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const filtered = packagesList.filter(p => {
+    const matchTab = activeTab === "All" || p.category.toLowerCase() === activeTab.toLowerCase();
     const q = search.toLowerCase();
     const matchSearch = !q || p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q);
     return matchTab && matchSearch;
@@ -243,10 +271,10 @@ export default function PackagesPage() {
         {/* Category Filter Tabs */}
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {[
-            { label: "All (24)",           key: "All",           icon: null },
-            { label: "Spiritual (6)",      key: "Spiritual",     icon: "temple_hindu", color: "#B45309" },
-            { label: "Domestic (10)",      key: "Domestic",      icon: "landscape",    color: "#0F766E" },
-            { label: "International (8)",  key: "International", icon: "public",       color: "#4338CA" },
+            { label: `All (${packagesList.length})`,           key: "All",           icon: null },
+            { label: `Spiritual (${packagesList.filter(p => p.category.toLowerCase() === "spiritual").length})`,      key: "Spiritual",     icon: "temple_hindu", color: "#B45309" },
+            { label: `Domestic (${packagesList.filter(p => p.category.toLowerCase() === "domestic").length})`,       key: "Domestic",      icon: "landscape",    color: "#0F766E" },
+            { label: `International (${packagesList.filter(p => p.category.toLowerCase() === "international").length})`,  key: "International", icon: "public",       color: "#4338CA" },
           ].map(tab => {
             const isSelected = activeTab === tab.key;
             return (

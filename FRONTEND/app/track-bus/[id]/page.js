@@ -4,6 +4,7 @@ import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
+import { apiFetch } from '@/lib/api';
 
 const sampleTrackerData = {
   'YB-994821': {
@@ -34,6 +35,19 @@ export default function LiveTrackPage({ params }) {
   const resolvedParams = use(params);
   const ticketId = resolvedParams?.id || 'YB-994821';
   const [userTrip, setUserTrip] = useState(null);
+  const [liveTracking, setLiveTracking] = useState(null);
+
+  useEffect(() => {
+    apiFetch(`/api/tracking/${ticketId}`)
+      .then(res => res.json())
+      .then(data => {
+        const t = data.data || data;
+        if (t && t.progressPercentage !== undefined) {
+          setLiveTracking(t);
+        }
+      })
+      .catch(() => {});
+  }, [ticketId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -54,15 +68,15 @@ export default function LiveTrackPage({ params }) {
   const track = userTrip ? {
     ticketId: userTrip.id,
     operator: userTrip.operator,
-    busPlate: userTrip.busPlate,
+    busPlate: liveTracking?.busPlate || userTrip.busPlate,
     busType: userTrip.busType,
     route: `${userTrip.from} ➔ ${userTrip.to}`,
     seats: userTrip.seats,
     driverName: userTrip.driverName || 'Sunil Sharma',
     driverPhone: userTrip.driverPhone || '+91 98220 11223',
-    speed: '76 km/h',
-    progressPercent: 45,
-    onTimeStatus: 'On Time (Highway Express Route)',
+    speed: liveTracking ? '78 km/h' : '76 km/h',
+    progressPercent: liveTracking ? liveTracking.progressPercentage : 45,
+    onTimeStatus: liveTracking ? `${liveTracking.status} (Live GPS Tracking)` : 'On Time (Highway Express Route)',
     milestones: [
       { location: `${userTrip.from} (${userTrip.fromStation || 'Depot Terminal'})`, time: userTrip.depTime, status: 'completed', label: 'Departed' },
       { location: 'Highway Expressway Toll (Km 65)', time: '21:30', status: 'completed', label: 'Passed' },

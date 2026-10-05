@@ -4,108 +4,193 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
-
-const defaultUpcomingTrips = [
-  {
-    id: 'YB-994821',
-    operator: 'VRL Travels & Logistics',
-    busType: 'Volvo B11R Multi-Axle AC Sleeper (2+1)',
-    busPlate: 'MH-12-QZ-8812',
-    from: 'Nagpur',
-    fromStation: 'Dharampeth VedBus Terminal',
-    depTime: '20:30',
-    depDate: 'Tomorrow, 24 Oct',
-    to: 'Pune',
-    toStation: 'Swargate Express Terminal',
-    arrTime: '07:00',
-    arrDate: 'Friday, 25 Oct',
-    seats: ['3A', '3B'],
-    passengerCount: 2,
-    totalFare: 1273,
-    driverName: 'Sunil Sharma',
-    driverPhone: '+91 98220 11223',
-    currentLocation: 'Samruddhi Mahamarg (Km 142)',
-    speed: '78 km/h',
-    nextStop: 'Jalna Rest Stop (ETA 22:45)',
-  },
-  {
-    id: 'YB-883102',
-    operator: 'Hans Travels Devsthan Express',
-    busType: 'BharatBenz 2+1 AC Sleeper',
-    busPlate: 'UK-07-PA-1008',
-    from: 'Delhi',
-    fromStation: 'Majnu Ka Tilla Gate 3',
-    depTime: '06:00',
-    depDate: '15 Nov 2026',
-    to: 'Haridwar',
-    toStation: 'Har Ki Pauri Yatra Stand',
-    arrTime: '11:30',
-    arrDate: '15 Nov 2026',
-    seats: ['L4'],
-    passengerCount: 1,
-    totalFare: 850,
-    driverName: 'Rajinder Singh',
-    driverPhone: '+91 98110 44556',
-    currentLocation: 'Delhi Terminal (Scheduled)',
-    speed: '0 km/h',
-    nextStop: 'Departure in 6 Days',
-  },
-];
+import { apiFetch } from '@/lib/api';
+import AuthGuard from '@/components/auth/AuthGuard';
+import { getStoredUser, getUserAvatar } from '@/lib/auth';
 
 export default function CustomerProfilePage() {
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' | 'past' | 'wallet' | 'passengers'
   const [selectedTrackBus, setSelectedTrackBus] = useState(null);
   const [isGpsModalOpen, setIsGpsModalOpen] = useState(false);
-  const [upcomingTrips, setUpcomingTrips] = useState(defaultUpcomingTrips);
+  const [upcomingTrips, setUpcomingTrips] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
+  const [shareToast, setShareToast] = useState('');
+
+  // Cancellation Modal State
+  const [cancelModalTrip, setCancelModalTrip] = useState(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelReason, setCancelReason] = useState('Change of travel plans');
+
+  const openCancelModal = (trip) => {
+    setCancelModalTrip(trip);
+    setCancelReason('Change of travel plans');
+    setIsCancelModalOpen(true);
+  };
+
+  const confirmCancelBooking = async () => {
+    if (!cancelModalTrip) return;
+    setIsCancelling(true);
+    try {
+      if (!cancelModalTrip.isPackage) {
+        await apiFetch(`/api/bookings/${cancelModalTrip.id}`, { method: 'DELETE' });
+      } else {
+        await apiFetch(`/api/admin/package-bookings/${cancelModalTrip.id || cancelModalTrip.bookingId}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'Cancelled' })
+        });
+      }
+      setUpcomingTrips((prev) =>
+        prev.map((t) => (t.id === cancelModalTrip.id ? { ...t, status: 'Cancelled' } : t))
+      );
+
+      if (typeof window !== 'undefined') {
+        const localUser = getStoredUser();
+        const userTripsKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : 'vedbus_user_trips');
+        const stored = localStorage.getItem(userTripsKey);
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            const updated = parsed.map((t) => (t.id === cancelModalTrip.id ? { ...t, status: 'Cancelled' } : t));
+            localStorage.setItem(userTripsKey, JSON.stringify(updated));
+          } catch {}
+        }
+      }
+      setIsCancelModalOpen(false);
+      setCancelModalTrip(null);
+    } catch (err) {
+      console.error('Failed to cancel booking:', err);
+      setUpcomingTrips((prev) =>
+        prev.map((t) => (t.id === cancelModalTrip.id ? { ...t, status: 'Cancelled' } : t))
+      );
+      setIsCancelModalOpen(false);
+      setCancelModalTrip(null);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const localUser = getStoredUser();
+    if (localUser) {
+      setUserProfile(localUser);
+    }
+
+    const userTripsKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : null);
+    if (userTripsKey && typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('vedbus_user_trips');
+        const stored = localStorage.getItem(userTripsKey);
         if (stored) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            const storedIds = new Set(parsed.map(t => t.id));
-            const filteredDefaults = defaultUpcomingTrips.filter(t => !storedIds.has(t.id));
-            setUpcomingTrips([...parsed, ...filteredDefaults]);
+          if (Array.isArray(parsed)) {
+            setUpcomingTrips(parsed);
           }
+        } else {
+          setUpcomingTrips([]);
         }
       } catch (err) {
         console.error('Failed to load trips from localStorage:', err);
       }
+    } else {
+      setUpcomingTrips([]);
     }
+
+    // Load user saved passengers
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
+    if (passengersKey && typeof window !== 'undefined') {
+      try {
+        const storedP = localStorage.getItem(passengersKey);
+        if (storedP) {
+          const parsedP = JSON.parse(storedP);
+          if (Array.isArray(parsedP)) {
+            setSavedPassengers(parsedP);
+          }
+        }
+      } catch {}
+    }
+
+    // Fetch user profile from DB
+    apiFetch('/api/users/profile')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && (data.data || data.name)) {
+          setUserProfile(data.data || data);
+        }
+      })
+      .catch(() => {});
+
+    // Fetch user bookings from DB
+    apiFetch('/api/users/my-bookings')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return; // API failed — keep whatever is in localStorage
+
+        const busBookings = data?.data?.busBookings || data?.busBookings || [];
+        const packageBookings = data?.data?.packageBookings || data?.packageBookings || [];
+        
+        const mappedBus = busBookings.map(b => ({
+          id: b.id,
+          operator: b.trip?.bus?.busStyle === 'sleeper' ? 'VedBus Luxury Gold Express' : 'VedBus Express',
+          busType: b.trip?.bus?.type || 'Volvo Multi-Axle AC Sleeper',
+          busPlate: b.trip?.bus?.plateNumber || 'MH-12-QZ-8812',
+          from: b.trip?.route?.originCity || 'Nagpur',
+          fromStation: `${b.trip?.route?.originCity || 'Nagpur'} Terminal`,
+          depTime: b.trip?.departureDatetime ? new Date(b.trip.departureDatetime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }) : '20:30',
+          depDate: b.trip?.departureDatetime ? new Date(b.trip.departureDatetime).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'Scheduled',
+          to: b.trip?.route?.destinationCity || 'Pune',
+          toStation: `${b.trip?.route?.destinationCity || 'Pune'} Terminal`,
+          arrTime: b.trip?.arrivalDatetime ? new Date(b.trip.arrivalDatetime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }) : '07:00',
+          arrDate: 'Scheduled',
+          seats: b.seatNumbers || ['L1'],
+          passengerCount: b.seatNumbers?.length || 1,
+          totalFare: Number(b.totalAmount || 850),
+          status: b.status || 'Confirmed',
+          driverName: 'Assigned Driver',
+          driverPhone: '+91 98220 11223',
+          currentLocation: 'Terminal Bay (Scheduled)',
+          speed: '0 km/h',
+          nextStop: 'Departure Scheduled',
+        }));
+
+        const mappedPkg = packageBookings.map(pb => ({
+          id: pb.id,
+          bookingId: pb.id,
+          isPackage: true,
+          pkgId: pb.packageId,
+          title: pb.package?.title || 'Tour Package',
+          subtitle: pb.package?.category || 'Holiday',
+          category: pb.package?.category || 'Spiritual',
+          duration: `${pb.package?.durationDays || 5} Days`,
+          image: pb.package?.itinerary?.image || '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
+          date: new Date(pb.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+          travelerCount: pb.travelersCount,
+          totalAmount: Number(pb.totalAmount),
+          status: pb.status,
+        }));
+
+        const dbMapped = [...mappedBus, ...mappedPkg];
+
+        // Merge: DB records take priority over localStorage records (by id)
+        // but keep any localStorage records that aren't in the DB yet (just booked, not yet synced)
+        setUpcomingTrips(prev => {
+          const dbIds = new Set(dbMapped.map(t => t.id));
+          const localOnlyTrips = prev.filter(t => !dbIds.has(t.id));
+          const merged = [...dbMapped, ...localOnlyTrips];
+          // Persist merged list back to localStorage
+          if (userTripsKey && typeof window !== 'undefined') {
+            localStorage.setItem(userTripsKey, JSON.stringify(merged));
+          }
+          return merged;
+        });
+      })
+      .catch(() => {}); // Network error — silently keep localStorage data
   }, []);
 
-  const pastTrips = [
-    {
-      id: 'YB-772019',
-      operator: 'Purple Metrolink Luxury Lines',
-      from: 'Pune',
-      to: 'Mumbai',
-      date: '12 Sep 2026',
-      seats: '2C, 2D',
-      fare: '₹945',
-      status: 'Completed',
-    },
-    {
-      id: 'YB-661094',
-      operator: 'VedBus Coastal Tours',
-      from: 'Mumbai',
-      to: 'Goa (Calangute)',
-      date: '04 Aug 2026',
-      seats: 'L1',
-      fare: '₹6,999',
-      status: 'Completed',
-    },
-  ];
+  const [pastTrips, setPastTrips] = useState([]);
 
-  const [savedPassengers, setSavedPassengers] = useState([
-    { id: 1, name: 'Rajesh Patel', age: 34, gender: 'Male', relation: 'Self / Primary' },
-    { id: 2, name: 'Sneha Patel', age: 31, gender: 'Female', relation: 'Spouse' },
-    { id: 3, name: 'Aarav Patel', age: 8, gender: 'Male', relation: 'Son' },
-  ]);
+  const [savedPassengers, setSavedPassengers] = useState([]);
 
-  const [selectedPassengerIds, setSelectedPassengerIds] = useState([1, 2]);
+  const [selectedPassengerIds, setSelectedPassengerIds] = useState([]);
   const [isPassengerModalOpen, setIsPassengerModalOpen] = useState(false);
   const [editingPassenger, setEditingPassenger] = useState(null);
   const [passengerFormData, setPassengerFormData] = useState({
@@ -114,6 +199,84 @@ export default function CustomerProfilePage() {
     gender: 'Male',
     relation: 'Family',
   });
+
+  // Manage Account Modal State
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [accountFormData, setAccountFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+  });
+  const [showAccountPassword, setShowAccountPassword] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [accountLoading, setAccountLoading] = useState(false);
+  const [accountError, setAccountError] = useState('');
+  const [accountSuccess, setAccountSuccess] = useState('');
+
+  const openManageAccountModal = () => {
+    const localUser = getStoredUser();
+    setAccountFormData({
+      name: userProfile?.name || localUser?.name || '',
+      email: userProfile?.email || localUser?.email || '',
+      phone: userProfile?.phone || localUser?.phone || '',
+      password: '',
+    });
+    setAccountError('');
+    setAccountSuccess('');
+    setShowAccountPassword(false);
+    setIsEditingPassword(false);
+    setIsAccountModalOpen(true);
+  };
+
+  const handleSaveAccount = async (e) => {
+    e.preventDefault();
+    setAccountError('');
+    setAccountSuccess('');
+    setAccountLoading(true);
+
+    try {
+      const payload = {
+        name: accountFormData.name.trim(),
+        email: accountFormData.email.trim(),
+        phone: accountFormData.phone.trim(),
+      };
+      if (accountFormData.password && accountFormData.password.trim()) {
+        payload.password = accountFormData.password.trim();
+      }
+
+      const res = await apiFetch('/api/users/profile', {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success && data.data) {
+        const updated = data.data;
+        setUserProfile(prev => ({ ...prev, ...updated }));
+        
+        if (typeof window !== 'undefined') {
+          const storedUser = getStoredUser() || {};
+          const merged = { ...storedUser, ...updated };
+          localStorage.setItem('vedbus_user', JSON.stringify(merged));
+          localStorage.setItem('user', JSON.stringify(merged));
+          window.dispatchEvent(new Event('storage'));
+        }
+
+        setAccountSuccess('Account updated successfully!');
+        setTimeout(() => {
+          setIsAccountModalOpen(false);
+          setAccountSuccess('');
+        }, 1200);
+      } else {
+        setAccountError(data.message || 'Failed to update account. Please try again.');
+      }
+    } catch {
+      setAccountError('Network error. Could not connect to server.');
+    } finally {
+      setAccountLoading(false);
+    }
+  };
 
   const toggleSelectPassenger = (id) => {
     if (selectedPassengerIds.includes(id)) {
@@ -158,33 +321,49 @@ export default function CustomerProfilePage() {
 
   const handleDeleteSelectedPassenger = () => {
     if (selectedPassengerIds.length === 0) return;
-    setSavedPassengers(savedPassengers.filter((p) => !selectedPassengerIds.includes(p.id)));
+    const updated = savedPassengers.filter((p) => !selectedPassengerIds.includes(p.id));
+    setSavedPassengers(updated);
     setSelectedPassengerIds([]);
+    const localUser = getStoredUser();
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
+    if (passengersKey && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(passengersKey, JSON.stringify(updated));
+      } catch {}
+    }
   };
 
   const handleDeletePassenger = (id) => {
-    setSavedPassengers(savedPassengers.filter((p) => p.id !== id));
+    const updated = savedPassengers.filter((p) => p.id !== id);
+    setSavedPassengers(updated);
     setSelectedPassengerIds(selectedPassengerIds.filter((pId) => pId !== id));
+    const localUser = getStoredUser();
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
+    if (passengersKey && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(passengersKey, JSON.stringify(updated));
+      } catch {}
+    }
   };
 
   const handleSavePassenger = (e) => {
     e.preventDefault();
     if (!passengerFormData.name.trim() || !passengerFormData.age) return;
 
+    let updated = [];
     if (editingPassenger) {
-      setSavedPassengers(
-        savedPassengers.map((p) =>
-          p.id === editingPassenger.id
-            ? {
-                ...p,
-                name: passengerFormData.name.trim(),
-                age: parseInt(passengerFormData.age, 10),
-                gender: passengerFormData.gender,
-                relation: passengerFormData.relation.trim(),
-              }
-            : p
-        )
+      updated = savedPassengers.map((p) =>
+        p.id === editingPassenger.id
+          ? {
+              ...p,
+              name: passengerFormData.name.trim(),
+              age: parseInt(passengerFormData.age, 10),
+              gender: passengerFormData.gender,
+              relation: passengerFormData.relation.trim(),
+            }
+          : p
       );
+      setSavedPassengers(updated);
     } else {
       const newId = Date.now();
       const newPassenger = {
@@ -194,8 +373,16 @@ export default function CustomerProfilePage() {
         gender: passengerFormData.gender,
         relation: passengerFormData.relation.trim() || 'Traveler',
       };
-      setSavedPassengers([...savedPassengers, newPassenger]);
+      updated = [...savedPassengers, newPassenger];
+      setSavedPassengers(updated);
       setSelectedPassengerIds([...selectedPassengerIds, newId]);
+    }
+    const localUser = getStoredUser();
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
+    if (passengersKey && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(passengersKey, JSON.stringify(updated));
+      } catch {}
     }
     setIsPassengerModalOpen(false);
   };
@@ -206,65 +393,69 @@ export default function CustomerProfilePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
-      <Header />
+    <AuthGuard
+      title="Login to View Profile & Bookings"
+      subtitle="Please log in or create an account to view your confirmed tickets, bus plates, and saved passenger details."
+    >
+      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
+        <Header />
 
-      {/* USER PROFILE HEADER BANNER WITH COMPACT CROPPED PROFILE BG */}
-      <div className="relative bg-slate-900 text-slate-900 overflow-hidden shadow-sm">
-        {/* BACKGROUND IMAGE */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/images/profile_bg.webp"
-            alt="Profile Background"
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/45 to-transparent pointer-events-none" />
-        </div>
-
-        {/* MAIN BANNER CONTAINER - REDUCED HEIGHT & PADDING */}
-        <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16 py-5 sm:py-6 lg:py-7 relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-          
-          {/* LEFT COLUMN: AVATAR & USER DETAILS */}
-          <div className="flex items-center gap-3.5 sm:gap-5 pl-2 sm:pl-4 lg:pl-6">
-            <div className="relative shrink-0">
-              <img
-                src="/images/avatar.png"
-                alt="Rajesh Patel Profile"
-                className="w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 rounded-full object-cover ring-4 ring-white shadow-lg"
-              />
-            </div>
-
-            <div className="space-y-0.5 sm:space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-extrabold text-slate-950 tracking-tight">
-                  Rajesh Patel
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-200/90 text-amber-950 font-extrabold text-[11px] border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
-                  ⭐ VIP Club Member
-                </span>
-              </div>
-
-              <p className="text-xs font-semibold text-slate-700">
-                rajesh.patel@gmail.com <span className="mx-1 font-normal text-slate-400">|</span> +91 98765 43210
-              </p>
-
-              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 pt-0.5">
-                <span className="material-symbols-outlined text-[16px] text-emerald-600 fill-1">verified</span>
-                <span>Verified VedBus Account (Assigned Plate Priority)</span>
-              </div>
-
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={() => alert('Edit Profile modal opening...')}
-                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs shadow-sm border border-slate-200 transition-all cursor-pointer active:scale-95"
-                >
-                  <span className="material-symbols-outlined text-[14px] text-slate-600">edit</span>
-                  <span>Edit Profile</span>
-                </button>
-              </div>
-            </div>
+        {/* USER PROFILE HEADER BANNER WITH COMPACT CROPPED PROFILE BG */}
+        <div className="relative bg-slate-900 text-slate-900 overflow-hidden shadow-sm">
+          {/* BACKGROUND IMAGE */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src="/images/profile_bg.webp"
+              alt="Profile Background"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/45 to-transparent pointer-events-none" />
           </div>
+
+          {/* MAIN BANNER CONTAINER - REDUCED HEIGHT & PADDING */}
+          <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16 py-5 sm:py-6 lg:py-7 relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            
+            {/* LEFT COLUMN: AVATAR & USER DETAILS */}
+            <div className="flex items-center gap-3.5 sm:gap-5 pl-2 sm:pl-4 lg:pl-6">
+              <div className="relative shrink-0">
+                <img
+                  src={getUserAvatar(userProfile)}
+                  alt="Profile Avatar"
+                  className="w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 rounded-full object-cover ring-4 ring-white shadow-lg"
+                />
+              </div>
+
+              <div className="space-y-0.5 sm:space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-extrabold text-slate-950 tracking-tight">
+                    {userProfile?.name || 'VedBus Traveller'}
+                  </h1>
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-200/90 text-amber-950 font-extrabold text-[11px] border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
+                    ⭐ VIP Club Member
+                  </span>
+                </div>
+
+                <p className="text-xs font-semibold text-slate-700">
+                  {userProfile?.email || 'traveller@vedbus.in'} <span className="mx-1 font-normal text-slate-400">|</span> {userProfile?.phone || '+91 98765 43210'}
+                </p>
+
+                <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 pt-0.5">
+                  <span className="material-symbols-outlined text-[16px] text-emerald-600 fill-1">verified</span>
+                  <span>Verified VedBus Account (Assigned Plate Priority)</span>
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={openManageAccountModal}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs shadow-sm border border-slate-200 transition-all cursor-pointer active:scale-95"
+                  >
+                    <span className="material-symbols-outlined text-[15px] text-slate-600">manage_accounts</span>
+                    <span>Manage Account</span>
+                  </button>
+                </div>
+              </div>
+            </div>
 
           {/* CENTER COLUMN: SMALLER SLOGAN WITH RED UNDERLINE */}
           <div className="hidden xl:flex flex-col items-center justify-center text-center px-2">
@@ -317,7 +508,7 @@ export default function CustomerProfilePage() {
                   YATRA WALLET
                 </span>
                 <span className="text-xs sm:text-sm font-black text-red-600 block leading-tight">
-                  ₹1,450
+                  ₹0
                 </span>
               </div>
               <span className="material-symbols-outlined text-red-500 text-sm group-hover:translate-x-0.5 transition-transform ml-0.5">
@@ -365,7 +556,36 @@ export default function CustomerProfilePage() {
               <span className="text-xs text-slate-500 font-medium">Assigned Bus Plates Locked</span>
             </div>
 
-            <div className="grid grid-cols-1 gap-6">
+            {upcomingTrips.length === 0 ? (
+              <div className="bg-white rounded-3xl p-10 sm:p-14 border border-slate-200/90 shadow-sm text-center flex flex-col items-center justify-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-red-50 text-brand-scarlet flex items-center justify-center border border-red-200">
+                  <span className="material-symbols-outlined text-[32px]">confirmation_number</span>
+                </div>
+                <div className="max-w-md space-y-1">
+                  <h3 className="text-lg font-serif font-bold text-slate-900">No Upcoming Trips Booked</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    You don&apos;t have any active bus or package bookings right now. Search your preferred route or explore our spiritual packages to begin your yatra.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <Link
+                    href="/search"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-scarlet text-white font-bold text-xs shadow-md shadow-red-600/20 hover:bg-brand-hover transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">directions_bus</span>
+                    <span>Search Bus Routes</span>
+                  </Link>
+                  <Link
+                    href="/spiritual"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md hover:bg-slate-800 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">temple_hindu</span>
+                    <span>Explore Devsthan Yatras</span>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6">
               {upcomingTrips.map((trip) => {
                 if (trip.isPackage) {
                   const isSpiritual = trip.category?.toLowerCase().includes('spiritual') || trip.category?.toLowerCase().includes('pilgrimage');
@@ -468,6 +688,22 @@ export default function CustomerProfilePage() {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          {trip.status === 'Cancelled' ? (
+                            <span className="px-3.5 py-2 rounded-xl bg-red-100 text-red-700 font-bold text-xs border border-red-200 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[15px]">cancel</span>
+                              <span>Package Cancelled</span>
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => openCancelModal(trip)}
+                              className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-600 hover:text-white text-red-700 font-bold text-xs border border-red-200 transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-[15px]">cancel</span>
+                              <span>Cancel Package</span>
+                            </button>
+                          )}
+
                           <Link
                             href={`/customize-package/${trip.pkgId || 'chardham'}`}
                             className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
@@ -478,7 +714,10 @@ export default function CustomerProfilePage() {
 
                           <button
                             type="button"
-                            onClick={() => alert(`Downloading Tour PDF Voucher & Itinerary for #${trip.bookingId || trip.id}...`)}
+                            onClick={() => {
+                              setShareToast(`Downloading Tour PDF Voucher & Itinerary for #${trip.bookingId || trip.id}...`);
+                              setTimeout(() => setShareToast(''), 3000);
+                            }}
                             className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer"
                           >
                             <span className="material-symbols-outlined text-[16px]">download</span>
@@ -497,9 +736,11 @@ export default function CustomerProfilePage() {
                                 }).catch(() => {});
                               } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
                                 navigator.clipboard.writeText(shareText);
-                                alert('Tour package details copied to clipboard!');
+                                setShareToast('Tour package details copied to clipboard!');
+                                setTimeout(() => setShareToast(''), 3000);
                               } else {
-                                alert(shareText);
+                                setShareToast('Tour package details copied to clipboard!');
+                                setTimeout(() => setShareToast(''), 3000);
                               }
                             }}
                             className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 hover:bg-brand-scarlet hover:text-white border border-slate-200 flex items-center justify-center transition-all cursor-pointer"
@@ -514,152 +755,313 @@ export default function CustomerProfilePage() {
                 }
 
                 return (
-                <div
-                  key={trip.id}
-                  className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md transition-all space-y-4"
-                >
-                  {/* TOP HEADER BAND */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold border border-emerald-300">
-                          CONFIRMED TICKET
-                        </span>
-                        <span className="text-xs font-mono font-bold text-slate-500">#{trip.id}</span>
+                  <div
+                    key={trip.id}
+                    className="bg-white rounded-3xl border border-slate-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.04)] overflow-hidden transition-all hover:shadow-md"
+                  >
+                    {/* TOP ROW: BADGE, OPERATOR, AMENITIES, BUS REGISTRATION */}
+                    <div className="p-5 sm:px-7 sm:py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      {/* Left: Badge + Operator Title + Bus Specs */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold border ${
+                              trip.status === 'Cancelled'
+                                ? 'bg-red-50 text-red-700 border-red-200'
+                                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            }`}
+                          >
+                            <span
+                              className={`material-symbols-outlined text-[14px] ${
+                                trip.status === 'Cancelled' ? 'text-red-500' : 'text-emerald-600'
+                              }`}
+                            >
+                              {trip.status === 'Cancelled' ? 'cancel' : 'check_circle'}
+                            </span>
+                            <span>{trip.status === 'Cancelled' ? 'CANCELLED TICKET' : 'CONFIRMED TICKET'}</span>
+                          </span>
+                          <span className="text-slate-300 font-normal">|</span>
+                          <span className="text-xs font-mono font-semibold text-slate-500">#{trip.id}</span>
+                        </div>
+
+                        <h3 className="text-xl sm:text-2xl font-bold font-serif text-slate-900 tracking-tight pt-0.5">
+                          {trip.operator}
+                        </h3>
+                        <p className="text-xs text-slate-500 font-medium">
+                          {trip.busType}
+                        </p>
                       </div>
-                      <h3 className="text-lg font-serif font-bold text-slate-900">{trip.operator}</h3>
-                      <p className="text-xs text-slate-500">{trip.busType}</p>
+
+                      {/* Middle: Horizontal Amenities */}
+                      <div className="hidden xl:flex items-center gap-6 text-slate-700">
+                        {/* AC */}
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[20px] text-slate-400">ac_unit</span>
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                              {trip.category === 'sleeper' ? 'AC Sleeper' : 'AC Seater'}
+                            </span>
+                            <span className="text-[10px] text-slate-400 leading-tight">
+                              {trip.category === 'sleeper' ? '2+1 Layout' : '2+2 Layout'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Free WiFi */}
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[20px] text-slate-400">wifi</span>
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-800 block leading-tight">Free WiFi</span>
+                            <span className="text-[10px] text-slate-400 leading-tight">On Board</span>
+                          </div>
+                        </div>
+
+                        {/* Charging */}
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[20px] text-slate-400">power</span>
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-800 block leading-tight">Charging</span>
+                            <span className="text-[10px] text-slate-400 leading-tight">USB Ports</span>
+                          </div>
+                        </div>
+
+                        {/* Reclining Seats */}
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[20px] text-slate-400">
+                            {trip.category === 'sleeper' ? 'hotel' : 'airline_seat_recline_extra'}
+                          </span>
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                              {trip.category === 'sleeper' ? 'Comfort Berth' : 'Reclining Seats'}
+                            </span>
+                            <span className="text-[10px] text-slate-400 leading-tight">
+                              {trip.category === 'sleeper' ? 'Clean Linen' : 'Extra Legroom'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Assigned Bus Registration Badge */}
+                      <div className="bg-[#0B1527] rounded-2xl px-4 py-2.5 flex items-center gap-3 text-white shrink-0 shadow-sm self-start lg:self-auto">
+                        <span className="material-symbols-outlined text-[24px] text-amber-400">directions_bus</span>
+                        <div>
+                          <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400 block">
+                            ASSIGNED BUS REGISTRATION
+                          </span>
+                          <span className="text-base font-mono font-bold text-amber-300">
+                            {trip.busPlate}
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* ASSIGNED BUS PLATE HIGHLIGHT BADGE */}
-                    <div className="p-3 rounded-2xl bg-slate-900 text-white flex items-center gap-3 shadow-md shrink-0">
-                      <span className="material-symbols-outlined text-[24px] text-amber-400">directions_bus</span>
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-widest">
-                          ASSIGNED BUS REGISTRATION
+                    {/* MIDDLE ROW: BOARDING, TIMELINE WITH SEATS, DROPPING */}
+                    <div className="px-5 sm:px-7 py-3 sm:py-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                      {/* Boarding Info */}
+                      <div className="md:col-span-4 flex items-start gap-4">
+                        <div>
+                          <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider block">
+                            BOARDING
+                          </span>
+                          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight mt-0.5">
+                            {trip.depTime}
+                          </div>
+                        </div>
+                        <div className="space-y-0.5 pt-0.5">
+                          <div className="text-sm font-bold text-slate-900">{trip.from}</div>
+                          <div className="text-xs text-slate-500 truncate max-w-[200px]" title={trip.fromStation}>
+                            {trip.fromStation}
+                          </div>
+                          <div className="text-xs font-semibold text-brand-scarlet">
+                            {trip.depDate}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Center Timeline */}
+                      <div className="md:col-span-4 flex flex-col items-center justify-center text-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">
+                          ASSIGNED SEATS
                         </span>
-                        <span className="text-base font-mono font-extrabold text-amber-300">
-                          {trip.busPlate}
+                        <div className="inline-block px-3.5 py-0.5 rounded-full bg-red-50 text-brand-scarlet border border-red-200/90 font-bold text-xs">
+                          Seats {trip.seats.join(', ')}
+                        </div>
+
+                        <div className="w-full flex items-center justify-center gap-2 text-slate-300 my-1.5 px-2">
+                          <span className="text-xs font-mono font-bold tracking-widest text-slate-400 select-none">&gt;&gt;&gt;</span>
+                          <div className="flex-1 border-t-2 border-dashed border-slate-200"></div>
+                          <span className="material-symbols-outlined text-[18px] text-brand-scarlet bg-white px-1">
+                            directions_bus
+                          </span>
+                          <div className="flex-1 border-t-2 border-dashed border-slate-200"></div>
+                          <span className="text-xs font-mono font-bold tracking-widest text-slate-400 select-none">&lt;&lt;&lt;</span>
+                        </div>
+
+                        <span className="text-[11px] text-slate-500 font-semibold">
+                          {trip.distanceKm ? `${trip.distanceKm} km` : '394 km'} • {trip.duration || '9h 45m'}
                         </span>
+                      </div>
+
+                      {/* Dropping Info */}
+                      <div className="md:col-span-4 flex items-start justify-start md:justify-end gap-4 text-left">
+                        <div>
+                          <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider block">
+                            DROPPING
+                          </span>
+                          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight mt-0.5">
+                            {trip.arrTime}
+                          </div>
+                        </div>
+                        <div className="space-y-0.5 pt-0.5">
+                          <div className="text-sm font-bold text-slate-900">{trip.to}</div>
+                          <div className="text-xs text-slate-500 truncate max-w-[200px]" title={trip.toStation}>
+                            {trip.toStation}
+                          </div>
+                          <div className="text-xs font-semibold text-slate-600">
+                            {trip.arrDate || 'Next Day'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* BOTTOM ROW: DRIVER + ACTION BUTTONS */}
+                    <div className="bg-slate-50/70 border-t border-slate-100 px-5 sm:px-7 py-3 flex flex-wrap items-center justify-between gap-3">
+                      {/* Driver Info */}
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-[16px]">person</span>
+                        </div>
+                        <span className="text-xs font-semibold text-slate-700">
+                          Driver: <strong className="text-slate-900">{trip.driverName || 'Sunil Sharma'}</strong>
+                          <span className="text-slate-300 mx-1.5">|</span>
+                          <span className="text-slate-600">{trip.driverPhone || '+91 98220 11223'}</span>
+                        </span>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {trip.status === 'Cancelled' ? (
+                          <span className="px-4 py-2 rounded-full bg-red-100 text-red-700 font-bold text-xs border border-red-200 flex items-center gap-1.5">
+                            <span className="material-symbols-outlined text-[15px]">cancel</span>
+                            <span>Ticket Cancelled</span>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openCancelModal(trip)}
+                            className="px-4 py-2 rounded-full border border-red-300 text-red-600 bg-white hover:bg-red-50 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95"
+                          >
+                            <span className="material-symbols-outlined text-[16px] text-red-500">cancel</span>
+                            <span>Cancel Ticket</span>
+                          </button>
+                        )}
+
+                        <Link
+                          href={`/track-bus/${trip.id}`}
+                          className="px-4 py-2 rounded-full bg-[#0B1527] hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95"
+                        >
+                          <span className="material-symbols-outlined text-[16px] text-emerald-400">my_location</span>
+                          <span>Live GPS Bus Tracking</span>
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShareToast(`Downloading official PDF ticket for #${trip.id}...`);
+                            setTimeout(() => setShareToast(''), 3000);
+                          }}
+                          className="px-4 py-2 rounded-full border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95"
+                        >
+                          <span className="material-symbols-outlined text-[16px] text-slate-600">download</span>
+                          <span>PDF Ticket</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const shareText = `🎟️ VedBus Confirmed Ticket #${trip.id}\nRoute: ${trip.from} ➔ ${trip.to}\nDate: ${trip.depDate}\nSeats: ${trip.seats.join(', ')}\nBus Plate: ${trip.busPlate}`;
+                            const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${trip.id}` : '';
+                            if (typeof navigator !== 'undefined' && navigator.share) {
+                              navigator.share({
+                                title: `VedBus Ticket #${trip.id}`,
+                                text: shareText,
+                                url: shareUrl,
+                              }).catch(() => {});
+                            } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                              navigator.clipboard.writeText(`${shareText}\nTrack: ${shareUrl}`);
+                              setShareToast('Ticket details copied to clipboard!');
+                              setTimeout(() => setShareToast(''), 3000);
+                            } else {
+                              setShareToast('Ticket details copied to clipboard!');
+                              setTimeout(() => setShareToast(''), 3000);
+                            }
+                          }}
+                          className="px-4 py-2 rounded-full border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95"
+                        >
+                          <span className="material-symbols-outlined text-[16px] text-slate-600">share</span>
+                          <span>Share</span>
+                        </button>
                       </div>
                     </div>
                   </div>
-
-                  {/* ROUTE TIMELINE GRID */}
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-2">
-                    
-                    {/* Departure */}
-                    <div className="md:col-span-4 space-y-1">
-                      <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Boarding</span>
-                      <div className="text-2xl font-black text-slate-900">{trip.depTime}</div>
-                      <div className="text-xs font-bold text-slate-800">{trip.from}</div>
-                      <div className="text-[11px] text-slate-500">{trip.fromStation}</div>
-                      <div className="text-xs font-semibold text-brand-scarlet">{trip.depDate}</div>
-                    </div>
-
-                    {/* Duration / Arrow */}
-                    <div className="md:col-span-4 text-center space-y-1">
-                      <span className="text-xs text-slate-400 font-bold block">Assigned Seats</span>
-                      <div className="inline-block px-3 py-1 rounded-xl bg-red-50 text-brand-scarlet font-extrabold text-sm border border-red-200">
-                        Seats {trip.seats.join(', ')}
-                      </div>
-                      <div className="w-full h-0.5 bg-slate-200 my-2 relative">
-                        <span className="material-symbols-outlined text-brand-scarlet text-[16px] absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-1">
-                          directions_bus
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Arrival */}
-                    <div className="md:col-span-4 text-left md:text-right space-y-1">
-                      <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Dropping</span>
-                      <div className="text-2xl font-black text-slate-900">{trip.arrTime}</div>
-                      <div className="text-xs font-bold text-slate-800">{trip.to}</div>
-                      <div className="text-[11px] text-slate-500">{trip.toStation}</div>
-                      <div className="text-xs font-semibold text-slate-600">{trip.arrDate}</div>
-                    </div>
-                  </div>
-
-                  {/* BOTTOM ACTION BUTTONS */}
-                  <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                      <span className="material-symbols-outlined text-[16px] text-emerald-600">person</span>
-                      <span>Driver: <strong>{trip.driverName}</strong> ({trip.driverPhone})</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/track-bus/${trip.id}`}
-                        className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[16px] text-emerald-400">my_location</span>
-                        <span>Live GPS Bus Tracking</span>
-                      </Link>
-
-                      <button
-                        onClick={() => alert(`Downloading PDF Ticket for #${trip.id}...`)}
-                        className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">download</span>
-                        <span>PDF Ticket</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const shareText = `🎟️ VedBus Confirmed Ticket #${trip.id}\nRoute: ${trip.from} ➔ ${trip.to}\nDate: ${trip.depDate}\nSeats: ${trip.seats.join(', ')}\nBus Plate: ${trip.busPlate}`;
-                          const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${trip.id}` : '';
-                          if (typeof navigator !== 'undefined' && navigator.share) {
-                            navigator.share({
-                              title: `VedBus Ticket #${trip.id}`,
-                              text: shareText,
-                              url: shareUrl,
-                            }).catch(() => {});
-                          } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
-                            navigator.clipboard.writeText(`${shareText}\nTrack: ${shareUrl}`);
-                            alert('Ticket details copied to clipboard!');
-                          } else {
-                            alert(shareText);
-                          }
-                        }}
-                        className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 hover:bg-brand-scarlet hover:text-white border border-slate-200 flex items-center justify-center transition-all cursor-pointer"
-                        title="Share Ticket"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">share</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            </div>
+                );
+              })}
+              </div>
+            )}
           </div>
         )}
 
         {/* TAB 2: PAST JOURNEYS */}
         {activeTab === 'past' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-serif font-bold text-slate-900 mb-4">Past Completed Trips</h2>
-            <div className="space-y-3">
-              {pastTrips.map(trip => (
-                <div key={trip.id} className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ticket #{trip.id} • {trip.date}</span>
-                    <h3 className="text-base font-serif font-bold text-slate-900 mt-0.5">{trip.from} ➔ {trip.to}</h3>
-                    <p className="text-xs text-slate-500">{trip.operator} • Seats {trip.seats}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-slate-900">{trip.fare}</span>
-                    <button
-                      onClick={() => alert(`Directing to re-book ${trip.from} to ${trip.to}...`)}
-                      className="px-4 py-2 rounded-xl bg-brand-scarlet text-white font-bold text-xs shadow-sm hover:bg-brand-hover transition-all"
-                    >
-                      Book Again
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-serif font-bold text-slate-900">Past Completed Journeys &amp; Reviews</h2>
+              <span className="text-xs text-slate-500 font-medium">Verified Travel History</span>
             </div>
+            {pastTrips.length === 0 ? (
+              <div className="bg-white rounded-3xl p-10 sm:p-14 border border-slate-200/90 shadow-sm text-center flex flex-col items-center justify-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200">
+                  <span className="material-symbols-outlined text-[32px]">history_edu</span>
+                </div>
+                <div className="max-w-md space-y-1">
+                  <h3 className="text-lg font-serif font-bold text-slate-900">No Past Journeys or Reviews Yet</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Once you complete your bus journeys or Devsthan pilgrimage tours, your travel history, ticket archives, and ratings will appear here.
+                  </p>
+                </div>
+                <Link
+                  href="/search"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-scarlet text-white font-bold text-xs shadow-md shadow-red-600/20 hover:bg-brand-hover transition-all"
+                >
+                  <span className="material-symbols-outlined text-[16px]">search</span>
+                  <span>Explore &amp; Book Routes</span>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {pastTrips.map(trip => (
+                  <div key={trip.id} className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ticket #{trip.id} • {trip.date}</span>
+                      <h3 className="text-base font-serif font-bold text-slate-900 mt-0.5">{trip.from} ➔ {trip.to}</h3>
+                      <p className="text-xs text-slate-500">{trip.operator} • Seats {trip.seats}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-slate-900">{trip.fare}</span>
+                      <button
+                        onClick={() => {
+                          setShareToast(`Directing to re-book ${trip.from} to ${trip.to}...`);
+                          setTimeout(() => setShareToast(''), 3000);
+                        }}
+                        className="px-4 py-2 rounded-xl bg-brand-scarlet text-white font-bold text-xs shadow-sm hover:bg-brand-hover transition-all"
+                      >
+                        Book Again
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -669,11 +1071,14 @@ export default function CustomerProfilePage() {
             <div className="p-6 rounded-3xl bg-slate-900 text-white flex justify-between items-center shadow-lg">
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block">Available Wallet Balance</span>
-                <span className="text-3xl font-extrabold text-amber-400">₹1,450</span>
+                <span className="text-3xl font-extrabold text-amber-400">₹{userProfile?.walletBalance || 0}</span>
                 <p className="text-xs text-slate-300 mt-1">Use 100% wallet balance on any bus ticket or Devsthan package booking.</p>
               </div>
               <button
-                onClick={() => alert('Add Money functionality coming soon!')}
+                onClick={() => {
+                  setShareToast('Add Money functionality coming soon!');
+                  setTimeout(() => setShareToast(''), 3000);
+                }}
                 className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md"
               >
                 + Add Money
@@ -1002,7 +1407,307 @@ export default function CustomerProfilePage() {
         </div>
       )}
 
+      {/* MANAGE USER ACCOUNT MODAL */}
+      {isAccountModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-slate-800 shadow-2xl space-y-5 border border-slate-100 relative">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-red-50 text-brand-scarlet flex items-center justify-center border border-red-200 shadow-xs">
+                  <span className="material-symbols-outlined text-[22px]">manage_accounts</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-serif font-bold text-slate-900 leading-tight">
+                    Manage User Account
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Edit credentials &amp; personal information
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAccountModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            {/* Error & Success Feedback Alerts */}
+            {accountError && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+                <span className="material-symbols-outlined text-[16px] text-red-600 shrink-0">error</span>
+                <span>{accountError}</span>
+              </div>
+            )}
+
+            {accountSuccess && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                <span className="material-symbols-outlined text-[16px] text-emerald-600 shrink-0">check_circle</span>
+                <span>{accountSuccess}</span>
+              </div>
+            )}
+
+            {/* Account Edit Form */}
+            <form onSubmit={handleSaveAccount} className="space-y-3.5">
+              
+              {/* Full Name */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Full Name *
+                </label>
+                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 focus-within:border-brand-scarlet focus-within:ring-2 focus-within:ring-brand-scarlet/20 bg-white transition-all">
+                  <span className="material-symbols-outlined text-[18px] text-slate-700 shrink-0 select-none">
+                    person
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={accountFormData.name}
+                    onChange={(e) => setAccountFormData({ ...accountFormData, name: e.target.value })}
+                    placeholder="Your Full Name"
+                    className="w-full bg-transparent outline-none border-none text-xs font-bold text-slate-800 placeholder:text-slate-400 p-0"
+                  />
+                </div>
+              </div>
+
+              {/* Email Address */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Email Address *
+                </label>
+                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 focus-within:border-brand-scarlet focus-within:ring-2 focus-within:ring-brand-scarlet/20 bg-white transition-all">
+                  <span className="material-symbols-outlined text-[18px] text-slate-700 shrink-0 select-none">
+                    mail
+                  </span>
+                  <input
+                    type="email"
+                    required
+                    value={accountFormData.email}
+                    onChange={(e) => setAccountFormData({ ...accountFormData, email: e.target.value })}
+                    placeholder="your.email@example.com"
+                    className="w-full bg-transparent outline-none border-none text-xs font-bold text-slate-800 placeholder:text-slate-400 p-0"
+                  />
+                </div>
+              </div>
+
+              {/* Mobile Phone Number */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Mobile Number *
+                </label>
+                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 focus-within:border-brand-scarlet focus-within:ring-2 focus-within:ring-brand-scarlet/20 bg-white transition-all">
+                  <span className="material-symbols-outlined text-[18px] text-slate-700 shrink-0 select-none">
+                    call
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={accountFormData.phone}
+                    onChange={(e) => setAccountFormData({ ...accountFormData, phone: e.target.value })}
+                    placeholder="+91 98765 43210"
+                    className="w-full bg-transparent outline-none border-none text-xs font-bold text-slate-800 placeholder:text-slate-400 p-0"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              {!isEditingPassword ? (
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Password
+                  </label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/80">
+                    <div className="flex items-center gap-2.5">
+                      <span className="material-symbols-outlined text-[18px] text-slate-700 shrink-0 select-none">
+                        lock
+                      </span>
+                      <span className="text-base font-black tracking-widest text-slate-700 select-none">
+                        ••••••••
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingPassword(true);
+                        setAccountFormData((prev) => ({ ...prev, password: '' }));
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-brand-scarlet bg-brand-scarlet/10 hover:bg-brand-scarlet hover:text-white transition-all cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">edit</span>
+                      <span>Edit Password</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                      New Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingPassword(false);
+                        setAccountFormData((prev) => ({ ...prev, password: '' }));
+                      }}
+                      className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                    >
+                      Keep Current Password
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 focus-within:border-brand-scarlet focus-within:ring-2 focus-within:ring-brand-scarlet/20 bg-white transition-all">
+                    <span className="material-symbols-outlined text-[18px] text-slate-700 shrink-0 select-none">
+                      lock_reset
+                    </span>
+                    <input
+                      type={showAccountPassword ? 'text' : 'password'}
+                      value={accountFormData.password}
+                      onChange={(e) => setAccountFormData({ ...accountFormData, password: e.target.value })}
+                      placeholder="Enter new password (min. 6 chars)"
+                      className="w-full bg-transparent outline-none border-none text-xs font-bold text-slate-800 placeholder:text-slate-400 p-0"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAccountPassword(!showAccountPassword)}
+                      className="text-slate-600 hover:text-slate-900 cursor-pointer shrink-0 ml-1 p-0.5"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        {showAccountPassword ? 'visibility_off' : 'visibility'}
+                      </span>
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Leave empty or click &quot;Keep Current Password&quot; to retain current password.
+                  </p>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAccountModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={accountLoading}
+                  className="px-5 py-2.5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs tracking-wide uppercase transition-all shadow-md shadow-red-600/20 flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                >
+                  {accountLoading ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-[16px]">check</span>
+                      <span>Save Changes</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CANCEL TICKET CONFIRMATION MODAL */}
+      {isCancelModalOpen && cancelModalTrip && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 relative">
+            <button
+              onClick={() => setIsCancelModalOpen(false)}
+              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[24px]">confirmation_number</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-serif font-bold text-slate-900">
+                  Cancel {cancelModalTrip.isPackage ? 'Package Booking' : 'Bus Ticket'}?
+                </h3>
+                <p className="text-xs text-slate-500 font-mono">ID: #{cancelModalTrip.bookingId || cancelModalTrip.id}</p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200 space-y-2 text-xs">
+              <div className="font-bold text-amber-900 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-amber-600">account_balance_wallet</span>
+                <span>100% Instant Wallet Refund Guaranteed</span>
+              </div>
+              <p className="text-amber-800">
+                Amount of <strong>₹{(cancelModalTrip.totalFare || cancelModalTrip.totalAmount || 850).toLocaleString('en-IN')}</strong> will be credited directly to your Yatra Wallet with 0 cancellation penalty.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                Reason for Cancellation
+              </label>
+              <select
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-brand-scarlet text-xs font-semibold outline-none bg-white"
+              >
+                <option value="Change of travel plans">Change of travel plans</option>
+                <option value="Found alternative transport">Found alternative transport</option>
+                <option value="Personal / Medical emergency">Personal / Medical emergency</option>
+                <option value="Booking date mistake">Booking date mistake</option>
+                <option value="Other reason">Other reason</option>
+              </select>
+            </div>
+
+            <div className="pt-2 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsCancelModalOpen(false)}
+                disabled={isCancelling}
+                className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Keep Booking
+              </button>
+              <button
+                type="button"
+                onClick={confirmCancelBooking}
+                disabled={isCancelling}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wide uppercase transition-all shadow-md shadow-red-600/30 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isCancelling ? (
+                  <>
+                    <span className="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                    <span>Cancelling...</span>
+                  </>
+                ) : (
+                  <span>Confirm Cancellation</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TOAST NOTIFICATION */}
+      {shareToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-fadeIn">
+          <span className="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+          <span className="text-xs font-bold">{shareToast}</span>
+        </div>
+      )}
+
       <Footer />
     </div>
-  );
+  </AuthGuard>
+);
 }

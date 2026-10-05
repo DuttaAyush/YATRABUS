@@ -153,6 +153,19 @@ export default function DomesticPackages() {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [isClosing, setIsClosing] = useState(false);
   const [cardScrollTop, setCardScrollTop] = useState(0);
+  const [packages, setPackages] = useState(domesticData);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/packages?category=Domestic')
+      .then(res => res.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : data.data || [];
+        if (items.length > 0) {
+          setPackages(items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const cardContainerRef = useRef(null);
   const touchStartY = useRef(0);
@@ -276,7 +289,7 @@ export default function DomesticPackages() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
-          {domesticData.map((pkg) => (
+          {packages.map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => handleOpenSheet(pkg)}

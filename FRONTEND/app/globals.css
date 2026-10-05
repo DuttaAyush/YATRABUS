@@ -6,6 +6,7 @@
   --font-serif: 'Playfair Display', 'Georgia', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-spiritual: 'Marcellus', 'Cinzel', serif;
 
   /* Brand Colors */
   --color-brand-scarlet: #D8232A;
@@ -31,6 +32,7 @@
 
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-spiritual: 'Marcellus', 'Cinzel', serif;
 
   --duration-fast: 150ms;
   --duration-base: 300ms;
@@ -115,11 +117,41 @@ html, body {
   direction: ltr;
   -webkit-font-smoothing: antialiased;
 }
-
 /* 1️⃣ Headings (Hero title & section headings) */
 h1, h2, h3, h4, h5, h6, .font-serif, .hero-title, .section-heading {
   font-family: 'Playfair Display', 'Georgia', serif !important;
-  font-weight: 500 !important;
+  font-weight: 500;
+}
+
+/* Dedicated Spiritual Heading Font - Non-Italic & Regal Architectural Roman Serif (Marcellus / Cinzel) */
+.font-spiritual,
+h1.font-spiritual,
+h2.font-spiritual,
+h3.font-spiritual,
+h4.font-spiritual,
+.spiritual-page h1,
+.spiritual-page h2,
+.spiritual-page h3,
+.spiritual-page .hero-title,
+.spiritual-page .section-heading {
+  font-family: var(--font-spiritual, 'Marcellus', 'Cinzel', serif) !important;
+  font-style: normal !important;
+  letter-spacing: -0.01em;
+}
+
+/* Make Spiritual Hero & main headings a bit more bold */
+.spiritual-hero-title,
+.spiritual-page h1,
+h1.font-spiritual {
+  font-weight: 700 !important;
+  -webkit-text-stroke: 0.35px rgba(255, 255, 255, 0.9);
+}
+
+.spiritual-hero-title span,
+.spiritual-page h1 span,
+h1.font-spiritual span {
+  font-weight: 700 !important;
+  -webkit-text-stroke: 0.35px rgba(253, 230, 138, 0.85);
 }
 
 /* 2️⃣ Buttons (Primary, secondary, ghost, etc.) */

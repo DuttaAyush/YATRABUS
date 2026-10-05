@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import AdminShell from "@/components/layout/AdminShell";
+import { adminFetch } from "@/lib/api";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -140,6 +142,9 @@ function BusTypeCard({ bus, selected, onSelect }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function NewBusPage() {
+  const router = useRouter();
+  const [isSubmitting,      setIsSubmitting]      = useState(false);
+  const [errorMsg,          setErrorMsg]          = useState("");
   const [selectedBusType,   setSelectedBusType]   = useState(BUS_TYPES[0].id);
   const [selectedAmenities, setSelectedAmenities] = useState(new Set(["wifi", "charging", "blanket", "gps"]));
   const [status,            setStatus]            = useState("Active");
@@ -149,6 +154,51 @@ export default function NewBusPage() {
 
   const toggleAmenity = (id) => setSelectedAmenities(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const currentBus = BUS_TYPES.find(b => b.id === selectedBusType) || BUS_TYPES[0];
+
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setErrorMsg("");
+    const plate = regPlate.trim().toUpperCase();
+    if (!plate) {
+      setErrorMsg("Registration Plate Number is required (e.g. MH-31-AZ-9999).");
+      return;
+    }
+    const seatCount = parseInt(seats, 10);
+    if (isNaN(seatCount) || seatCount < 10) {
+      setErrorMsg("Total seats must be a valid number (minimum 10).");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const amenitiesObj = {};
+      AMENITIES.forEach(a => {
+        amenitiesObj[a.id] = selectedAmenities.has(a.id);
+      });
+
+      const res = await adminFetch("/api/admin/fleet", {
+        method: "POST",
+        body: JSON.stringify({
+          plateNumber: plate,
+          type: currentBus.name,
+          totalSeats: seatCount,
+          amenities: amenitiesObj,
+          busStyle: currentBus.style || "silver",
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        router.push("/buses");
+      } else {
+        setErrorMsg(data.message || "Failed to add bus to fleet");
+      }
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to communicate with server");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const inputStyle = {
     width: "100%", paddingLeft: 34, paddingRight: 12, paddingTop: 9, paddingBottom: 9,
@@ -335,6 +385,25 @@ export default function NewBusPage() {
             </div>
           </div>
 
+          {/* Error Message */}
+          {errorMsg && (
+            <div style={{
+              backgroundColor: "#FEF2F2",
+              border: "1px solid #F87171",
+              borderRadius: 8,
+              padding: "0.75rem 1rem",
+              marginBottom: "1rem",
+              color: "#991B1B",
+              fontSize: "0.875rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>error</span>
+              {errorMsg}
+            </div>
+          )}
+
           {/* Action buttons */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.25rem" }}>
             <Link href="/buses" style={{
@@ -347,15 +416,19 @@ export default function NewBusPage() {
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
               Cancel
             </Link>
-            <button style={{
-              display: "inline-flex", alignItems: "center", gap: "0.375rem",
-              padding: "0.5625rem 1.5rem",
-              border: "none", borderRadius: 8,
-              backgroundColor: "#B91C1C", color: "#fff",
-              fontSize: "0.875rem", fontWeight: 600, cursor: "pointer",
-            }}>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "0.375rem",
+                padding: "0.5625rem 1.5rem",
+                border: "none", borderRadius: 8,
+                backgroundColor: isSubmitting ? "#94A3B8" : "#B91C1C", color: "#fff",
+                fontSize: "0.875rem", fontWeight: 600, cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span>
-              Save Bus
+              {isSubmitting ? "Saving Bus..." : "Save Bus"}
             </button>
           </div>
         </div>

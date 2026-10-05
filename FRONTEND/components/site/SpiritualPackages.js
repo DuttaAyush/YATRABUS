@@ -160,6 +160,19 @@ export default function SpiritualPackages() {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [isClosing, setIsClosing] = useState(false);
   const [cardScrollTop, setCardScrollTop] = useState(0);
+  const [packages, setPackages] = useState(spiritualData);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/packages?category=Spiritual')
+      .then(res => res.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : data.data || [];
+        if (items.length > 0) {
+          setPackages(items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const cardContainerRef = useRef(null);
   const touchStartY = useRef(0);
@@ -264,7 +277,7 @@ export default function SpiritualPackages() {
               <span className="material-symbols-outlined text-[16px]">temple_hindu</span>
               PILGRIMAGE &amp; DIVINE DARSHAN
             </div>
-            <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-serif font-semibold">
+            <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-spiritual font-normal not-italic">
               Curated Spiritual Darshan Circuits
             </h2>
             <p className="text-sm text-slate-600 mt-1 max-w-2xl">
@@ -283,7 +296,7 @@ export default function SpiritualPackages() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
-          {spiritualData.map((pkg) => (
+          {packages.map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => handleOpenSheet(pkg)}

@@ -12,6 +12,7 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  SUPER_ADMIN
 }
 
 model User {
@@ -21,11 +22,28 @@ model User {
   phone           String           @unique
   passwordHash    String
   role            Role             @default(USER)
+  isActive        Boolean          @default(true)
   createdAt       DateTime         @default(now())
   
   busBookings     BusBooking[]
   packageBookings PackageBooking[]
   supportTickets  SupportTicket[]
+}
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Admin {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  phone        String?   @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
 }
 
 enum BusStatus {

@@ -1,57 +1,52 @@
-import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Router, Response } from 'express';
+import { prisma } from '../prisma';
 import { authenticateJWT, AuthRequest } from '../middleware/auth';
+import { sendSuccess, sendError } from '../utils/response';
 
 const router = Router();
-const prisma = new PrismaClient();
 
-// GET user's support tickets
-router.get('/', authenticateJWT, async (req: AuthRequest, res) => {
+// ── GET /api/support ──────────────────────────────────────────────
+// Auth required — user's own tickets only
+router.get('/', authenticateJWT, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-
     const tickets = await prisma.supportTicket.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
+      where: { userId: req.user!.id },
+      orderBy: { createdAt: 'desc' },
     });
-    res.json(tickets);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch support tickets' });
+    return sendSuccess(res, tickets);
+  } catch (err) {
+    console.error('[support GET]', err);
+    return sendError(res, 'Failed to fetch support tickets.', 500);
   }
 });
 
-// POST to create a new support ticket
-router.post('/', async (req: AuthRequest, res) => {
+// ── POST /api/support ─────────────────────────────────────────────
+// Auth required — open a new support ticket
+router.post('/', authenticateJWT, async (req: AuthRequest, res: Response) => {
   try {
-    let { subject, message, email } = req.body;
-    let userId = req.user?.id;
-    
-    if (!userId) {
-       // if not logged in, try to find user by email or fallback
-       const user = email ? await prisma.user.findUnique({ where: { email } }) : await prisma.user.findFirst();
-       if (user) userId = user.id;
-       else return res.status(400).json({ error: 'User not found or email missing' });
-    }
+    const { subject, message } = req.body;
 
     if (!subject || !message) {
-      return res.status(400).json({ error: 'Subject and message are required' });
+      return sendError(res, 'subject and message are required.', 400);
+    }
+
+    if (subject.trim().length < 5) {
+      return sendError(res, 'Subject must be at least 5 characters.', 400);
     }
 
     const ticket = await prisma.supportTicket.create({
       data: {
-        userId,
-        subject,
-        message,
-        status: 'Open'
-      }
+        userId:  req.user!.id,
+        subject: subject.trim(),
+        message: message.trim(),
+        status:  'Open',
+      },
     });
 
-    res.status(201).json({ success: true, ticket });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to create support ticket' });
+    return sendSuccess(res, { ticket }, 'Support ticket created. We will respond within 24 hours.', 201);
+  } catch (err) {
+    console.error('[support POST]', err);
+    return sendError(res, 'Failed to create support ticket.', 500);
   }
 });
 

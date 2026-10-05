@@ -135,11 +135,13 @@ export default function TripSeatMapPage() {
     }
   };
 
-  const topRow = currentSeats.slice(0, 10);
-  const bottomRow = currentSeats.slice(10);
+  const half = Math.ceil(currentSeats.length / 2);
+  const topRow = currentSeats.slice(0, half);
+  const bottomRow = currentSeats.slice(half);
 
   return (
     <AdminShell>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", maxWidth: 1120, margin: "0 auto", paddingBottom: "2rem" }}>
       {/* Breadcrumb */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "0.625rem", fontSize: "0.8125rem" }}>
         <Link href="/dashboard" style={{ color: "#64748B", textDecoration: "none" }}>Dashboard</Link>
@@ -326,125 +328,307 @@ export default function TripSeatMapPage() {
 
       </div>
 
-      {/* Main Bus Shell Container */}
+      {/* Main Bus Shell Card */}
       <div style={{
         background: "#fff", borderRadius: 16, border: "1px solid #E2E8F0",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.04)", padding: "2rem 1.5rem",
-        marginBottom: "1.5rem", overflowX: "auto"
+        boxShadow: "0 2px 10px rgba(0,0,0,0.04)", padding: "1.75rem 1.5rem",
+        width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center"
       }}>
         
-        {/* Bus Outer Body Wrapper */}
+        {/* Realistic Bus Chassis Frame (Fits 100% at once) */}
         <div style={{
-          minWidth: 860, margin: "0 auto", position: "relative",
-          borderRadius: "40px 24px 24px 40px",
-          border: "3px solid #334155", backgroundColor: "#F8FAFC",
-          padding: "1.5rem 1.25rem 1.5rem 2rem", display: "flex", alignItems: "center"
+          width: "100%", maxWidth: 940, minHeight: 230, position: "relative",
+          borderRadius: "56px 22px 22px 56px",
+          border: "4px solid #334155",
+          backgroundColor: "#E2E8F0",
+          boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), inset 0 2px 4px rgba(0,0,0,0.06)",
+          display: "flex", alignItems: "stretch",
+          overflow: "visible"
         }}>
           
-          {/* Driver Cabin Area */}
+          {/* Top Window Strip with Segmented Panes */}
           <div style={{
-            width: 110, borderRight: "2px dashed #CBD5E1",
-            paddingRight: "1rem", display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center", flexShrink: 0
+            position: "absolute", top: -4, left: 80, right: 65, height: 6,
+            display: "flex", gap: 14, zIndex: 3, pointerEvents: "none"
           }}>
+            {[...Array(8)].map((_, i) => (
+              <div key={`tw-${i}`} style={{
+                flex: 1, backgroundColor: "#1E293B",
+                borderRadius: "0 0 2px 2px",
+                borderBottom: "1.5px solid #94A3B8"
+              }} />
+            ))}
+          </div>
+
+          {/* Bottom Window Strip with Segmented Panes */}
+          <div style={{
+            position: "absolute", bottom: -4, left: 80, right: 65, height: 6,
+            display: "flex", gap: 14, zIndex: 3, pointerEvents: "none"
+          }}>
+            {[...Array(8)].map((_, i) => (
+              <div key={`bw-${i}`} style={{
+                flex: 1, backgroundColor: "#1E293B",
+                borderRadius: "2px 2px 0 0",
+                borderTop: "1.5px solid #94A3B8"
+              }} />
+            ))}
+          </div>
+
+          {/* Left: Driver Cabin Area */}
+          <div style={{
+            width: 86, flexShrink: 0, position: "relative",
+            borderRight: "2px dashed #94A3B8",
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+            padding: "0.5rem 0.25rem 0.5rem 1.25rem",
+            backgroundColor: "#E2E8F0",
+            borderRadius: "52px 0 0 52px"
+          }}>
+            
+            {/* Front windshield dark glass blocks */}
             <div style={{
-              width: 44, height: 44, borderRadius: "50%",
-              border: "3px solid #64748B", display: "flex",
-              alignItems: "center", justifyContent: "center", marginBottom: "0.75rem"
+              position: "absolute", left: 5, top: 22, bottom: 22, width: 7,
+              display: "flex", flexDirection: "column", justifyContent: "space-between", pointerEvents: "none"
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 24, color: "#475569" }}>radio_button_checked</span>
+              <div style={{ width: 7, height: 26, backgroundColor: "#1E293B", borderRadius: "3px 0 0 3px" }} />
+              <div style={{ width: 7, height: 42, backgroundColor: "#1E293B", borderRadius: "3px 0 0 3px" }} />
+              <div style={{ width: 7, height: 26, backgroundColor: "#1E293B", borderRadius: "3px 0 0 3px" }} />
             </div>
-            <div style={{ fontSize: "0.6875rem", fontWeight: 600, color: "#94A3B8", textAlign: "center" }}>
-              Front<br/>(Driver)
+
+            {/* Driver Seat at top right */}
+            <div style={{
+              position: "absolute", top: 14, right: 10,
+              width: 22, height: 28, backgroundColor: "#475569",
+              borderRadius: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
+            }} title="Driver Seat" />
+
+            {/* Boarding Step at bottom left */}
+            <div style={{
+              position: "absolute", bottom: 14, left: 24,
+              width: 30, height: 22, backgroundColor: "#475569",
+              borderRadius: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
+            }} title="Entry Step" />
+
+            {/* Steering Wheel */}
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              backgroundColor: "transparent",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              marginBottom: 4, marginTop: -6
+            }}>
+              <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="15" stroke="#334155" strokeWidth="3" />
+                <circle cx="18" cy="18" r="5" fill="#334155" />
+                <line x1="18" y1="3" x2="18" y2="13" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="5" y1="24" x2="14" y2="20" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="31" y1="24" x2="22" y2="20" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Front / Driver label */}
+            <div style={{
+              fontSize: "0.625rem", fontWeight: 700, color: "#475569",
+              textAlign: "center", lineHeight: 1.15, textTransform: "uppercase", letterSpacing: "0.02em"
+            }}>
+              Front<br/>
+              <span style={{ fontSize: "0.58rem", color: "#64748B", textTransform: "none", fontWeight: 600 }}>[Driver]</span>
             </div>
           </div>
 
-          {/* Passenger Cabin Seating */}
-          <div style={{ flex: 1, padding: "0 1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          {/* Center: Passenger Cabin Seating */}
+          <div style={{
+            flex: 1, padding: "0.875rem 0.875rem", display: "flex", flexDirection: "column",
+            justifyContent: "space-between", minWidth: 0
+          }}>
             
-            {/* Top Row Seats (Single Row Berths) */}
-            <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+            {/* Top Row Seats (1 to 10) */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${topRow.length}, 1fr)`,
+              gap: "0.5rem",
+              alignItems: "center",
+              justifyItems: "center"
+            }}>
               {topRow.map(seat => {
                 const style = renderSeatContent(seat);
                 return (
-                  <button
+                  <div
                     key={seat.id}
-                    onClick={() => cycleStatus(seat.id)}
-                    title={`Seat ${seat.number} (${seat.status}) - Click to cycle status`}
                     style={{
-                      width: 52, height: 58, borderRadius: 8,
-                      border: `1.5px solid ${style.border}`,
-                      backgroundColor: style.bg, color: style.color,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: "pointer", transition: "transform 100ms",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.06)", flexShrink: 0
+                      position: "relative", width: "100%", maxWidth: 52,
+                      display: "flex", flexDirection: "column", alignItems: "center"
                     }}
-                    onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
                   >
-                    {style.content}
-                  </button>
+                    {/* Headrest / Seat Frame Backing (extends top & bottom for bus seat look) */}
+                    <div style={{
+                      position: "absolute",
+                      top: -3,
+                      width: "68%",
+                      height: 6,
+                      backgroundColor: "#475569",
+                      borderRadius: "4px 4px 0 0",
+                      zIndex: 0
+                    }} />
+                    <div style={{
+                      position: "absolute",
+                      bottom: -3,
+                      width: "68%",
+                      height: 6,
+                      backgroundColor: "#475569",
+                      borderRadius: "0 0 4px 4px",
+                      zIndex: 0
+                    }} />
+
+                    {/* Seat Cushion Button */}
+                    <button
+                      type="button"
+                      onClick={() => cycleStatus(seat.id)}
+                      title={`Seat ${seat.number} (${seat.status}) - Click to change status`}
+                      style={{
+                        position: "relative", zIndex: 1,
+                        width: "100%", height: 50, borderRadius: 8,
+                        border: `1.5px solid ${style.border}`,
+                        backgroundColor: style.bg, color: style.color,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        cursor: "pointer", transition: "transform 120ms ease, box-shadow 120ms ease",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.12)",
+                        padding: 0
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = "scale(1.08)";
+                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.18)";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.12)";
+                      }}
+                    >
+                      {style.content}
+                    </button>
+                  </div>
                 );
               })}
             </div>
 
-            {/* Aisle label divider */}
+            {/* Aisle Area */}
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "center",
-              gap: "1rem", color: "#94A3B8", fontSize: "0.75rem",
-              fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase"
+              margin: "0.35rem 0", color: "#94A3B8", fontSize: "0.6875rem",
+              fontWeight: 800, letterSpacing: "0.35em", textTransform: "uppercase",
+              userSelect: "none"
             }}>
-              <span style={{ flex: 1, height: 1, backgroundColor: "#E2E8F0" }} />
               A I S L E
-              <span style={{ flex: 1, height: 1, backgroundColor: "#E2E8F0" }} />
             </div>
 
-            {/* Bottom Row Seats */}
-            <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+            {/* Bottom Row Seats (11 to 20) */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${bottomRow.length}, 1fr)`,
+              gap: "0.5rem",
+              alignItems: "center",
+              justifyItems: "center"
+            }}>
               {bottomRow.map(seat => {
                 const style = renderSeatContent(seat);
                 return (
-                  <button
+                  <div
                     key={seat.id}
-                    onClick={() => cycleStatus(seat.id)}
-                    title={`Seat ${seat.number} (${seat.status}) - Click to cycle status`}
                     style={{
-                      width: 52, height: 58, borderRadius: 8,
-                      border: `1.5px solid ${style.border}`,
-                      backgroundColor: style.bg, color: style.color,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: "pointer", transition: "transform 100ms",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.06)", flexShrink: 0
+                      position: "relative", width: "100%", maxWidth: 52,
+                      display: "flex", flexDirection: "column", alignItems: "center"
                     }}
-                    onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
                   >
-                    {style.content}
-                  </button>
+                    {/* Headrest / Seat Frame Backing */}
+                    <div style={{
+                      position: "absolute",
+                      top: -3,
+                      width: "68%",
+                      height: 6,
+                      backgroundColor: "#475569",
+                      borderRadius: "4px 4px 0 0",
+                      zIndex: 0
+                    }} />
+                    <div style={{
+                      position: "absolute",
+                      bottom: -3,
+                      width: "68%",
+                      height: 6,
+                      backgroundColor: "#475569",
+                      borderRadius: "0 0 4px 4px",
+                      zIndex: 0
+                    }} />
+
+                    {/* Seat Cushion Button */}
+                    <button
+                      type="button"
+                      onClick={() => cycleStatus(seat.id)}
+                      title={`Seat ${seat.number} (${seat.status}) - Click to change status`}
+                      style={{
+                        position: "relative", zIndex: 1,
+                        width: "100%", height: 50, borderRadius: 8,
+                        border: `1.5px solid ${style.border}`,
+                        backgroundColor: style.bg, color: style.color,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        cursor: "pointer", transition: "transform 120ms ease, box-shadow 120ms ease",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.12)",
+                        padding: 0
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = "scale(1.08)";
+                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.18)";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.12)";
+                      }}
+                    >
+                      {style.content}
+                    </button>
+                  </div>
                 );
               })}
             </div>
 
           </div>
 
-          {/* Emergency Exit Area (Right End) */}
+          {/* Right: Emergency Exit & Rear Area */}
           <div style={{
-            width: 70, borderLeft: "2px dashed #CBD5E1",
-            paddingLeft: "0.75rem", display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center", flexShrink: 0
+            width: 76, flexShrink: 0, position: "relative",
+            borderLeft: "2px dashed #94A3B8",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "0.5rem 0.5rem",
+            backgroundColor: "#E2E8F0",
+            borderRadius: "0 18px 18px 0"
           }}>
+            {/* Emergency Exit Panel */}
             <div style={{
-              writingMode: "vertical-rl", textOrientation: "mixed",
-              fontSize: "0.6875rem", fontWeight: 700, color: "#94A3B8",
-              letterSpacing: "0.08em"
+              width: "100%", height: "82%",
+              backgroundColor: "#CBD5E1", borderRadius: 8,
+              border: "1.5px solid #94A3B8",
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              padding: "0.25rem"
             }}>
-              Emergency Exit
+              <div style={{
+                fontSize: "0.625rem", fontWeight: 700, color: "#475569",
+                textAlign: "center", lineHeight: 1.25, letterSpacing: "0.02em"
+              }}>
+                Emergency<br/>Exit
+              </div>
             </div>
-            {/* Red tail accent */}
+
+            {/* Rear Red Tail Lights */}
             <div style={{
-              position: "absolute", right: -4, top: "20%", bottom: "20%",
-              width: 5, backgroundColor: "#EF4444", borderRadius: "0 4px 4px 0"
-            }} />
+              position: "absolute", right: -4, top: 16,
+              width: 5, height: 26, backgroundColor: "#DC2626",
+              borderRadius: "0 3px 3px 0",
+              boxShadow: "0 0 6px rgba(220,38,38,0.7)"
+            }} title="Tail Light" />
+            <div style={{
+              position: "absolute", right: -4, bottom: 16,
+              width: 5, height: 26, backgroundColor: "#DC2626",
+              borderRadius: "0 3px 3px 0",
+              boxShadow: "0 0 6px rgba(220,38,38,0.7)"
+            }} title="Tail Light" />
           </div>
 
         </div>
@@ -564,6 +748,7 @@ export default function TripSeatMapPage() {
         </div>
 
       </div>
+    </div>
 
     </AdminShell>
   );

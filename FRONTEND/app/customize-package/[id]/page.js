@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
+import { apiFetch } from '@/lib/api';
 import { allPackagesData } from '@/lib/data/packagesData';
 
 export default function CustomizePackagePage({ params }) {
@@ -12,8 +13,8 @@ export default function CustomizePackagePage({ params }) {
   // Unwrap params using React.use() for Next.js App Router dynamic routes
   const resolvedParams = use(params);
   const packageId = resolvedParams?.id || 'chardham';
-  const pkg = allPackagesData[packageId] || allPackagesData['chardham'];
-
+  
+  const [pkg, setPkg] = useState(allPackagesData[packageId] || allPackagesData['chardham']);
   const [hotelTier, setHotelTier] = useState('4star'); // '3star' | '4star' | '5star'
   const [transportMode, setTransportMode] = useState('coach'); // 'coach' | 'private-suv' | 'private-sedan'
   const [mealPlan, setMealPlan] = useState('satvik'); // 'satvik' | 'standard'
@@ -21,10 +22,30 @@ export default function CustomizePackagePage({ params }) {
   const [activeAddons, setActiveAddons] = useState(pkg.addons || []);
 
   useEffect(() => {
-    if (pkg && pkg.addons) {
-      setActiveAddons(pkg.addons);
-    }
-  }, [pkg]);
+    apiFetch(`/api/packages/${packageId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && (data.data || data.title)) {
+          const fetchedPkg = data.data || data;
+          const merged = {
+            id: fetchedPkg.id || packageId,
+            title: fetchedPkg.title || pkg.title,
+            subtitle: fetchedPkg.subtitle || fetchedPkg.destinations || pkg.subtitle,
+            duration: fetchedPkg.duration || `${fetchedPkg.durationDays || 5} Days`,
+            basePrice: fetchedPkg.pricePerPerson ? Number(fetchedPkg.pricePerPerson) : pkg.basePrice,
+            image: fetchedPkg.image || pkg.image,
+            category: fetchedPkg.category || pkg.category,
+            badge: fetchedPkg.badge || pkg.badge,
+            badgeColor: fetchedPkg.badgeColor || pkg.badgeColor,
+            inclusions: fetchedPkg.highlights || fetchedPkg.inclusions || pkg.inclusions,
+            addons: fetchedPkg.addons || pkg.addons,
+          };
+          setPkg(merged);
+          if (merged.addons) setActiveAddons(merged.addons);
+        }
+      })
+      .catch(() => {});
+  }, [packageId]);
 
   const getHotelCost = () => {
     if (hotelTier === '4star') return 4500;

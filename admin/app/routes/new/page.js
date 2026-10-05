@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import AdminShell from "@/components/layout/AdminShell";
+import { adminFetch } from "@/lib/api";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -102,6 +104,9 @@ function SideCard({ icon, title, subtitle, children }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function NewRoutePage() {
+  const router = useRouter();
+  const [isSubmitting,      setIsSubmitting]      = useState(false);
+  const [errorMsg,          setErrorMsg]          = useState("");
   const [activeDays,       setActiveDays]       = useState(new Set(["Mon", "Tue", "Wed", "Thu", "Fri"]));
   const [stops,            setStops]            = useState(["Wardha", "Amravati", "Akola", "Shegaon"]);
   const [stopSearch,       setStopSearch]       = useState("");
@@ -129,6 +134,47 @@ export default function NewRoutePage() {
     if (v && !stops.includes(v)) { setStops(s => [...s, v]); setStopSearch(""); }
   };
   const setField = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setErrorMsg("");
+    if (!form.fromCity || !form.toCity) {
+      setErrorMsg("Origin and Destination cities are required.");
+      return;
+    }
+    if (form.fromCity.trim().toLowerCase() === form.toCity.trim().toLowerCase()) {
+      setErrorMsg("Origin and Destination cannot be the same city.");
+      return;
+    }
+    const dist = parseFloat(form.distance);
+    if (isNaN(dist) || dist <= 0) {
+      setErrorMsg("Distance must be a valid positive number.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await adminFetch("/api/admin/routes", {
+        method: "POST",
+        body: JSON.stringify({
+          originCity: form.fromCity.trim(),
+          destinationCity: form.toCity.trim(),
+          distanceKm: dist,
+          waypoints: stops,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        router.push("/routes");
+      } else {
+        setErrorMsg(data.message || "Failed to create route");
+      }
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to connect to backend");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const allPoints = [
     { name: form.fromCity, type: "start" },
@@ -365,6 +411,25 @@ export default function NewRoutePage() {
             </div>
           </SectionCard>
 
+          {/* Error Message */}
+          {errorMsg && (
+            <div style={{
+              backgroundColor: "#FEF2F2",
+              border: "1px solid #F87171",
+              borderRadius: 8,
+              padding: "0.75rem 1rem",
+              marginBottom: "1rem",
+              color: "#991B1B",
+              fontSize: "0.875rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>error</span>
+              {errorMsg}
+            </div>
+          )}
+
           {/* Action buttons */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.25rem" }}>
             <Link href="/routes" style={{
@@ -377,15 +442,19 @@ export default function NewRoutePage() {
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
               Cancel
             </Link>
-            <button style={{
-              display: "inline-flex", alignItems: "center", gap: "0.375rem",
-              padding: "0.5625rem 1.5rem",
-              border: "none", borderRadius: 8,
-              backgroundColor: "#B91C1C", color: "#fff",
-              fontSize: "0.875rem", fontWeight: 600, cursor: "pointer",
-            }}>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "0.375rem",
+                padding: "0.5625rem 1.5rem",
+                border: "none", borderRadius: 8,
+                backgroundColor: isSubmitting ? "#94A3B8" : "#B91C1C", color: "#fff",
+                fontSize: "0.875rem", fontWeight: 600, cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span>
-              Create Route
+              {isSubmitting ? "Creating Route..." : "Create Route"}
             </button>
           </div>
         </div>

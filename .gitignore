@@ -1,17 +1,115 @@
-# Internal Documentation & PRD Files (Not committed to GitHub)
+# ==============================================================================
+# 1. ENVIRONMENT & SECRETS (FIRST PRIORITY - NEVER COMMIT)
+# ==============================================================================
+.env
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.env.*
+!.env.example
+**/.env
+**/.env*
+!**/.env.example
+
+# ==============================================================================
+# 2. DEPENDENCIES & PACKAGE MANAGERS
+# ==============================================================================
+node_modules/
+**/node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ==============================================================================
+# 3. BUILD ARTIFACTS & CACHES
+# ==============================================================================
+.next/
+**/.next/
+out/
+**/out/
+build/
+**/build/
+dist/
+**/dist/
+.turbo/
+**/.turbo/
+.vercel/
+**/.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# ==============================================================================
+# 4. DATABASE, RUNTIME & LOG FILES
+# ==============================================================================
+*.log
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.db
+*.db-journal
+
+# ==============================================================================
+# 5. OS & EDITOR ARTIFACTS
+# ==============================================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ==============================================================================
+# 6. TESTING & COVERAGE
+# ==============================================================================
+coverage/
+**/coverage/
+.nyc_output/
+
+# ==============================================================================
+# 7. CERTIFICATES & ENCRYPTION KEYS
+# ==============================================================================
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# ==============================================================================
+# 8. LOCAL BACKUPS & TEMPORARY/SCRATCH DIRECTORIES
+# ==============================================================================
+frontend_only/
+frontend only/
+scratch/
+tmp/
+temp/
+*.tmp
+*.bak
+
+# ==============================================================================
+# 9. INTERNAL DOCUMENTATION & BLUEPRINTS
+# ==============================================================================
 frontend.md
 PRD.md
 *.md.tmp
 BACKEND.md
 ADMIN.md
-
-
-# Node / Next.js
-node_modules/
-.next/
-out/
-build/
-.DS_Store
-.env*
-
 VedBus_Admin_Panel_Blueprint.pdf

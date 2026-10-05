@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
+import { adminFetch } from "@/lib/api";
 
 // ── Mock Data ─────────────────────────────────────────────────────────────────
 
@@ -373,6 +374,49 @@ export default function DashboardPage() {
   const greeting = h < 12 ? "Good Morning," : h < 17 ? "Good Afternoon," : "Good Evening,";
   const dateStr = now.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 
+  const [kpis, setKpis] = useState(KPI_DATA);
+  const [recentBookings, setRecentBookings] = useState(RECENT_BOOKINGS);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loadDashboardData = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await adminFetch('/api/admin/dashboard/stats');
+      const data = await res.json();
+      const stats = data.data?.stats || data.stats;
+      if (stats) {
+        setKpis(prev => prev.map(k => {
+          if (k.id === 'revenue') return { ...k, value: `₹${(stats.totalRevenue || 0).toLocaleString('en-IN')}` };
+          if (k.id === 'bookings') return { ...k, value: (stats.totalBookings || 0).toLocaleString('en-IN') };
+          if (k.id === 'trips') return { ...k, value: String(stats.activeTrips || 0) };
+          if (k.id === 'users') return { ...k, value: (stats.totalUsers || 0).toLocaleString('en-IN') };
+          return k;
+        }));
+      }
+      const rec = data.data?.recentBookings || data.recentBookings;
+      if (Array.isArray(rec) && rec.length > 0) {
+        setRecentBookings(rec.map(b => ({
+          id: b.id,
+          type: b.type || (b.package ? "Package" : "Bus"),
+          customer: b.customer || b.user?.name || "Passenger",
+          email: b.email || b.user?.email || "customer@vedbus.in",
+          route: b.route || (b.trip?.route ? `${b.trip.route.originCity} → ${b.trip.route.destinationCity}` : (b.package?.title || "Intercity Route")),
+          date: b.date ? new Date(b.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : (b.bookingDate ? new Date(b.bookingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "Today"),
+          amount: typeof b.amount === 'string' && b.amount.startsWith('₹') ? b.amount : `₹${Number(b.amount || b.totalAmount || 0).toLocaleString('en-IN')}`,
+          status: b.status,
+        })));
+      }
+    } catch (err) {
+      console.error('[Dashboard] Error fetching stats:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
   return (
     <AdminShell>
       {/* ── Greeting row ── */}
@@ -395,7 +439,7 @@ export default function DashboardPage() {
 
       {/* ── KPI Cards ── */}
       <div className="dashboard-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
-        {KPI_DATA.map((k) => (
+        {kpis.map((k) => (
           <div key={k.id} className="dashboard-kpi-card" style={{
             background: "#fff", borderRadius: 12,
             padding: "1.125rem 1.25rem",
@@ -505,14 +549,32 @@ export default function DashboardPage() {
               <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Latest bus and package bookings across all channels</div>
             </div>
           </div>
-          <Link href="/bookings" style={{
-            display: "flex", alignItems: "center", gap: "0.25rem",
-            fontSize: "0.8125rem", fontWeight: 600, color: "#B91C1C",
-            textDecoration: "none",
-          }}>
-            View All Bookings
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
-          </Link>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <button
+              onClick={loadDashboardData}
+              disabled={isRefreshing}
+              style={{
+                display: "flex", alignItems: "center", gap: "0.3rem",
+                padding: "0.35rem 0.65rem", borderRadius: 6,
+                border: "1px solid #E2E8F0", background: "#fff",
+                color: "#475569", fontSize: "0.75rem", fontWeight: 600,
+                cursor: "pointer", transition: "all 150ms"
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#F8FAFC"}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = "#fff"}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 15, animation: isRefreshing ? "spin 1s linear infinite" : "none" }}>refresh</span>
+              {isRefreshing ? "Refreshing..." : "Refresh"}
+            </button>
+            <Link href="/bookings" style={{
+              display: "flex", alignItems: "center", gap: "0.25rem",
+              fontSize: "0.8125rem", fontWeight: 600, color: "#B91C1C",
+              textDecoration: "none",
+            }}>
+              View All Bookings
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
+            </Link>
+          </div>
         </div>
 
         {/* Table */}
@@ -531,10 +593,10 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {RECENT_BOOKINGS.map((b, idx) => (
-                <tr key={b.id} style={{ borderBottom: idx < RECENT_BOOKINGS.length - 1 ? "1px solid #F8FAFC" : "none" }}>
+              {recentBookings.map((b, idx) => (
+                <tr key={`${b.id}-${idx}`} style={{ borderBottom: idx < recentBookings.length - 1 ? "1px solid #F8FAFC" : "none" }}>
                   <td style={{ padding: "0.875rem 1rem" }}>
-                    <Link href={`/bookings/${b.id}`} style={{ color: "#B91C1C", fontWeight: 600, fontSize: "0.8125rem", textDecoration: "none" }}>
+                    <Link href={b.type === "Package" ? "/package-bookings" : `/bookings`} style={{ color: "#B91C1C", fontWeight: 600, fontSize: "0.8125rem", textDecoration: "none" }}>
                       {b.id}
                     </Link>
                   </td>

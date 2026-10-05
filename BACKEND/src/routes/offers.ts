@@ -1,42 +1,54 @@
-import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { authenticateJWT, AuthRequest } from '../middleware/auth';
+import { Router, Request, Response } from 'express';
+import { prisma } from '../prisma';
+import { sendSuccess, sendError } from '../utils/response';
 
 const router = Router();
-const prisma = new PrismaClient();
 
-// GET all active offers
-router.get('/', async (req, res) => {
+// ── GET /api/offers ───────────────────────────────────────────────
+// Public — all currently active and valid offers
+router.get('/', async (_req: Request, res: Response) => {
   try {
     const offers = await prisma.offer.findMany({
-      where: { isActive: true },
-      orderBy: { validUntil: 'desc' }
+      where: {
+        isActive: true,
+        validUntil: { gte: new Date() }, // exclude expired offers
+      },
+      orderBy: { validUntil: 'asc' },
     });
-    res.json(offers);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch offers' });
+    return sendSuccess(res, offers);
+  } catch (err) {
+    console.error('[offers GET]', err);
+    return sendError(res, 'Failed to fetch offers.', 500);
   }
 });
 
-// POST to validate an offer code
-router.post('/validate', async (req, res) => {
+// ── POST /api/offers/validate ─────────────────────────────────────
+// Public — validate a promo code at checkout
+router.post('/validate', async (req: Request, res: Response) => {
   try {
     const { code } = req.body;
-    if (!code) return res.status(400).json({ error: 'Offer code required' });
+
+    if (!code || typeof code !== 'string') {
+      return sendError(res, 'Offer code is required.', 400);
+    }
 
     const offer = await prisma.offer.findUnique({
-      where: { code: String(code).toUpperCase() }
+      where: { code: code.trim().toUpperCase() },
     });
 
     if (!offer || !offer.isActive || new Date(offer.validUntil) < new Date()) {
-      return res.status(400).json({ error: 'Invalid or expired offer code' });
+      return sendError(res, 'Invalid or expired offer code.', 400);
     }
 
-    res.json({ success: true, offer });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to validate offer' });
+    return sendSuccess(res, {
+      code:               offer.code,
+      discountPercentage: offer.discountPercentage,
+      maxDiscountAmount:  Number(offer.maxDiscountAmount),
+      validUntil:         offer.validUntil,
+    }, 'Offer code is valid.');
+  } catch (err) {
+    console.error('[offers/validate]', err);
+    return sendError(res, 'Failed to validate offer code.', 500);
   }
 });
 

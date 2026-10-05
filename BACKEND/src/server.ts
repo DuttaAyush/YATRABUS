@@ -1,40 +1,28 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import busRoutes from './routes/buses';
-import bookingRoutes from './routes/bookings';
-import packageRoutes from './routes/packages';
-import userRoutes from './routes/users';
-import trackingRoutes from './routes/tracking';
-import homepageRoutes from './routes/homepage';
-import supportRoutes from './routes/support';
-import offerRoutes from './routes/offers';
+import 'dotenv/config';
+import { app } from './app';
 
-dotenv.config();
-
-const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Routes
-app.get('/', (req, res) => {
-  res.send('YATRABUS API is running!');
+// ── Start Server ──────────────────────────────────────────────────
+export const server = app.listen(PORT, () => {
+  console.log(
+    `[vedbus-api] Server running → http://localhost:${PORT} | ENV: ${process.env.NODE_ENV || 'development'}`
+  );
 });
 
-// Modular Routes
-app.use('/api/buses', busRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/packages', packageRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/tracking', trackingRoutes);
-app.use('/api/homepage', homepageRoutes);
-app.use('/api/support', supportRoutes);
-app.use('/api/offers', offerRoutes);
+// ── Graceful shutdown (required for Railway/Render/Docker) ────────
+let isShuttingDown = false;
+const shutdown = (signal: string) => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log(`[vedbus-api] ${signal} received. Shutting down gracefully...`);
+  server.close(() => {
+    console.log('[vedbus-api] HTTP server closed.');
+    process.exit(0);
+  });
+};
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT',  () => shutdown('SIGINT'));
+
+export default server;

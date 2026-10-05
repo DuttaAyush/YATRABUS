@@ -39,7 +39,7 @@ export default function SpiritualFAQ() {
           <span className="text-xs font-bold text-brand-scarlet uppercase tracking-wider bg-amber-100 px-3 py-1 rounded-full border border-amber-200">
             Devotee Assistance
           </span>
-          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-serif font-bold">Frequently Asked Questions</h2>
+          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight mt-3 font-spiritual font-normal not-italic">Frequently Asked Questions</h2>
           <p className="text-sm text-slate-600 mt-2">Everything you need to know about our pilgrimage passes, Satvik arrangements, and elder accommodations.</p>
         </div>
 

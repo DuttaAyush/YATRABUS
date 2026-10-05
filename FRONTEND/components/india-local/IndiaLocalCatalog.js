@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PackageDetailModal from '@/components/site/PackageDetailModal';
+import { apiFetch } from '@/lib/api';
 
 const domesticPackagesData = [
   {
@@ -58,10 +59,21 @@ export default function IndiaLocalCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [modalPkg, setModalPkg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [packages, setPackages] = useState(domesticPackagesData);
+
+  useEffect(() => {
+    apiFetch('/api/packages?category=Domestic')
+      .then(res => res.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : data.data || [];
+        if (items.length > 0) setPackages(items);
+      })
+      .catch(() => {});
+  }, []);
 
   const filteredPackages = activeFilter === 'all'
-    ? domesticPackagesData
-    : domesticPackagesData.filter((pkg) => pkg.category === activeFilter);
+    ? packages
+    : packages.filter((pkg) => String(pkg.category || '').toLowerCase().includes(activeFilter) || String(pkg.title || '').toLowerCase().includes(activeFilter));
 
   const handleOpenModal = (pkg) => {
     setModalPkg(pkg);

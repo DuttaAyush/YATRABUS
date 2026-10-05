@@ -10,7 +10,7 @@ export default function UpcomingBatches() {
               <span className="material-symbols-outlined text-[16px] text-brand-scarlet">event_available</span>
               CALENDAR DEPARTURES & GROUP BATCHES
             </div>
-            <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-bold">Upcoming Fixed Departure Batches & Escorted Yatras</h2>
+            <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-spiritual font-normal not-italic">Upcoming Fixed Departure Batches &amp; Escorted Yatras</h2>
             <p className="text-sm text-slate-600 mt-1">Book pre-scheduled departure dates with guaranteed coach plates, escort Purohit assistance, and confirmed priority sanctum slots.</p>
           </div>
           <div className="flex items-center gap-2 text-xs font-bold text-slate-600">

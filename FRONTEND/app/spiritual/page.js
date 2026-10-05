@@ -16,7 +16,7 @@ export const metadata = {
 
 export default function SpiritualYatraPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 font-sans text-slate-800 antialiased relative">
+    <div className="min-h-screen flex flex-col bg-slate-950 font-sans text-slate-800 antialiased relative spiritual-page">
       <Header />
       <main className="flex-1 relative">
         <SpiritualHero />

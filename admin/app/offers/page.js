@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
+import { adminFetch } from "@/lib/api";
 
 const INITIAL_OFFERS = [
   {
@@ -80,6 +81,41 @@ export default function OffersPage() {
   const [newDiscount, setNewDiscount] = useState("");
   const [newMin, setNewMin] = useState("");
   const [newCategory, setNewCategory] = useState("Bus Tickets");
+
+  useEffect(() => {
+    adminFetch('/api/admin/offers')
+      .then(res => res.json())
+      .then(data => {
+        const list = Array.isArray(data) ? data : data.data?.offers || data.offers;
+        if (Array.isArray(list) && list.length > 0) {
+          const mapped = list.map((o, i) => ({
+            id: o.id.length > 8 ? o.id.slice(0, 8).toUpperCase() : o.id,
+            code: o.code,
+            title: o.title || `Special Offer ${o.code}`,
+            type: o.discountType === 'PERCENTAGE' ? "Percentage" : "Flat Discount",
+            discount: o.discountType === 'PERCENTAGE' ? `${o.discountValue}%` : `₹ ${o.discountValue}`,
+            minBooking: `₹ ${o.minBookingAmount || 0}`,
+            validTill: o.validUntil ? new Date(o.validUntil).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "31 Dec 2026",
+            usageCount: o.timesUsed || 0,
+            maxUsage: o.maxUses || 500,
+            category: "All Bookings",
+            status: o.isActive !== false ? "Active" : "Expired"
+          }));
+          setOffers(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleToggleOfferStatus = (id) => {
+    setOffers(prev => prev.map(o => {
+      if (o.id === id) {
+        const nextStatus = o.status === "Active" ? "Inactive" : "Active";
+        return { ...o, status: nextStatus };
+      }
+      return o;
+    }));
+  };
 
   const handleCreateOffer = (e) => {
     e.preventDefault();
@@ -173,7 +209,7 @@ export default function OffersPage() {
       {/* Offers Cards Grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}>
         {offers.map(o => {
-          const isExpired = o.status === "Expired";
+          const isActive = o.status === "Active";
           const usagePercent = Math.min(100, Math.round((o.usageCount / o.maxUsage) * 100));
 
           return (
@@ -187,13 +223,14 @@ export default function OffersPage() {
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                opacity: isExpired ? 0.75 : 1
+                opacity: isActive ? 1 : 0.7,
+                transition: "opacity 200ms ease, box-shadow 200ms ease",
               }}
             >
               {/* Card Top Banner with Dashed Coupon Border */}
               <div style={{
                 padding: "1rem 1.25rem",
-                backgroundColor: isExpired ? "#F8FAFC" : "#FFF5F5",
+                backgroundColor: isActive ? "#FFF5F5" : "#F8FAFC",
                 borderBottom: "1.5px dashed #CBD5E1",
                 display: "flex",
                 alignItems: "center",
@@ -202,25 +239,62 @@ export default function OffersPage() {
                 <div style={{
                   padding: "0.3rem 0.65rem",
                   borderRadius: 6,
-                  border: isExpired ? "1px dashed #94A3B8" : "1.5px dashed #DC2626",
+                  border: isActive ? "1.5px dashed #DC2626" : "1px dashed #94A3B8",
                   backgroundColor: "#fff",
                   fontFamily: "monospace",
                   fontSize: "1rem",
                   fontWeight: 800,
-                  color: isExpired ? "#64748B" : "#B91C1C",
+                  color: isActive ? "#B91C1C" : "#64748B",
                   letterSpacing: "0.08em"
                 }}>
                   {o.code}
                 </div>
 
-                <span style={{
-                  padding: "0.2rem 0.5rem", borderRadius: 4,
-                  backgroundColor: isExpired ? "#F1F5F9" : "#DCFCE7",
-                  color: isExpired ? "#64748B" : "#166534",
-                  fontSize: "0.6875rem", fontWeight: 700
-                }}>
-                  {o.status}
-                </span>
+                {/* Active / Inactive Toggle Switch */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{
+                    padding: "0.2rem 0.5rem", borderRadius: 4,
+                    backgroundColor: isActive ? "#DCFCE7" : "#F1F5F9",
+                    color: isActive ? "#166534" : "#64748B",
+                    fontSize: "0.6875rem", fontWeight: 700
+                  }}>
+                    {isActive ? "Active" : "Inactive"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleOfferStatus(o.id)}
+                    title={isActive ? "Click to set Inactive" : "Click to set Active"}
+                    aria-label={`Toggle offer ${o.code} active status`}
+                    style={{
+                      width: 36,
+                      height: 20,
+                      borderRadius: 10,
+                      backgroundColor: isActive ? "#16A34A" : "#CBD5E1",
+                      border: "none",
+                      cursor: "pointer",
+                      position: "relative",
+                      padding: 0,
+                      transition: "background-color 200ms ease",
+                      outline: "none",
+                      display: "inline-block",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 2,
+                        left: isActive ? 18 : 2,
+                        width: 16,
+                        height: 16,
+                        borderRadius: "50%",
+                        backgroundColor: "#FFFFFF",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+                        transition: "left 200ms ease",
+                      }}
+                    />
+                  </button>
+                </div>
               </div>
 
               {/* Card Body */}
@@ -250,7 +324,7 @@ export default function OffersPage() {
                     <span>Valid till {o.validTill}</span>
                   </div>
                   <div style={{ width: "100%", height: 6, backgroundColor: "#F1F5F9", borderRadius: 3, overflow: "hidden" }}>
-                    <div style={{ width: `${usagePercent}%`, height: "100%", backgroundColor: isExpired ? "#94A3B8" : "#B91C1C", borderRadius: 3 }} />
+                    <div style={{ width: `${usagePercent}%`, height: "100%", backgroundColor: !isActive ? "#94A3B8" : "#B91C1C", borderRadius: 3 }} />
                   </div>
                 </div>
               </div>

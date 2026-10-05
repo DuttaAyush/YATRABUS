@@ -1,13 +1,34 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import DatePickerPopover from '@/components/ui/DatePickerPopover';
 
+const popularCities = [
+  { city: 'Nagpur', state: 'Maharashtra', tag: 'Direct Fleet' },
+  { city: 'Pune', state: 'Maharashtra', tag: 'Direct Express' },
+  { city: 'Mumbai', state: 'Maharashtra', tag: 'Borivali & Dadar' },
+  { city: 'Delhi', state: 'NCR', tag: 'Kashmere Gate' },
+  { city: 'Haridwar', state: 'Uttarakhand', tag: 'Ganga Ghat' },
+  { city: 'Indore', state: 'Madhya Pradesh', tag: 'Vijay Nagar' },
+  { city: 'Goa', state: 'Goa', tag: 'Panjim & Mapusa' },
+  { city: 'Shirdi', state: 'Maharashtra', tag: 'Mandir Gate 2' },
+  { city: 'Bengaluru', state: 'Karnataka', tag: 'Majestic' },
+  { city: 'Hyderabad', state: 'Telangana', tag: 'MGBS / Ameerpet' },
+  { city: 'Ahmedabad', state: 'Gujarat', tag: 'Paldi Hub' },
+  { city: 'Varanasi', state: 'Uttar Pradesh', tag: 'Cantt Depot' },
+  { city: 'Jaipur', state: 'Rajasthan', tag: 'Sindhi Camp' },
+];
+
 export default function BusHero() {
   const router = useRouter();
+  const searchContainerRef = useRef(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isFromOpen, setIsFromOpen] = useState(false);
+  const [isToOpen, setIsToOpen] = useState(false);
+  const [isPassengerOpen, setIsPassengerOpen] = useState(false);
+  const [passengers, setPassengers] = useState(1);
   const [selectedDate, setSelectedDate] = useState({
     mainText: 'Tomorrow, 24 Oct',
     subText: 'Thursday',
@@ -23,6 +44,18 @@ export default function BusHero() {
     setFromCity(toCity);
     setToCity(fromCity);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+        setIsFromOpen(false);
+        setIsToOpen(false);
+        setIsPassengerOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -131,22 +164,26 @@ export default function BusHero() {
         </div>
 
         {/* ULTRA-TRANSPARENT GLASS SEARCH BAR CAPSULE */}
-        <div className="w-full max-w-6xl">
-          <div className={`rounded-full p-1 sm:p-2 md:py-2 md:pl-4 md:pr-4 bg-white/[0.07] backdrop-blur-md border border-white/15 shadow-2xl ${isDatePickerOpen ? 'overflow-visible' : 'overflow-hidden'}`}>
+        <div ref={searchContainerRef} className="w-full max-w-6xl relative z-30">
+          <div className="rounded-full p-1 sm:p-2 md:py-2 md:pl-4 md:pr-4 bg-white/[0.07] backdrop-blur-md border border-white/15 shadow-2xl relative">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                setIsFromOpen(false);
+                setIsToOpen(false);
+                setIsPassengerOpen(false);
                 const params = new URLSearchParams({
                   from: fromCity.trim() || 'Nagpur',
                   to: toCity.trim() || 'Pune',
                   date: selectedDate.mainText,
+                  passengers: String(passengers),
                 });
                 router.push(`/search?${params.toString()}`);
               }}
               className="flex flex-row items-center justify-between w-full"
             >
               {/* 1. FROM FIELD */}
-              <div className="flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3">
+              <div className="relative flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3">
                 <span className="material-symbols-outlined text-amber-300 text-[15px] sm:text-[20px] md:text-[24px] shrink-0">
                   departure_board
                 </span>
@@ -157,11 +194,61 @@ export default function BusHero() {
                   <input
                     type="text"
                     value={fromCity}
-                    onChange={(e) => setFromCity(e.target.value)}
+                    onFocus={() => {
+                      setIsFromOpen(true);
+                      setIsToOpen(false);
+                      setIsPassengerOpen(false);
+                      setIsDatePickerOpen(false);
+                    }}
+                    onChange={(e) => {
+                      setFromCity(e.target.value);
+                      setIsFromOpen(true);
+                    }}
                     className="w-full bg-transparent font-medium text-white text-[11px] sm:text-sm md:text-base lg:text-lg outline-none border-0 p-0 focus:ring-0 placeholder-white/40 truncate leading-tight sm:leading-snug"
-                    placeholder="From"
+                    placeholder="Departure city"
                   />
                 </div>
+
+                {/* FROM AUTOCOMPLETE DROPDOWN */}
+                {isFromOpen && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute top-full left-0 mt-3 w-64 sm:w-72 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-2 z-50 text-left animate-fadeIn"
+                  >
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300/80 px-3 py-1.5 border-b border-white/10 flex items-center justify-between">
+                      <span>Select Departure City</span>
+                      <span className="text-[9px] text-white/50">{popularCities.filter(c => c.city.toLowerCase().includes(fromCity.toLowerCase().trim())).length} cities</span>
+                    </div>
+                    <div className="max-h-48 overflow-y-auto py-1 space-y-0.5 custom-scrollbar">
+                      {popularCities
+                        .filter(c => c.city.toLowerCase().includes(fromCity.toLowerCase().trim()) || c.state.toLowerCase().includes(fromCity.toLowerCase().trim()))
+                        .map((item) => (
+                          <button
+                            key={item.city}
+                            type="button"
+                            onClick={() => {
+                              setFromCity(item.city);
+                              setIsFromOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+                              fromCity.toLowerCase() === item.city.toLowerCase()
+                                ? 'bg-brand-scarlet text-white font-bold shadow-sm'
+                                : 'text-white/90 hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-[16px] text-amber-300">location_on</span>
+                              <div>
+                                <span className="block text-xs leading-none">{item.city}</span>
+                                <span className="text-[10px] text-white/50">{item.state}</span>
+                              </div>
+                            </div>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-amber-200">{item.tag}</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* CENTER DIVIDER LINE & SWAP ARROW */}
@@ -178,7 +265,7 @@ export default function BusHero() {
               </div>
 
               {/* 2. TO FIELD */}
-              <div className="flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3">
+              <div className="relative flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3">
                 <span className="material-symbols-outlined text-amber-300 text-[15px] sm:text-[20px] md:text-[24px] shrink-0">
                   pin_drop
                 </span>
@@ -189,11 +276,61 @@ export default function BusHero() {
                   <input
                     type="text"
                     value={toCity}
-                    onChange={(e) => setToCity(e.target.value)}
+                    onFocus={() => {
+                      setIsToOpen(true);
+                      setIsFromOpen(false);
+                      setIsPassengerOpen(false);
+                      setIsDatePickerOpen(false);
+                    }}
+                    onChange={(e) => {
+                      setToCity(e.target.value);
+                      setIsToOpen(true);
+                    }}
                     className="w-full bg-transparent font-medium text-white text-[11px] sm:text-sm md:text-base lg:text-lg outline-none border-0 p-0 focus:ring-0 placeholder-white/40 truncate leading-tight sm:leading-snug"
-                    placeholder="To"
+                    placeholder="Destination city"
                   />
                 </div>
+
+                {/* TO AUTOCOMPLETE DROPDOWN */}
+                {isToOpen && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute top-full left-0 mt-3 w-64 sm:w-72 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-2 z-50 text-left animate-fadeIn"
+                  >
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300/80 px-3 py-1.5 border-b border-white/10 flex items-center justify-between">
+                      <span>Select Destination City</span>
+                      <span className="text-[9px] text-white/50">{popularCities.filter(c => c.city.toLowerCase().includes(toCity.toLowerCase().trim())).length} cities</span>
+                    </div>
+                    <div className="max-h-48 overflow-y-auto py-1 space-y-0.5 custom-scrollbar">
+                      {popularCities
+                        .filter(c => c.city.toLowerCase().includes(toCity.toLowerCase().trim()) || c.state.toLowerCase().includes(toCity.toLowerCase().trim()))
+                        .map((item) => (
+                          <button
+                            key={item.city}
+                            type="button"
+                            onClick={() => {
+                              setToCity(item.city);
+                              setIsToOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+                              toCity.toLowerCase() === item.city.toLowerCase()
+                                ? 'bg-brand-scarlet text-white font-bold shadow-sm'
+                                : 'text-white/90 hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-[16px] text-amber-300">pin_drop</span>
+                              <div>
+                                <span className="block text-xs leading-none">{item.city}</span>
+                                <span className="text-[10px] text-white/50">{item.state}</span>
+                              </div>
+                            </div>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-amber-200">{item.tag}</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* DIVIDER */}
@@ -204,7 +341,12 @@ export default function BusHero() {
                 className={`relative flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3 cursor-pointer hover:bg-white/5 rounded-full transition-all ${
                   isDatePickerOpen ? 'z-[9999]' : 'z-10'
                 }`}
-                onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+                onClick={() => {
+                  setIsDatePickerOpen(!isDatePickerOpen);
+                  setIsFromOpen(false);
+                  setIsToOpen(false);
+                  setIsPassengerOpen(false);
+                }}
               >
                 <span className="material-symbols-outlined text-amber-300 text-[15px] sm:text-[20px] md:text-[24px] shrink-0">
                   calendar_month
@@ -234,19 +376,84 @@ export default function BusHero() {
               <div className="h-4 sm:h-5 md:h-6 w-[1px] bg-white/20 shrink-0 mx-0.5 sm:mx-1" />
 
               {/* 4. PASSENGERS FIELD */}
-              <div className="flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3">
+              <div
+                className="relative flex-1 min-w-0 px-1 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-2 md:py-2.5 flex items-center gap-1 sm:gap-2 md:gap-3 cursor-pointer hover:bg-white/5 rounded-full transition-all select-none"
+                onClick={() => {
+                  setIsPassengerOpen(!isPassengerOpen);
+                  setIsFromOpen(false);
+                  setIsToOpen(false);
+                  setIsDatePickerOpen(false);
+                }}
+              >
                 <span className="material-symbols-outlined text-amber-300 text-[15px] sm:text-[20px] md:text-[24px] shrink-0">
                   group
                 </span>
                 <div className="min-w-0 flex-1">
-                  <label className="block text-[8px] sm:text-[10px] md:text-xs font-semibold uppercase tracking-wider text-amber-300/90 truncate">
+                  <label className="block text-[8px] sm:text-[10px] md:text-xs font-semibold uppercase tracking-wider text-amber-300/90 truncate cursor-pointer">
                     PASSENGERS
                   </label>
                   <div className="text-[11px] sm:text-sm md:text-base lg:text-lg font-medium text-white truncate leading-tight sm:leading-snug">
-                    <span className="hidden sm:inline">1 Passenger (1 Seat)</span>
-                    <span className="sm:hidden">1 Pax</span>
+                    <span className="hidden sm:inline">{passengers} {passengers === 1 ? 'Passenger (1 Seat)' : `Passengers (${passengers} Seats)`}</span>
+                    <span className="sm:hidden">{passengers} Pax</span>
                   </div>
                 </div>
+
+                {/* PASSENGERS SELECTION DROPDOWN */}
+                {isPassengerOpen && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute top-full right-0 sm:right-auto sm:left-0 mt-3 w-64 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-3 z-50 text-left animate-fadeIn"
+                  >
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300/80 pb-2 border-b border-white/10 flex items-center justify-between">
+                      <span>Number of Passengers</span>
+                      <span className="text-[10px] text-white/50">Max 6 per booking</span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-3 border-b border-white/10">
+                      <div>
+                        <span className="text-xs font-bold text-white block">Seats to reserve</span>
+                        <span className="text-[10px] text-white/60">Direct coach berths</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-slate-950/80 px-2 py-1 rounded-xl border border-white/10">
+                        <button
+                          type="button"
+                          onClick={() => setPassengers(Math.max(1, passengers - 1))}
+                          className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+                        >
+                          -
+                        </button>
+                        <span className="font-extrabold text-sm text-amber-300 w-5 text-center">{passengers}</span>
+                        <button
+                          type="button"
+                          onClick={() => setPassengers(Math.min(6, passengers + 1))}
+                          className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-1.5 pt-2">
+                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => {
+                            setPassengers(num);
+                            setIsPassengerOpen(false);
+                          }}
+                          className={`py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                            passengers === num
+                              ? 'bg-brand-scarlet text-white shadow-sm'
+                              : 'bg-white/5 hover:bg-white/15 text-white/80'
+                          }`}
+                        >
+                          {num} {num === 1 ? 'Seat' : 'Seats'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* 5. SEARCH BUTTON */}

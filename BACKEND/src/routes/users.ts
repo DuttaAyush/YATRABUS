@@ -1,111 +1,117 @@
-import express, { Request, Response } from 'express';
+import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../prisma';
 import { authenticateJWT, AuthRequest } from '../middleware/auth';
+import { sendSuccess, sendError } from '../utils/response';
 
-const router = express.Router();
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'yatrabus_super_secret_key';
+const router = Router();
 
-// Register User
-router.post('/register', async (req: Request, res: Response) => {
+// All user routes require authentication
+router.use(authenticateJWT);
+
+// ── GET /api/users/profile ────────────────────────────────────────
+router.get('/profile', async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+    });
+
+    if (!user) return sendError(res, 'User not found.', 404);
+
+    return sendSuccess(res, user);
+  } catch (err) {
+    console.error('[users/profile GET]', err);
+    return sendError(res, 'Failed to fetch profile.', 500);
+  }
+});
+
+// ── PATCH /api/users/profile ──────────────────────────────────────
+router.patch('/profile', async (req: AuthRequest, res: Response) => {
   try {
     const { name, email, phone, password } = req.body;
-    
-    const existingUser = await prisma.user.findFirst({
-      where: { OR: [{ email }, { phone }] }
-    });
+    const userId = req.user!.id;
 
-    if (existingUser) {
-      return res.status(400).json({ error: 'User with this email or phone already exists' });
+    if (!name && !email && !phone && !password) {
+      return sendError(res, 'Provide at least one field to update.', 400);
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    const user = await prisma.user.create({
-      data: { name, email, phone, passwordHash }
-    });
-
-    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
-    
-    res.status(201).json({ message: 'User registered successfully', token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to register user' });
-  }
-});
-
-// Login User
-router.post('/login', async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
-    
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
-    
-    res.json({ message: 'Login successful', token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to login' });
-  }
-});
-
-// Get User Profile
-router.get('/profile', authenticateJWT, async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true }
-    });
-    
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to get profile' });
-  }
-});
-
-// Get User's Bookings
-router.get('/my-bookings', authenticateJWT, async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    
-    const busBookings = await prisma.busBooking.findMany({
-      where: { userId },
-      include: {
-        trip: {
-          include: {
-            route: true,
-            bus: true
-          }
-        }
-      },
-      orderBy: { bookingDate: 'desc' }
-    });
-
-    const packageBookings = await prisma.packageBooking.findMany({
-      where: { userId },
-      include: {
-        package: true
+    // Check if email already in use by another user
+    if (email && email.trim()) {
+      const existingEmail = await prisma.user.findFirst({
+        where: {
+          email: email.trim().toLowerCase(),
+          NOT: { id: userId },
+        },
+      });
+      if (existingEmail) {
+        return sendError(res, 'An account with this email already exists.', 409);
       }
+    }
+
+    // Check if phone already in use by another user
+    if (phone && phone.trim()) {
+      const existingPhone = await prisma.user.findFirst({
+        where: {
+          phone: phone.trim(),
+          NOT: { id: userId },
+        },
+      });
+      if (existingPhone) {
+        return sendError(res, 'An account with this phone number already exists.', 409);
+      }
+    }
+
+    let passwordHash: string | undefined = undefined;
+    if (password && password.trim()) {
+      if (password.length < 6) {
+        return sendError(res, 'Password must be at least 6 characters.', 400);
+      }
+      passwordHash = await bcrypt.hash(password, 12);
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(name && { name: name.trim() }),
+        ...(email && { email: email.trim().toLowerCase() }),
+        ...(phone && { phone: phone.trim() }),
+        ...(passwordHash && { passwordHash }),
+      },
+      select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
     });
 
-    res.json({ busBookings, packageBookings });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch bookings' });
+    return sendSuccess(res, updated, 'Profile updated successfully.');
+  } catch (err) {
+    console.error('[users/profile PATCH]', err);
+    return sendError(res, 'Failed to update profile.', 500);
+  }
+});
+
+// ── GET /api/users/my-bookings ────────────────────────────────────
+router.get('/my-bookings', async (req: AuthRequest, res: Response) => {
+  try {
+    const [busBookings, packageBookings] = await Promise.all([
+      prisma.busBooking.findMany({
+        where: { userId: req.user!.id },
+        include: {
+          trip: {
+            include: { route: true, bus: true },
+          },
+        },
+        orderBy: { bookingDate: 'desc' },
+      }),
+      prisma.packageBooking.findMany({
+        where: { userId: req.user!.id },
+        include: { package: true },
+        orderBy: { travelDate: 'desc' },
+      }),
+    ]);
+
+    return sendSuccess(res, { busBookings, packageBookings });
+  } catch (err) {
+    console.error('[users/my-bookings]', err);
+    return sendError(res, 'Failed to fetch bookings.', 500);
   }
 });
 

@@ -305,6 +305,19 @@ export default function InternationalPackages() {
   const [activeTab, setActiveTab] = useState('itinerary'); // 'itinerary' | 'summary' | 'inclusions'
   const [isClosing, setIsClosing] = useState(false);
   const [cardScrollTop, setCardScrollTop] = useState(0);
+  const [packages, setPackages] = useState(packagesData);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/packages?category=International')
+      .then(res => res.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : data.data || [];
+        if (items.length > 0) {
+          setPackages(items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const cardContainerRef = useRef(null);
   const touchStartY = useRef(0);
@@ -430,50 +443,52 @@ export default function InternationalPackages() {
         </div>
 
         {/* Hero Spotlight Banner */}
-        <div
-          onClick={() => handleOpenSheet(packagesData[0])}
-          className="mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-md hover:shadow-xl border border-slate-200 relative group cursor-pointer transition-transform active:scale-[0.99]"
-        >
-          <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden bg-slate-900">
-            <img
-              alt="Luxury Dubai & Singapore Escape collage banner"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              src={packagesData[0].image}
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
-            <div className="absolute inset-0 p-4 sm:p-6 md:p-10 flex flex-col justify-between text-white">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold uppercase tracking-wider shadow-sm">
-                  {packagesData[0].badge}
-                </span>
-              </div>
-              <div className="max-w-2xl">
-                <h3 className="text-lg sm:text-2xl md:text-3xl font-serif tracking-tight mb-1 sm:mb-2 font-semibold">
-                  {packagesData[0].title}
-                </h3>
-                <p className="text-xs md:text-sm text-slate-200 leading-relaxed mb-2.5 sm:mb-4 line-clamp-2">
-                  {packagesData[0].overview}
-                </p>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <div className="bg-white/10 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/20">
-                    <span className="text-[9px] sm:text-[10px] text-amber-300 block font-semibold">Duration</span>
-                    <span className="text-xs md:text-sm font-extrabold">{packagesData[0].duration}</span>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/20">
-                    <span className="text-[9px] sm:text-[10px] text-amber-300 block font-semibold">All-Inclusive</span>
-                    <span className="text-xs md:text-sm font-extrabold">{packagesData[0].price} / person</span>
+        {packages[0] && (
+          <div
+            onClick={() => handleOpenSheet(packages[0])}
+            className="mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-md hover:shadow-xl border border-slate-200 relative group cursor-pointer transition-transform active:scale-[0.99]"
+          >
+            <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden bg-slate-900">
+              <img
+                alt="Luxury Dubai & Singapore Escape collage banner"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                src={packages[0].image}
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
+              <div className="absolute inset-0 p-4 sm:p-6 md:p-10 flex flex-col justify-between text-white">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold uppercase tracking-wider shadow-sm">
+                    {packages[0].badge}
+                  </span>
+                </div>
+                <div className="max-w-2xl">
+                  <h3 className="text-lg sm:text-2xl md:text-3xl font-serif tracking-tight mb-1 sm:mb-2 font-semibold">
+                    {packages[0].title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-200 leading-relaxed mb-2.5 sm:mb-4 line-clamp-2">
+                    {packages[0].overview}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div className="bg-white/10 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/20">
+                      <span className="text-[9px] sm:text-[10px] text-amber-300 block font-semibold">Duration</span>
+                      <span className="text-xs md:text-sm font-extrabold">{packages[0].duration}</span>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-md px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/20">
+                      <span className="text-[9px] sm:text-[10px] text-amber-300 block font-semibold">All-Inclusive</span>
+                      <span className="text-xs md:text-sm font-extrabold">{packages[0].price} / person</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* 3 International Tour Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-4 md:gap-6">
-          {packagesData.slice(1).map((pkg) => (
+          {packages.slice(1).map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => handleOpenSheet(pkg)}
