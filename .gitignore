@@ -96,8 +96,7 @@ coverage/
 # ==============================================================================
 # 8. LOCAL BACKUPS & TEMPORARY/SCRATCH DIRECTORIES
 # ==============================================================================
-frontend_only/
-frontend only/
+
 scratch/
 tmp/
 temp/
