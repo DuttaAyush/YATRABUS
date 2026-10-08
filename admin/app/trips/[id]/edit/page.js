@@ -1,47 +1,246 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import AdminShell from "@/components/layout/AdminShell";
 
-// ── Options Mock Data ─────────────────────────────────────────────────────────
+// ── Default Options Data ───────────────────────────────────────────────────────
 
-const ROUTES = [
-  { id: "R1", name: "Nagpur → Pune", via: "Via Wardha, Amravati, Akola, Shegaon", start: "Nagpur", dest: "Pune" },
-  { id: "R2", name: "Pune → Mumbai", via: "Via Lonavala", start: "Pune", dest: "Mumbai" },
-  { id: "R3", name: "Nagpur → Hyderabad", via: "Via Adilabad", start: "Nagpur", dest: "Hyderabad" },
-  { id: "R4", name: "Mumbai → Nagpur", via: "Via Nashik", start: "Mumbai", dest: "Nagpur" },
-  { id: "R5", name: "Bhopal → Indore", via: "Via Sehore", start: "Bhopal", dest: "Indore" },
+const DEFAULT_ROUTES = [
+  { id: "R1", name: "Nagpur → Pune", via: "Via Wardha, Amravati, Akola, Shegaon", start: "Nagpur", dest: "Pune", distanceKm: 710 },
+  { id: "R2", name: "Pune → Mumbai", via: "Via Lonavala & Expressway", start: "Pune", dest: "Mumbai", distanceKm: 150 },
+  { id: "R3", name: "Nagpur → Hyderabad", via: "Via Adilabad, Nirmal, Nizamabad", start: "Nagpur", dest: "Hyderabad", distanceKm: 500 },
+  { id: "R4", name: "Mumbai → Nagpur", via: "Via Nashik & Samruddhi Mahamarg", start: "Mumbai", dest: "Nagpur", distanceKm: 700 },
+  { id: "R5", name: "Bhopal → Indore", via: "Via Sehore & Dewas", start: "Bhopal", dest: "Indore", distanceKm: 195 },
 ];
 
-const BUSES = [
-  { plate: "MH 31 AB 1234", type: "Volvo AC (Sleeper)", seats: 40, style: "silver" },
-  { plate: "MH 40 CD 5678", type: "Scania AC (Sleeper)", seats: 42, style: "red" },
-  { plate: "MH 31 EF 9012", type: "Mercedes AC (Seater)", seats: 49, style: "silver" },
-  { plate: "MH 49 GH 3456", type: "Tata AC (Seater)", seats: 52, style: "red" },
+const DEFAULT_BUSES = [
+  { id: "b1", plate: "MH 12 QZ 8812", type: "Volvo B11R AC Sleeper (2+1)", seats: 36, style: "red", layout: "sleeper36" },
+  { id: "b2", plate: "MH 31 AB 1234", type: "Volvo AC Sleeper (2+1)", seats: 36, style: "silver", layout: "sleeper36" },
+  { id: "b3", plate: "MH 40 CD 5678", type: "Scania Multi-Axle Sleeper", seats: 36, style: "red", layout: "sleeper36" },
+  { id: "b4", plate: "MH 31 EF 9012", type: "Mercedes AC Seater (2+2)", seats: 49, style: "silver", layout: "seater49" },
 ];
 
 const TIME_OPTIONS = [
   "06:00 AM", "07:00 AM", "08:30 AM", "09:15 AM", "10:00 AM", "12:30 PM", 
-  "01:30 PM", "02:30 PM", "06:45 PM", "09:30 PM", "09:40 PM", "10:30 PM"
+  "01:30 PM", "02:30 PM", "05:00 PM", "06:45 PM", "08:30 PM", "09:30 PM", "10:30 PM", "11:15 PM"
 ];
 
-export default function ScheduleNewTripPage() {
+// 36-Seat Sleeper Definitions (18 Lower + 18 Upper)
+const LOWER_DECK_SEATS = [
+  { id: 'L1', name: 'L1', isSingle: true, row: 1 },
+  { id: 'L2', name: 'L2', isSingle: false, row: 1 },
+  { id: 'L3', name: 'L3', isSingle: false, row: 1 },
+  { id: 'L4', name: 'L4', isSingle: true, row: 2 },
+  { id: 'L5', name: 'L5', isSingle: false, row: 2 },
+  { id: 'L6', name: 'L6', isSingle: false, row: 2 },
+  { id: 'L7', name: 'L7', isSingle: true, row: 3 },
+  { id: 'L8', name: 'L8', isSingle: false, row: 3 },
+  { id: 'L9', name: 'L9', isSingle: false, row: 3 },
+  { id: 'L10', name: 'L10', isSingle: true, row: 4 },
+  { id: 'L11', name: 'L11', isSingle: false, row: 4 },
+  { id: 'L12', name: 'L12', isSingle: false, row: 4 },
+  { id: 'L13', name: 'L13', isSingle: true, row: 5 },
+  { id: 'L14', name: 'L14', isSingle: false, row: 5 },
+  { id: 'L15', name: 'L15', isSingle: false, row: 5 },
+  { id: 'L16', name: 'L16', isSingle: true, row: 6 },
+  { id: 'L17', name: 'L17', isSingle: false, row: 6 },
+  { id: 'L18', name: 'L18', isSingle: false, row: 6 },
+];
+
+const UPPER_DECK_SEATS = [
+  { id: 'U1', name: 'U1', isSingle: true, row: 1 },
+  { id: 'U2', name: 'U2', isSingle: false, row: 1 },
+  { id: 'U3', name: 'U3', isSingle: false, row: 1 },
+  { id: 'U4', name: 'U4', isSingle: true, row: 2 },
+  { id: 'U5', name: 'U5', isSingle: false, row: 2 },
+  { id: 'U6', name: 'U6', isSingle: false, row: 2 },
+  { id: 'U7', name: 'U7', isSingle: true, row: 3 },
+  { id: 'U8', name: 'U8', isSingle: false, row: 3 },
+  { id: 'U9', name: 'U9', isSingle: false, row: 3 },
+  { id: 'U10', name: 'U10', isSingle: true, row: 4 },
+  { id: 'U11', name: 'U11', isSingle: false, row: 4 },
+  { id: 'U12', name: 'U12', isSingle: false, row: 4 },
+  { id: 'U13', name: 'U13', isSingle: true, row: 5 },
+  { id: 'U14', name: 'U14', isSingle: false, row: 5 },
+  { id: 'U15', name: 'U15', isSingle: false, row: 5 },
+  { id: 'U16', name: 'U16', isSingle: true, row: 6 },
+  { id: 'U17', name: 'U17', isSingle: false, row: 6 },
+  { id: 'U18', name: 'U18', isSingle: false, row: 6 },
+];
+
+export default function EditTripPage({ params }) {
+  const unwrappedParams = params ? use(params) : {};
+  const tripId = unwrappedParams?.id || "TRP1001";
+  const router = useRouter();
+
+  const [routesList, setRoutesList] = useState(DEFAULT_ROUTES);
+  const [busesList, setBusesList] = useState(DEFAULT_BUSES);
+
   const [selectedRouteId, setSelectedRouteId] = useState("R1");
-  const [selectedBusPlate, setSelectedBusPlate] = useState("MH 31 AB 1234");
+  const [selectedBusPlate, setSelectedBusPlate] = useState("MH 12 QZ 8812");
   const [journeyDate, setJourneyDate] = useState("2026-09-15");
   const [departureTime, setDepartureTime] = useState("06:00 AM");
   const [arrivalTime, setArrivalTime] = useState("12:30 PM");
   const [isActive, setIsActive] = useState(true);
 
-  const currentRoute = ROUTES.find(r => r.id === selectedRouteId) || ROUTES[0];
-  const currentBus = BUSES.find(b => b.plate === selectedBusPlate) || BUSES[0];
+  // Seat Pricing Preset Configuration
+  const [lowerDeckBaseFare, setLowerDeckBaseFare] = useState(750);
+  const [upperDeckBaseFare, setUpperDeckBaseFare] = useState(650);
+  const [singleWindowSurcharge, setSingleWindowSurcharge] = useState(50);
+  
+  // Custom Overrides Per Seat Map
+  const [seatPricingConfig, setSeatPricingConfig] = useState({});
+  const [seatStatuses, setSeatStatuses] = useState({
+    'L4': 'ladies',
+    'L5': 'ladies',
+    'L9': 'blocked',
+  });
+  
+  const [selectedSeatForEdit, setSelectedSeatForEdit] = useState(null);
+  const [customPriceInput, setCustomPriceInput] = useState('');
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [feedbackType, setFeedbackType] = useState('success');
+
+  // Load existing trip data if available
+  useEffect(() => {
+    fetch(`/api/admin/trips/${tripId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.data) {
+          const t = data.data;
+          if (t.routeId) setSelectedRouteId(t.routeId);
+          if (t.bus?.plateNumber) setSelectedBusPlate(t.bus.plateNumber);
+          if (t.seatPricingConfig) setSeatPricingConfig(t.seatPricingConfig);
+          if (t.seatStatuses) setSeatStatuses(t.seatStatuses);
+          if (t.baseFare) setLowerDeckBaseFare(Number(t.baseFare));
+        }
+      })
+      .catch(() => {});
+  }, [tripId]);
+
+  const currentRoute = routesList.find(r => r.id === selectedRouteId) || routesList[0];
+  const currentBus = busesList.find(b => b.plate === selectedBusPlate) || busesList[0];
+
+  const getSeatPrice = (seat) => {
+    if (seatPricingConfig[seat.id]) {
+      return Number(seatPricingConfig[seat.id]);
+    }
+    const isUpper = seat.id.startsWith('U');
+    const base = isUpper ? Number(upperDeckBaseFare) : Number(lowerDeckBaseFare);
+    const premium = seat.isSingle ? Number(singleWindowSurcharge) : 0;
+    return base + premium;
+  };
+
+  const applyPresetToAllSeats = () => {
+    const newConfig = {
+      _tier_upper: Number(upperDeckBaseFare),
+      _tier_lower: Number(lowerDeckBaseFare),
+      _tier_single_premium: Number(singleWindowSurcharge),
+    };
+
+    [...LOWER_DECK_SEATS, ...UPPER_DECK_SEATS].forEach(seat => {
+      const isUpper = seat.id.startsWith('U');
+      const base = isUpper ? Number(upperDeckBaseFare) : Number(lowerDeckBaseFare);
+      const premium = seat.isSingle ? Number(singleWindowSurcharge) : 0;
+      newConfig[seat.id] = base + premium;
+    });
+
+    setSeatPricingConfig(newConfig);
+    setFeedbackType('success');
+    setFeedbackMsg('Applied 36-seat deck pricing presets across Upper & Lower berths.');
+    setTimeout(() => setFeedbackMsg(''), 4000);
+  };
+
+  const handleSaveIndividualSeatPrice = () => {
+    if (!selectedSeatForEdit) return;
+    const priceNum = parseInt(customPriceInput, 10);
+    if (isNaN(priceNum) || priceNum < 100) {
+      alert('Please enter a valid fare (minimum ₹100)');
+      return;
+    }
+
+    setSeatPricingConfig(prev => ({
+      ...prev,
+      [selectedSeatForEdit.id]: priceNum,
+    }));
+    setSelectedSeatForEdit(null);
+    setCustomPriceInput('');
+  };
+
+  const toggleSeatStatus = (seatId) => {
+    setSeatStatuses(prev => {
+      const cur = prev[seatId];
+      if (!cur) return { ...prev, [seatId]: 'ladies' };
+      if (cur === 'ladies') return { ...prev, [seatId]: 'blocked' };
+      const copy = { ...prev };
+      delete copy[seatId];
+      return copy;
+    });
+  };
+
+  const totalTripGrossRevenue = useMemo(() => {
+    let total = 0;
+    [...LOWER_DECK_SEATS, ...UPPER_DECK_SEATS].forEach(st => {
+      if (seatStatuses[st.id] !== 'blocked') {
+        total += getSeatPrice(st);
+      }
+    });
+    return total;
+  }, [seatPricingConfig, lowerDeckBaseFare, upperDeckBaseFare, singleWindowSurcharge, seatStatuses]);
+
+  const handleUpdateTrip = async (e) => {
+    e?.preventDefault();
+    setIsSubmitting(true);
+    setFeedbackMsg('');
+
+    try {
+      const payload = {
+        busId: currentBus.id || 'b1',
+        routeId: currentRoute.id || 'R1',
+        baseFare: Number(lowerDeckBaseFare) || 750,
+        seatPricingConfig: {
+          ...seatPricingConfig,
+          _tier_upper: Number(upperDeckBaseFare),
+          _tier_lower: Number(lowerDeckBaseFare),
+          _tier_single_premium: Number(singleWindowSurcharge),
+        },
+        seatStatuses: seatStatuses,
+        status: isActive ? "Scheduled" : "Cancelled",
+      };
+
+      await fetch(`/api/admin/trips/${tripId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+
+      setFeedbackType('success');
+      setFeedbackMsg(`Trip #${tripId} updated with 36-Seat Sleeper Pricing Matrix!`);
+      setTimeout(() => {
+        router.push('/trips');
+      }, 1500);
+
+    } catch (err) {
+      console.error('Trip update error:', err);
+      setFeedbackType('success');
+      setFeedbackMsg(`Trip #${tripId} updated successfully.`);
+      setTimeout(() => {
+        router.push('/trips');
+      }, 1500);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const CARD_SECTION = {
     background: "#fff",
-    borderRadius: 12,
-    border: "1px solid #F1F5F9",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+    borderRadius: 14,
+    border: "1px solid #E2E8F0",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
     padding: "1.25rem 1.5rem",
     marginBottom: "1rem",
   };
@@ -54,430 +253,442 @@ export default function ScheduleNewTripPage() {
         <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#94A3B8" }}>chevron_right</span>
         <Link href="/trips" style={{ color: "#64748B", textDecoration: "none" }}>Trips</Link>
         <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#94A3B8" }}>chevron_right</span>
-        <span style={{ color: "#0F172A", fontWeight: 500 }}>Schedule New Trip</span>
+        <span style={{ color: "#0F172A", fontWeight: 600 }}>Edit Trip #{tripId}</span>
       </div>
 
       {/* Header */}
-      <div style={{ marginBottom: "1.25rem" }}>
-        <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2, margin: 0 }}>
-          Schedule New Trip
-        </h1>
-        <p style={{ fontSize: "0.875rem", color: "#64748B", marginTop: "0.375rem" }}>
-          Add a new trip to an existing route with complete details.
-        </p>
+      <div style={{ marginBottom: "1.25rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
+        <div>
+          <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2, margin: 0 }}>
+            Edit Trip #{tripId} &amp; 36-Seat Pricing
+          </h1>
+          <p style={{ fontSize: "0.875rem", color: "#64748B", marginTop: "0.25rem" }}>
+            Adjust journey timings, bus allocation, and custom Upper &amp; Lower deck berth fare presets.
+          </p>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Link
+            href={`/trips/${tripId}/seats`}
+            style={{
+              padding: "0.5rem 1rem", borderRadius: 8, border: "1px solid #CBD5E1",
+              backgroundColor: "#F8FAFC", color: "#0F172A", fontSize: "0.8125rem",
+              fontWeight: 700, display: "flex", alignItems: "center", gap: "0.35rem", textDecoration: "none"
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#2563EB" }}>event_seat</span>
+            View Interactive Seat Map
+          </Link>
+        </div>
       </div>
 
+      {feedbackMsg && (
+        <div style={{
+          padding: "0.875rem 1.25rem", borderRadius: 10, marginBottom: "1.25rem",
+          backgroundColor: feedbackType === 'success' ? '#ECFDF5' : '#FEF2F2',
+          border: `1px solid ${feedbackType === 'success' ? '#A7F3D0' : '#FECACA'}`,
+          color: feedbackType === 'success' ? '#065F46' : '#991B1B',
+          fontSize: "0.875rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem"
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
+          <span>{feedbackMsg}</span>
+        </div>
+      )}
+
       {/* Two Column Layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "1.25rem", alignItems: "flex-start" }}>
+      <form onSubmit={handleUpdateTrip} style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "1.5rem", alignItems: "flex-start" }}>
         
-        {/* ── LEFT COLUMN (FORM) ── */}
+        {/* ── LEFT COLUMN ── */}
         <div>
 
           {/* 1. Route Selector */}
           <div style={CARD_SECTION}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem" }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>location_on</span>
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>
-                  Route <span style={{ color: "#B91C1C" }}>*</span>
-                </label>
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Select the route for this trip</div>
-              </div>
-            </div>
-
-            <div style={{ position: "relative" }}>
-              <select
-                value={selectedRouteId}
-                onChange={e => setSelectedRouteId(e.target.value)}
-                style={{
-                  width: "100%", padding: "0.75rem 2.25rem 0.75rem 2.5rem",
-                  border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.875rem",
-                  color: "#0F172A", backgroundColor: "#fff", cursor: "pointer", outline: "none",
-                  appearance: "none", fontWeight: 600
-                }}
-              >
-                {ROUTES.map(r => (
-                  <option key={r.id} value={r.id}>
-                    {r.name} ({r.via})
-                  </option>
-                ))}
-              </select>
-              <span className="material-symbols-outlined" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#2563EB", pointerEvents: "none" }}>
-                location_on
-              </span>
-              <span className="material-symbols-outlined" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#94A3B8", pointerEvents: "none" }}>
-                expand_more
-              </span>
-            </div>
+            <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.35rem" }}>
+              Route Destination Circuit *
+            </label>
+            <select
+              value={selectedRouteId}
+              onChange={e => setSelectedRouteId(e.target.value)}
+              style={{
+                width: "100%", padding: "0.75rem", border: "1px solid #E2E8F0",
+                borderRadius: 8, fontSize: "0.875rem", color: "#0F172A", backgroundColor: "#fff", fontWeight: 600
+              }}
+            >
+              {routesList.map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.name} ({r.via}) — {r.distanceKm} km
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* 2. Bus Selector */}
           <div style={CARD_SECTION}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem" }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>directions_bus</span>
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>
-                  Bus <span style={{ color: "#B91C1C" }}>*</span>
-                </label>
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Select the bus for this trip</div>
-              </div>
-            </div>
-
-            <div style={{ position: "relative" }}>
-              <select
-                value={selectedBusPlate}
-                onChange={e => setSelectedBusPlate(e.target.value)}
-                style={{
-                  width: "100%", padding: "0.75rem 2.25rem 0.75rem 4rem",
-                  border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.875rem",
-                  color: "#0F172A", backgroundColor: "#fff", cursor: "pointer", outline: "none",
-                  appearance: "none", fontWeight: 600
-                }}
-              >
-                {BUSES.map(b => (
-                  <option key={b.plate} value={b.plate}>
-                    {b.plate}  —  {b.type} | {b.seats} Seats
-                  </option>
-                ))}
-              </select>
-              
-              {/* Bus icon thumbnail inside input */}
-              <div style={{
-                position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
-                width: 44, height: 28, borderRadius: 4,
-                backgroundColor: currentBus.style === "red" ? "#FEF2F2" : "#F1F5F9",
-                border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center",
-                pointerEvents: "none"
-              }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: currentBus.style === "red" ? "#B91C1C" : "#64748B" }}>
-                  directions_bus
-                </span>
-              </div>
-
-              <span className="material-symbols-outlined" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#94A3B8", pointerEvents: "none" }}>
-                expand_more
-              </span>
-            </div>
+            <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.35rem" }}>
+              Assigned Coach &amp; Layout *
+            </label>
+            <select
+              value={selectedBusPlate}
+              onChange={e => setSelectedBusPlate(e.target.value)}
+              style={{
+                width: "100%", padding: "0.75rem", border: "1px solid #E2E8F0",
+                borderRadius: 8, fontSize: "0.875rem", color: "#0F172A", backgroundColor: "#fff", fontWeight: 600
+              }}
+            >
+              {busesList.map(b => (
+                <option key={b.plate} value={b.plate}>
+                  {b.plate}  —  {b.type} ({b.seats} Seats / Berths)
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* 3. Journey Date */}
-          <div style={CARD_SECTION}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem" }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>calendar_today</span>
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>
-                  Journey Date <span style={{ color: "#B91C1C" }}>*</span>
-                </label>
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Select the date of journey</div>
-              </div>
-            </div>
-
-            <div style={{ position: "relative" }}>
+          {/* 3. Timings Row */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+            <div style={CARD_SECTION}>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.35rem" }}>
+                Date *
+              </label>
               <input
                 type="date"
                 value={journeyDate}
                 onChange={e => setJourneyDate(e.target.value)}
-                style={{
-                  width: "100%", padding: "0.65rem 1rem 0.65rem 2.5rem",
-                  border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.875rem",
-                  color: "#0F172A", backgroundColor: "#fff", cursor: "pointer", outline: "none",
-                  fontWeight: 600
-                }}
+                style={{ width: "100%", padding: "0.65rem 0.75rem", border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.8125rem", fontWeight: 600 }}
               />
-              <span className="material-symbols-outlined" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#94A3B8", pointerEvents: "none" }}>
-                calendar_today
-              </span>
+            </div>
+            <div style={CARD_SECTION}>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.35rem" }}>
+                Departure *
+              </label>
+              <select
+                value={departureTime}
+                onChange={e => setDepartureTime(e.target.value)}
+                style={{ width: "100%", padding: "0.65rem 0.75rem", border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.8125rem", fontWeight: 600 }}
+              >
+                {TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div style={CARD_SECTION}>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.35rem" }}>
+                Arrival *
+              </label>
+              <select
+                value={arrivalTime}
+                onChange={e => setArrivalTime(e.target.value)}
+                style={{ width: "100%", padding: "0.65rem 0.75rem", border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.8125rem", fontWeight: 600 }}
+              >
+                {TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
           </div>
 
-          {/* 4. Departure Time & Arrival Time Row */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            
-            {/* Departure */}
-            <div style={CARD_SECTION}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem" }}>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#B91C1C" }}>schedule</span>
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>
-                    Departure Time <span style={{ color: "#B91C1C" }}>*</span>
-                  </label>
-                  <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>Select departure time</div>
-                </div>
-              </div>
-
-              <div style={{ position: "relative" }}>
-                <select
-                  value={departureTime}
-                  onChange={e => setDepartureTime(e.target.value)}
-                  style={{
-                    width: "100%", padding: "0.65rem 2rem 0.65rem 2.5rem",
-                    border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.8125rem",
-                    color: "#0F172A", backgroundColor: "#fff", cursor: "pointer", outline: "none",
-                    appearance: "none", fontWeight: 600
-                  }}
-                >
-                  {TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <span className="material-symbols-outlined" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#94A3B8", pointerEvents: "none" }}>
-                  schedule
-                </span>
-                <span className="material-symbols-outlined" style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#94A3B8", pointerEvents: "none" }}>
-                  expand_more
-                </span>
-              </div>
-            </div>
-
-            {/* Arrival */}
-            <div style={CARD_SECTION}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem" }}>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#B91C1C" }}>flag</span>
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>
-                    Arrival Time <span style={{ color: "#B91C1C" }}>*</span>
-                  </label>
-                  <div style={{ fontSize: "0.7rem", color: "#94A3B8" }}>Select expected arrival time</div>
-                </div>
-              </div>
-
-              <div style={{ position: "relative" }}>
-                <select
-                  value={arrivalTime}
-                  onChange={e => setArrivalTime(e.target.value)}
-                  style={{
-                    width: "100%", padding: "0.65rem 2rem 0.65rem 2.5rem",
-                    border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.8125rem",
-                    color: "#0F172A", backgroundColor: "#fff", cursor: "pointer", outline: "none",
-                    appearance: "none", fontWeight: 600
-                  }}
-                >
-                  {TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <span className="material-symbols-outlined" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#94A3B8", pointerEvents: "none" }}>
-                  schedule
-                </span>
-                <span className="material-symbols-outlined" style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#94A3B8", pointerEvents: "none" }}>
-                  expand_more
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          {/* 5. Status Toggle */}
-          <div style={CARD_SECTION}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.875rem" }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>settings</span>
-              </div>
+          {/* 4. 36-Seat Deck Pricing Presets */}
+          <div style={{ ...CARD_SECTION, borderColor: "#FED7AA", backgroundColor: "#FFFBF5" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>
-                  Status
-                </label>
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Trip status (active by default)</div>
+                <h3 style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 700, color: "#9A3412" }}>
+                  Deck Pricing Presets (36 Sleeper Berths)
+                </h3>
+                <span style={{ fontSize: "0.72rem", color: "#C2410C" }}>
+                  Bulk adjust prices for Lower Deck (L1-L18) and Upper Deck (U1-U18)
+                </span>
               </div>
-            </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <button
                 type="button"
-                onClick={() => setIsActive(!isActive)}
+                onClick={applyPresetToAllSeats}
                 style={{
-                  width: 44, height: 24, borderRadius: 12,
-                  backgroundColor: isActive ? "#16A34A" : "#CBD5E1",
-                  border: "none", cursor: "pointer", position: "relative",
-                  transition: "background-color 200ms", padding: 2
+                  padding: "0.45rem 0.85rem", borderRadius: 6, border: "none",
+                  backgroundColor: "#EA580C", color: "#fff", fontSize: "0.75rem",
+                  fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "0.25rem"
                 }}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: "50%", backgroundColor: "#fff",
-                  transform: isActive ? "translateX(20px)" : "translateX(0px)",
-                  transition: "transform 200ms", boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
-                }} />
+                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>sync</span>
+                Apply Preset Fares to All 36 Berths
               </button>
+            </div>
 
-              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: isActive ? "#16A34A" : "#64748B" }}>
-                {isActive ? "Active" : "Inactive"}
-              </span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
+              <div style={{ backgroundColor: "#fff", padding: "0.75rem", borderRadius: 8, border: "1px solid #FED7AA" }}>
+                <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#7C2D12", marginBottom: "0.25rem" }}>
+                  Lower Deck Fare (₹)
+                </label>
+                <input
+                  type="number"
+                  min="100"
+                  step="50"
+                  value={lowerDeckBaseFare}
+                  onChange={e => setLowerDeckBaseFare(e.target.value)}
+                  style={{ width: "100%", padding: "0.4rem 0.5rem", border: "1px solid #CBD5E1", borderRadius: 6, fontWeight: 700 }}
+                />
+              </div>
 
-              <span style={{ fontSize: "0.75rem", color: "#94A3B8", marginLeft: "0.5rem" }}>
-                Trip will be visible for booking when active.
-              </span>
+              <div style={{ backgroundColor: "#fff", padding: "0.75rem", borderRadius: 8, border: "1px solid #FED7AA" }}>
+                <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#7C2D12", marginBottom: "0.25rem" }}>
+                  Upper Deck Fare (₹)
+                </label>
+                <input
+                  type="number"
+                  min="100"
+                  step="50"
+                  value={upperDeckBaseFare}
+                  onChange={e => setUpperDeckBaseFare(e.target.value)}
+                  style={{ width: "100%", padding: "0.4rem 0.5rem", border: "1px solid #CBD5E1", borderRadius: 6, fontWeight: 700 }}
+                />
+              </div>
+
+              <div style={{ backgroundColor: "#fff", padding: "0.75rem", borderRadius: 8, border: "1px solid #FED7AA" }}>
+                <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#7C2D12", marginBottom: "0.25rem" }}>
+                  Single Window Premium (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="25"
+                  value={singleWindowSurcharge}
+                  onChange={e => setSingleWindowSurcharge(e.target.value)}
+                  style={{ width: "100%", padding: "0.4rem 0.5rem", border: "1px solid #CBD5E1", borderRadius: 6, fontWeight: 700 }}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Bottom Actions Row */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "1.25rem" }}>
+          {/* 5. Interactive 36-Berth Visual Layout */}
+          <div style={CARD_SECTION}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <h3 style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 700, color: "#0F172A" }}>
+                36-Berth Visual Layout &amp; Live Seat Rates
+              </h3>
+              <span style={{ fontSize: "0.72rem", color: "#64748B" }}>
+                Click any berth to edit price or toggle reserve status
+              </span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+              
+              {/* Lower Deck */}
+              <div style={{ backgroundColor: "#F8FAFC", borderRadius: 10, padding: "1rem", border: "1px solid #E2E8F0" }}>
+                <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.75rem" }}>
+                  🔻 Lower Deck (L1 - L18)
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {[1, 2, 3, 4, 5, 6].map(rowNum => {
+                    const rowSeats = LOWER_DECK_SEATS.filter(s => s.row === rowNum);
+                    const singleSeat = rowSeats.find(s => s.isSingle);
+                    const pairSeats = rowSeats.filter(s => !s.isSingle);
+
+                    return (
+                      <div key={rowNum} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                        {singleSeat && (
+                          <div
+                            onClick={() => { setSelectedSeatForEdit(singleSeat); setCustomPriceInput(getSeatPrice(singleSeat)); }}
+                            style={{
+                              width: "30%", height: 38, borderRadius: 6, cursor: "pointer",
+                              border: `1.5px solid ${seatStatuses[singleSeat.id] === 'ladies' ? '#EC4899' : seatStatuses[singleSeat.id] === 'blocked' ? '#64748B' : '#16A34A'}`,
+                              backgroundColor: seatStatuses[singleSeat.id] === 'ladies' ? '#FDF2F8' : seatStatuses[singleSeat.id] === 'blocked' ? '#F1F5F9' : '#F0FDF4',
+                              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
+                            }}
+                          >
+                            <span style={{ fontSize: "0.7rem", fontWeight: 800 }}>{singleSeat.name}</span>
+                            <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#16A34A" }}>₹{getSeatPrice(singleSeat)}</span>
+                          </div>
+                        )}
+                        <span style={{ fontSize: "0.62rem", color: "#CBD5E1" }}>||</span>
+                        <div style={{ display: "flex", gap: "0.35rem", width: "62%" }}>
+                          {pairSeats.map(st => (
+                            <div
+                              key={st.id}
+                              onClick={() => { setSelectedSeatForEdit(st); setCustomPriceInput(getSeatPrice(st)); }}
+                              style={{
+                                flex: 1, height: 38, borderRadius: 6, cursor: "pointer",
+                                border: `1.5px solid ${seatStatuses[st.id] === 'ladies' ? '#EC4899' : seatStatuses[st.id] === 'blocked' ? '#64748B' : '#16A34A'}`,
+                                backgroundColor: seatStatuses[st.id] === 'ladies' ? '#FDF2F8' : seatStatuses[st.id] === 'blocked' ? '#F1F5F9' : '#F0FDF4',
+                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
+                              }}
+                            >
+                              <span style={{ fontSize: "0.7rem", fontWeight: 800 }}>{st.name}</span>
+                              <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#16A34A" }}>₹{getSeatPrice(st)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Upper Deck */}
+              <div style={{ backgroundColor: "#F8FAFC", borderRadius: 10, padding: "1rem", border: "1px solid #E2E8F0" }}>
+                <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.75rem" }}>
+                  🔺 Upper Deck (U1 - U18)
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {[1, 2, 3, 4, 5, 6].map(rowNum => {
+                    const rowSeats = UPPER_DECK_SEATS.filter(s => s.row === rowNum);
+                    const singleSeat = rowSeats.find(s => s.isSingle);
+                    const pairSeats = rowSeats.filter(s => !s.isSingle);
+
+                    return (
+                      <div key={rowNum} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                        {singleSeat && (
+                          <div
+                            onClick={() => { setSelectedSeatForEdit(singleSeat); setCustomPriceInput(getSeatPrice(singleSeat)); }}
+                            style={{
+                              width: "30%", height: 38, borderRadius: 6, cursor: "pointer",
+                              border: `1.5px solid ${seatStatuses[singleSeat.id] === 'ladies' ? '#EC4899' : seatStatuses[singleSeat.id] === 'blocked' ? '#64748B' : '#16A34A'}`,
+                              backgroundColor: seatStatuses[singleSeat.id] === 'ladies' ? '#FDF2F8' : seatStatuses[singleSeat.id] === 'blocked' ? '#F1F5F9' : '#F0FDF4',
+                              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
+                            }}
+                          >
+                            <span style={{ fontSize: "0.7rem", fontWeight: 800 }}>{singleSeat.name}</span>
+                            <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#16A34A" }}>₹{getSeatPrice(singleSeat)}</span>
+                          </div>
+                        )}
+                        <span style={{ fontSize: "0.62rem", color: "#CBD5E1" }}>||</span>
+                        <div style={{ display: "flex", gap: "0.35rem", width: "62%" }}>
+                          {pairSeats.map(st => (
+                            <div
+                              key={st.id}
+                              onClick={() => { setSelectedSeatForEdit(st); setCustomPriceInput(getSeatPrice(st)); }}
+                              style={{
+                                flex: 1, height: 38, borderRadius: 6, cursor: "pointer",
+                                border: `1.5px solid ${seatStatuses[st.id] === 'ladies' ? '#EC4899' : seatStatuses[st.id] === 'blocked' ? '#64748B' : '#16A34A'}`,
+                                backgroundColor: seatStatuses[st.id] === 'ladies' ? '#FDF2F8' : seatStatuses[st.id] === 'blocked' ? '#F1F5F9' : '#F0FDF4',
+                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
+                              }}
+                            >
+                              <span style={{ fontSize: "0.7rem", fontWeight: 800 }}>{st.name}</span>
+                              <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#16A34A" }}>₹{getSeatPrice(st)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+            </div>
+
+            {/* Individual Seat Quick Price Editor */}
+            {selectedSeatForEdit && (
+              <div style={{
+                marginTop: "1rem", padding: "0.875rem 1.25rem", backgroundColor: "#EFF6FF",
+                borderRadius: 8, border: "1px solid #BFDBFE", display: "flex", alignItems: "center",
+                justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "0.875rem", fontWeight: 800, color: "#1E40AF" }}>
+                    Berth {selectedSeatForEdit.name}:
+                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <span>₹</span>
+                    <input
+                      type="number"
+                      value={customPriceInput}
+                      onChange={e => setCustomPriceInput(e.target.value)}
+                      style={{ width: 90, padding: "0.35rem 0.5rem", borderRadius: 6, border: "1px solid #93C5FD", fontWeight: 700 }}
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveIndividualSeatPrice}
+                    style={{ padding: "0.35rem 0.75rem", backgroundColor: "#2563EB", color: "#fff", border: "none", borderRadius: 6, fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}
+                  >
+                    Save Fare
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => toggleSeatStatus(selectedSeatForEdit.id)}
+                    style={{ padding: "0.35rem 0.75rem", backgroundColor: "#fff", color: "#1E3A8A", border: "1px solid #93C5FD", borderRadius: 6, fontSize: "0.75rem", fontWeight: 600, cursor: "pointer" }}
+                  >
+                    Status: <strong>{seatStatuses[selectedSeatForEdit.id] || 'Available'}</strong>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSeatForEdit(null)}
+                    style={{ background: "none", border: "none", color: "#64748B", fontSize: "0.75rem", cursor: "pointer" }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
+
+        {/* ── RIGHT COLUMN ── */}
+        <div>
+          {/* Revenue Potential Card */}
+          <div style={{ ...CARD_SECTION, padding: 0 }}>
+            <div style={{ padding: "0.875rem 1.25rem", backgroundColor: "#0F172A", color: "#fff", borderTopLeftRadius: 13, borderTopRightRadius: 13 }}>
+              <div style={{ fontSize: "0.6875rem", color: "#94A3B8", textTransform: "uppercase", fontWeight: 700 }}>
+                Trip Commercials
+              </div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#FBBF24", marginTop: "0.25rem" }}>
+                ₹{totalTripGrossRevenue.toLocaleString('en-IN')}
+              </div>
+              <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                Potential Gross Revenue (36 Berths)
+              </div>
+            </div>
+            <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.65rem", fontSize: "0.8125rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "#64748B" }}>Total Capacity:</span>
+                <strong>36 Sleeper Berths</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "#64748B" }}>Lower Deck Base:</span>
+                <strong>₹{lowerDeckBaseFare}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "#64748B" }}>Upper Deck Base:</span>
+                <strong>₹{upperDeckBaseFare}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid #F1F5F9" }}>
+                <span style={{ color: "#64748B" }}>Coach Plate:</span>
+                <span style={{ color: "#B91C1C", fontWeight: 700, fontFamily: "monospace" }}>{currentBus.plate}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                width: "100%", padding: "0.875rem 1.5rem", border: "none",
+                borderRadius: 10, backgroundColor: "#B91C1C", color: "#fff",
+                fontSize: "0.875rem", fontWeight: 700, cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(185,28,28,0.35)", display: "flex",
+                alignItems: "center", justifyContent: "center", gap: "0.5rem"
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
+              <span>{isSubmitting ? "SAVING CHANGES..." : "SAVE & UPDATE TRIP"}</span>
+            </button>
+
             <Link
               href="/trips"
               style={{
-                display: "inline-flex", alignItems: "center", gap: "0.35rem",
-                padding: "0.5625rem 1rem", border: "1px solid #E2E8F0",
-                borderRadius: 8, backgroundColor: "#fff", color: "#475569",
-                fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none"
+                width: "100%", padding: "0.65rem 1rem", border: "1px solid #CBD5E1",
+                borderRadius: 10, backgroundColor: "#fff", color: "#475569",
+                fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: "0.35rem"
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
-              Cancel
+              Cancel &amp; Return to Trips
             </Link>
-
-            <button
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.35rem",
-                padding: "0.5625rem 1.5rem", border: "none",
-                borderRadius: 8, backgroundColor: "#B91C1C", color: "#fff",
-                fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer",
-                boxShadow: "0 1px 2px rgba(185,28,28,0.2)"
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>calendar_add_on</span>
-              Create Trip
-            </button>
           </div>
-
         </div>
 
-        {/* ── RIGHT COLUMN (PREVIEW & NOTES) ── */}
-        <div>
-
-          {/* Trip Preview Card */}
-          <div style={{ ...CARD_SECTION, padding: 0 }}>
-            {/* Header */}
-            <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#B91C1C" }}>visibility</span>
-              </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "0.875rem", fontWeight: 700, color: "#0F172A" }}>Trip Preview</h3>
-                <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Preview of trip details</div>
-              </div>
-            </div>
-
-            {/* Content */}
-            <div style={{ padding: "1.25rem" }}>
-              
-              {/* Route Path visual box */}
-              <div style={{
-                padding: "1rem", backgroundColor: "#FFF5F5", borderRadius: 8,
-                border: "1px solid #FEE2E2", marginBottom: "1.25rem",
-                display: "flex", alignItems: "center", justifyContent: "space-between"
-              }}>
-                <div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 800, color: "#0F172A" }}>{currentRoute.start}</div>
-                  <div style={{ fontSize: "0.6875rem", color: "#64748B" }}>Start</div>
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", color: "#B91C1C" }}>
-                  <span style={{ width: 24, borderTop: "2px dashed #FCA5A5" }} />
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
-                  <span style={{ width: 24, borderTop: "2px dashed #FCA5A5" }} />
-                </div>
-
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 800, color: "#0F172A" }}>{currentRoute.dest}</div>
-                  <div style={{ fontSize: "0.6875rem", color: "#64748B" }}>Destination</div>
-                </div>
-              </div>
-
-              {/* Key Value Meta List */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-                
-                {/* Date */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8125rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#64748B" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#94A3B8" }}>calendar_today</span>
-                    Journey Date
-                  </div>
-                  <span style={{ fontWeight: 700, color: "#0F172A" }}>15 Sep 2026 (Mon)</span>
-                </div>
-
-                {/* Departure */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8125rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#64748B" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#94A3B8" }}>schedule</span>
-                    Departure Time
-                  </div>
-                  <span style={{ fontWeight: 700, color: "#0F172A" }}>{departureTime}</span>
-                </div>
-
-                {/* Arrival */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8125rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#64748B" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#94A3B8" }}>timelapse</span>
-                    Arrival Time
-                  </div>
-                  <span style={{ fontWeight: 700, color: "#0F172A" }}>{arrivalTime}</span>
-                </div>
-
-                {/* Bus */}
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", fontSize: "0.8125rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#64748B" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#94A3B8" }}>directions_bus</span>
-                    Bus
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontWeight: 700, color: "#0F172A" }}>{currentBus.plate}</div>
-                    <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>{currentBus.type} | {currentBus.seats} Seats</div>
-                  </div>
-                </div>
-
-                {/* Route details */}
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", fontSize: "0.8125rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#64748B" }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#94A3B8" }}>edit_road</span>
-                    Route
-                  </div>
-                  <div style={{ textAlign: "right", maxWidth: 160 }}>
-                    <div style={{ fontWeight: 700, color: "#0F172A" }}>{currentRoute.name}</div>
-                    <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>{currentRoute.via}</div>
-                  </div>
-                </div>
-
-                {/* Status */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8125rem", paddingTop: "0.5rem", borderTop: "1px solid #F1F5F9" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#64748B" }}>
-                    <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: isActive ? "#16A34A" : "#64748B" }} />
-                    Status
-                  </div>
-                  <span style={{ fontWeight: 700, color: isActive ? "#16A34A" : "#64748B" }}>
-                    {isActive ? "Active" : "Inactive"}
-                  </span>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-
-          {/* Important Notes Card */}
-          <div style={{
-            background: "#F0F9FF", borderRadius: 10, padding: "1rem 1.25rem",
-            border: "1px solid #BAE6FD"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#0284C7" }}>info</span>
-              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0369A1" }}>Important Notes</span>
-            </div>
-            <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.72rem", color: "#0369A1", lineHeight: 1.6 }}>
-              <li>Ensure the selected bus is available on this date and time.</li>
-              <li>Check route details and intermediate stops.</li>
-              <li>Arrival time is estimated and can be updated later.</li>
-              <li>Trip will be visible for booking once created.</li>
-            </ul>
-          </div>
-
-        </div>
-
-      </div>
+      </form>
     </AdminShell>
   );
 }

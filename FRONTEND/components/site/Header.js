@@ -576,12 +576,24 @@ export default function Header() {
                   </Link>
 
                   <Link
+                    href="/gallery"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-[18px] text-purple-400">photo_library</span>
+                      <span>Fleet Gallery (Photos)</span>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>
+                  </Link>
+
+                  <Link
                     href="/about"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition-all text-xs font-semibold"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-[18px] text-purple-400">info</span>
+                      <span className="material-symbols-outlined text-[18px] text-blue-400">info</span>
                       <span>About Us</span>
                     </div>
                     <span className="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>

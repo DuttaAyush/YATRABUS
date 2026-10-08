@@ -7,6 +7,7 @@ import Footer from '@/components/site/Footer';
 import { apiFetch } from '@/lib/api';
 import AuthGuard from '@/components/auth/AuthGuard';
 import { getStoredUser, getUserAvatar } from '@/lib/auth';
+import PrintableBoardingPassModal from '@/components/site/PrintableBoardingPassModal';
 
 export default function CustomerProfilePage() {
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' | 'past' | 'wallet' | 'passengers'
@@ -15,6 +16,8 @@ export default function CustomerProfilePage() {
   const [upcomingTrips, setUpcomingTrips] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
   const [shareToast, setShareToast] = useState('');
+  const [isBoardingPassModalOpen, setIsBoardingPassModalOpen] = useState(false);
+  const [selectedBoardingPassTrip, setSelectedBoardingPassTrip] = useState(null);
 
   // Cancellation Modal State
   const [cancelModalTrip, setCancelModalTrip] = useState(null);
@@ -26,6 +29,35 @@ export default function CustomerProfilePage() {
     setCancelModalTrip(trip);
     setCancelReason('Change of travel plans');
     setIsCancelModalOpen(true);
+  };
+
+  const openBoardingPassModal = (trip) => {
+    setSelectedBoardingPassTrip({
+      id: trip.bookingId || trip.id,
+      bookingId: trip.bookingId || trip.id,
+      operator: trip.operator || (trip.isPackage ? 'VedBus Spiritual Tour Fleet' : 'VedBus Luxury Gold Express'),
+      busType: trip.busType || (trip.isPackage ? (trip.transportMode === 'private-suv' ? 'Innova Crysta SUV' : 'BharatBenz Luxury Coach') : 'Volvo 9600 AC Sleeper'),
+      busPlate: trip.busPlate || 'MH-12-QZ-8812',
+      from: trip.from || (trip.isPackage ? (trip.route?.split('➔')[0]?.trim() || 'Nagpur') : 'Nagpur'),
+      fromStation: trip.fromStation || `${trip.from || 'Nagpur'} Central Terminal`,
+      to: trip.to || (trip.isPackage ? (trip.route?.split('➔')[1]?.trim() || trip.title) : 'Pune'),
+      toStation: trip.toStation || `${trip.to || 'Pune'} Terminal Lounge`,
+      depTime: trip.depTime || '20:30',
+      depDate: trip.depDate || trip.date || trip.departureDate || 'Scheduled Journey',
+      arrTime: trip.arrTime || '07:00',
+      arrDate: trip.arrDate || 'Next Morning',
+      duration: trip.duration || '10h 30m',
+      seats: Array.isArray(trip.seats) ? trip.seats : (trip.seatNumbers ? trip.seatNumbers : [trip.seats || 'L1']),
+      passengers: trip.passengers || trip.travelers || [],
+      totalFare: trip.totalFare || trip.totalAmount || trip.paidAmount || 850,
+      driverName: trip.driverName || 'Sunil Sharma (Verified Captain)',
+      driverPhone: trip.driverPhone || '+91 98220 11223',
+      reportingTime: '30 mins before scheduled departure',
+      isPackage: !!trip.isPackage,
+      packageTitle: trip.title || '',
+      hotelTier: trip.hotelTier || '',
+    });
+    setIsBoardingPassModalOpen(true);
   };
 
   const confirmCancelBooking = async () => {
@@ -96,15 +128,35 @@ export default function CustomerProfilePage() {
     }
 
     // Load user saved passengers
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
-    if (passengersKey && typeof window !== 'undefined') {
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    if (typeof window !== 'undefined') {
       try {
-        const storedP = localStorage.getItem(passengersKey);
+        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('vedbus_saved_passengers');
         if (storedP) {
           const parsedP = JSON.parse(storedP);
-          if (Array.isArray(parsedP)) {
+          if (Array.isArray(parsedP) && parsedP.length > 0) {
             setSavedPassengers(parsedP);
+          } else {
+            const defaults = [
+              { id: 'sp1', name: localUser?.name || 'Rajesh Patel', age: 34, gender: 'Male', relation: 'Self' },
+              { id: 'sp2', name: 'Sneha Patel', age: 31, gender: 'Female', relation: 'Spouse' },
+              { id: 'sp3', name: 'Aarav Patel', age: 8, gender: 'Male', relation: 'Child' },
+              { id: 'sp4', name: 'Suresh Patel', age: 62, gender: 'Male', relation: 'Father' },
+            ];
+            setSavedPassengers(defaults);
+            localStorage.setItem(passengersKey, JSON.stringify(defaults));
+            localStorage.setItem('vedbus_saved_passengers', JSON.stringify(defaults));
           }
+        } else {
+          const defaults = [
+            { id: 'sp1', name: localUser?.name || 'Rajesh Patel', age: 34, gender: 'Male', relation: 'Self' },
+            { id: 'sp2', name: 'Sneha Patel', age: 31, gender: 'Female', relation: 'Spouse' },
+            { id: 'sp3', name: 'Aarav Patel', age: 8, gender: 'Male', relation: 'Child' },
+            { id: 'sp4', name: 'Suresh Patel', age: 62, gender: 'Male', relation: 'Father' },
+          ];
+          setSavedPassengers(defaults);
+          localStorage.setItem(passengersKey, JSON.stringify(defaults));
+          localStorage.setItem('vedbus_saved_passengers', JSON.stringify(defaults));
         }
       } catch {}
     }
@@ -325,10 +377,11 @@ export default function CustomerProfilePage() {
     setSavedPassengers(updated);
     setSelectedPassengerIds([]);
     const localUser = getStoredUser();
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
-    if (passengersKey && typeof window !== 'undefined') {
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(passengersKey, JSON.stringify(updated));
+        localStorage.setItem('vedbus_saved_passengers', JSON.stringify(updated));
       } catch {}
     }
   };
@@ -338,10 +391,11 @@ export default function CustomerProfilePage() {
     setSavedPassengers(updated);
     setSelectedPassengerIds(selectedPassengerIds.filter((pId) => pId !== id));
     const localUser = getStoredUser();
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
-    if (passengersKey && typeof window !== 'undefined') {
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(passengersKey, JSON.stringify(updated));
+        localStorage.setItem('vedbus_saved_passengers', JSON.stringify(updated));
       } catch {}
     }
   };
@@ -378,10 +432,11 @@ export default function CustomerProfilePage() {
       setSelectedPassengerIds([...selectedPassengerIds, newId]);
     }
     const localUser = getStoredUser();
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : null);
-    if (passengersKey && typeof window !== 'undefined') {
+    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(passengersKey, JSON.stringify(updated));
+        localStorage.setItem('vedbus_saved_passengers', JSON.stringify(updated));
       } catch {}
     }
     setIsPassengerModalOpen(false);
@@ -714,14 +769,11 @@ export default function CustomerProfilePage() {
 
                           <button
                             type="button"
-                            onClick={() => {
-                              setShareToast(`Downloading Tour PDF Voucher & Itinerary for #${trip.bookingId || trip.id}...`);
-                              setTimeout(() => setShareToast(''), 3000);
-                            }}
+                            onClick={() => openBoardingPassModal(trip)}
                             className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-[16px]">download</span>
-                            <span>Tour Voucher</span>
+                            <span className="material-symbols-outlined text-[16px] text-brand-scarlet">print</span>
+                            <span>Tour Voucher &amp; Pass</span>
                           </button>
 
                           <button
@@ -966,14 +1018,11 @@ export default function CustomerProfilePage() {
 
                         <button
                           type="button"
-                          onClick={() => {
-                            setShareToast(`Downloading official PDF ticket for #${trip.id}...`);
-                            setTimeout(() => setShareToast(''), 3000);
-                          }}
+                          onClick={() => openBoardingPassModal(trip)}
                           className="px-4 py-2 rounded-full border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95"
                         >
-                          <span className="material-symbols-outlined text-[16px] text-slate-600">download</span>
-                          <span>PDF Ticket</span>
+                          <span className="material-symbols-outlined text-[16px] text-brand-scarlet">print</span>
+                          <span>Boarding Pass / PDF</span>
                         </button>
 
                         <button
@@ -1705,6 +1754,16 @@ export default function CustomerProfilePage() {
           <span className="text-xs font-bold">{shareToast}</span>
         </div>
       )}
+
+      {/* PRINTABLE BOARDING PASS MODAL */}
+      <PrintableBoardingPassModal
+        isOpen={isBoardingPassModalOpen}
+        onClose={() => {
+          setIsBoardingPassModalOpen(false);
+          setSelectedBoardingPassTrip(null);
+        }}
+        ticketData={selectedBoardingPassTrip}
+      />
 
       <Footer />
     </div>

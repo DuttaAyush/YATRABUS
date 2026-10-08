@@ -4,752 +4,434 @@ import { useState } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
 
-// ── Mock Initial Seats Data ──────────────────────────────────────────────────
+// ── 36-Seat Sleeper Bus Layout Definition for Admin Seat Editor ──────────────
+// Lower Deck: 18 Seats (L1 to L18)
+// Upper Deck: 18 Seats (U1 to U18)
+// Total: 36 Berths with custom price & status overrides per seat
 
-// Status types: 'available' | 'booked' | 'held' | 'blocked' | 'ladies'
-const INITIAL_LOWER_SEATS = [
-  // Row 1 (Top Single Row: 1 to 10)
-  { id: "L1", number: "1", status: "available" },
-  { id: "L2", number: "2", status: "booked" },
-  { id: "L3", number: "3", status: "available" },
-  { id: "L4", number: "4", status: "ladies" },
-  { id: "L5", number: "5", status: "available" },
-  { id: "L6", number: "6", status: "available" },
-  { id: "L7", number: "7", status: "held" },
-  { id: "L8", number: "8", status: "available" },
-  { id: "L9", number: "9", status: "blocked" },
-  { id: "L10", number: "10", status: "available" },
-  // Row 2 (Bottom Double/Single Row: 11 to 20)
-  { id: "L11", number: "11", status: "available" },
-  { id: "L12", number: "12", status: "available" },
-  { id: "L13", number: "13", status: "booked" },
-  { id: "L14", number: "14", status: "available" },
-  { id: "L15", number: "15", status: "ladies" },
-  { id: "L16", number: "16", status: "available" },
-  { id: "L17", number: "17", status: "available" },
-  { id: "L18", number: "18", status: "available" },
-  { id: "L19", number: "19", status: "booked" },
-  { id: "L20", number: "20", status: "available" },
+const INITIAL_LOWER_36 = [
+  { id: "L1", number: "L1", row: 1, col: "right-aisle", type: "double", isWindow: false, deck: "lower", price: 700, status: "available" },
+  { id: "L2", number: "L2", row: 1, col: "right-window", type: "double", isWindow: true, deck: "lower", price: 700, status: "available" },
+  { id: "L3", number: "L3", row: 2, col: "left-single", type: "single", isWindow: true, deck: "lower", price: 750, status: "booked", passenger: "Sunil Verma (Male, 38)" },
+  { id: "L4", number: "L4", row: 2, col: "right-aisle", type: "double", isWindow: false, deck: "lower", price: 700, status: "booked", passenger: "Rajesh Kumar (Male, 42)" },
+  { id: "L5", number: "L5", row: 2, col: "right-window", type: "double", isWindow: true, deck: "lower", price: 700, status: "ladies", passenger: "Pooja Sharma (Female, 29)" },
+  { id: "L6", number: "L6", row: 3, col: "left-single", type: "single", isWindow: true, deck: "lower", price: 750, status: "booked", passenger: "Amit Joshi (Male, 35)" },
+  { id: "L7", number: "L7", row: 3, col: "right-aisle", type: "double", isWindow: false, deck: "lower", price: 700, status: "booked", passenger: "Vikas Patil (Male, 31)" },
+  { id: "L8", number: "L8", row: 3, col: "right-window", type: "double", isWindow: true, deck: "lower", price: 700, status: "booked", passenger: "Nitin Rao (Male, 28)" },
+  { id: "L9", number: "L9", row: 4, col: "left-single", type: "single", isWindow: true, deck: "lower", price: 750, status: "blocked", reason: "Maintenance" },
+  { id: "L10", number: "L10", row: 4, col: "right-aisle", type: "double", isWindow: false, deck: "lower", price: 700, status: "available" },
+  { id: "L11", number: "L11", row: 4, col: "right-window", type: "double", isWindow: true, deck: "lower", price: 700, status: "available" },
+  { id: "L12", number: "L12", row: 5, col: "left-single", type: "single", isWindow: true, deck: "lower", price: 750, status: "available" },
+  { id: "L13", number: "L13", row: 5, col: "right-aisle", type: "double", isWindow: false, deck: "lower", price: 700, status: "available" },
+  { id: "L14", number: "L14", row: 5, col: "right-window", type: "double", isWindow: true, deck: "lower", price: 700, status: "available" },
+  { id: "L15", number: "L15", row: 6, col: "left-single", type: "single", isWindow: true, deck: "lower", price: 750, status: "available" },
+  { id: "L16", number: "L16", row: 6, col: "right-aisle", type: "double", isWindow: false, deck: "lower", price: 700, status: "available" },
+  { id: "L17", number: "L17", row: 6, col: "right-window", type: "double", isWindow: true, deck: "lower", price: 700, status: "available" },
+  { id: "L18", number: "L18", row: 6, col: "rear-center", type: "single", isWindow: false, deck: "lower", price: 650, status: "available" },
 ];
 
-const INITIAL_UPPER_SEATS = [
-  // Upper Deck Row 1
-  { id: "U1", number: "U1", status: "available" },
-  { id: "U2", number: "U2", status: "available" },
-  { id: "U3", number: "U3", status: "booked" },
-  { id: "U4", number: "U4", status: "available" },
-  { id: "U5", number: "U5", status: "ladies" },
-  { id: "U6", number: "U6", status: "available" },
-  { id: "U7", number: "U7", status: "available" },
-  { id: "U8", number: "U8", status: "held" },
-  { id: "U9", number: "U9", status: "available" },
-  { id: "U10", number: "U10", status: "available" },
-  { id: "U11", number: "U11", status: "booked" },
-  // Upper Deck Row 2
-  { id: "U12", number: "U12", status: "available" },
-  { id: "U13", number: "U13", status: "available" },
-  { id: "U14", number: "U14", status: "available" },
-  { id: "U15", number: "U15", status: "blocked" },
-  { id: "U16", number: "U16", status: "available" },
-  { id: "U17", number: "U17", status: "booked" },
-  { id: "U18", number: "U18", status: "available" },
-  { id: "U19", number: "U19", status: "ladies" },
-  { id: "U20", number: "U20", status: "available" },
-  { id: "U21", number: "U21", status: "available" },
-  { id: "U22", number: "U22", status: "available" },
+const INITIAL_UPPER_36 = [
+  { id: "U1", number: "U1", row: 1, col: "left-single", type: "single", isWindow: true, deck: "upper", price: 700, status: "available" },
+  { id: "U2", number: "U2", row: 1, col: "right-aisle", type: "double", isWindow: false, deck: "upper", price: 650, status: "available" },
+  { id: "U3", number: "U3", row: 1, col: "right-window", type: "double", isWindow: true, deck: "upper", price: 650, status: "available" },
+  { id: "U4", number: "U4", row: 2, col: "left-single", type: "single", isWindow: true, deck: "upper", price: 700, status: "ladies", passenger: "Kavita Nair (Female, 33)" },
+  { id: "U5", number: "U5", row: 2, col: "right-aisle", type: "double", isWindow: false, deck: "upper", price: 650, status: "available" },
+  { id: "U6", number: "U6", row: 2, col: "right-window", type: "double", isWindow: true, deck: "upper", price: 650, status: "available" },
+  { id: "U7", number: "U7", row: 3, col: "left-single", type: "single", isWindow: true, deck: "upper", price: 700, status: "booked", passenger: "Gaurav Sen (Male, 26)" },
+  { id: "U8", number: "U8", row: 3, col: "right-aisle", type: "double", isWindow: false, deck: "upper", price: 650, status: "available" },
+  { id: "U9", number: "U9", row: 3, col: "right-window", type: "double", isWindow: true, deck: "upper", price: 650, status: "available" },
+  { id: "U10", number: "U10", row: 4, col: "left-single", type: "single", isWindow: true, deck: "upper", price: 700, status: "available" },
+  { id: "U11", number: "U11", row: 4, col: "right-aisle", type: "double", isWindow: false, deck: "upper", price: 650, status: "available" },
+  { id: "U12", number: "U12", row: 4, col: "right-window", type: "double", isWindow: true, deck: "upper", price: 650, status: "available" },
+  { id: "U13", number: "U13", row: 5, col: "left-single", type: "single", isWindow: true, deck: "upper", price: 700, status: "available" },
+  { id: "U14", number: "U14", row: 5, col: "right-aisle", type: "double", isWindow: false, deck: "upper", price: 650, status: "available" },
+  { id: "U15", number: "U15", row: 5, col: "right-window", type: "double", isWindow: true, deck: "upper", price: 650, status: "available" },
+  { id: "U16", number: "U16", row: 6, col: "left-single", type: "single", isWindow: true, deck: "upper", price: 700, status: "available" },
+  { id: "U17", number: "U17", row: 6, col: "right-aisle", type: "double", isWindow: false, deck: "upper", price: 650, status: "available" },
+  { id: "U18", number: "U18", row: 6, col: "right-window", type: "double", isWindow: true, deck: "upper", price: 650, status: "available" },
 ];
 
 export default function TripSeatMapPage() {
   const [activeDeck, setActiveDeck] = useState("lower"); // 'lower' | 'upper'
-  const [lowerSeats, setLowerSeats] = useState(INITIAL_LOWER_SEATS);
-  const [upperSeats, setUpperSeats] = useState(INITIAL_UPPER_SEATS);
+  const [lowerSeats, setLowerSeats] = useState(INITIAL_LOWER_36);
+  const [upperSeats, setUpperSeats] = useState(INITIAL_UPPER_36);
   const [selectedSeat, setSelectedSeat] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Bulk Tier Pricing Inputs
+  const [bulkLowerPrice, setBulkLowerPrice] = useState(750);
+  const [bulkUpperPrice, setBulkUpperPrice] = useState(650);
 
   const currentSeats = activeDeck === "lower" ? lowerSeats : upperSeats;
   const setCurrentSeats = activeDeck === "lower" ? setLowerSeats : setUpperSeats;
 
-  const cycleStatus = (seatId) => {
-    setCurrentSeats(prev => prev.map(s => {
-      if (s.id !== seatId) return s;
-      // Sequence: available -> blocked -> ladies -> held -> available (skip booked for safety or toggle)
-      const order = ["available", "blocked", "ladies", "held"];
-      const currentIndex = order.indexOf(s.status);
-      const nextStatus = currentIndex === -1 ? "available" : order[(currentIndex + 1) % order.length];
-      return { ...s, status: nextStatus };
-    }));
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3500);
   };
 
-  const handleReset = () => {
-    setLowerSeats(INITIAL_LOWER_SEATS);
-    setUpperSeats(INITIAL_UPPER_SEATS);
+  const handleSeatClick = (seat) => {
+    setSelectedSeat(seat);
   };
 
-  // Helper for seat styling
-  const renderSeatContent = (seat) => {
-    switch (seat.status) {
-      case "booked":
+  const handleUpdateSeatPriceAndStatus = (seatId, newPrice, newStatus) => {
+    const updateFn = (prev) => prev.map(s => {
+      if (s.id === seatId) {
         return {
-          bg: "#475569",
-          border: "#334155",
-          color: "#fff",
-          content: <span className="material-symbols-outlined" style={{ fontSize: 18 }}>lock</span>,
+          ...s,
+          price: Number(newPrice) || s.price,
+          status: newStatus || s.status,
         };
-      case "held":
-        return {
-          bg: "#FDE047",
-          border: "#EAB308",
-          color: "#713F12",
-          content: (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>schedule</span>
-            </div>
-          ),
-        };
-      case "blocked":
-        return {
-          bg: "#DC2626",
-          border: "#B91C1C",
-          color: "#fff",
-          content: <span className="material-symbols-outlined" style={{ fontSize: 18 }}>block</span>,
-        };
-      case "ladies":
-        return {
-          bg: "#FBCFE8",
-          border: "#F472B6",
-          color: "#9D174D",
-          content: (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 1 }}>
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, marginBottom: 2 }}>{seat.number}</span>
-              <span className="material-symbols-outlined" style={{ fontSize: 13 }}>female</span>
-            </div>
-          ),
-        };
-      case "available":
-      default:
-        return {
-          bg: "#FFFFFF",
-          border: "#CBD5E1",
-          color: "#0F172A",
-          content: <span style={{ fontSize: "0.8125rem", fontWeight: 700 }}>{seat.number}</span>,
-        };
+      }
+      return s;
+    });
+
+    if (activeDeck === "lower") {
+      setLowerSeats(updateFn);
+    } else {
+      setUpperSeats(updateFn);
     }
+
+    if (selectedSeat && selectedSeat.id === seatId) {
+      setSelectedSeat({
+        ...selectedSeat,
+        price: Number(newPrice) || selectedSeat.price,
+        status: newStatus || selectedSeat.status,
+      });
+    }
+
+    showToast(`Updated Seat ${seatId}: Price ₹${newPrice}, Status: ${newStatus}`);
   };
 
-  const half = Math.ceil(currentSeats.length / 2);
-  const topRow = currentSeats.slice(0, half);
-  const bottomRow = currentSeats.slice(half);
+  const applyBulkLowerPricing = () => {
+    setLowerSeats(prev => prev.map(s => ({ ...s, price: Number(bulkLowerPrice) })));
+    showToast(`All Lower Deck seats updated to ₹${bulkLowerPrice}`);
+  };
+
+  const applyBulkUpperPricing = () => {
+    setUpperSeats(prev => prev.map(s => ({ ...s, price: Number(bulkUpperPrice) })));
+    showToast(`All Upper Deck seats updated to ₹${bulkUpperPrice}`);
+  };
+
+  const handleSaveAll = () => {
+    showToast("Trip Seat Pricing & Status configurations saved to Database!");
+  };
+
+  const rows = [1, 2, 3, 4, 5, 6];
 
   return (
     <AdminShell>
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", maxWidth: 1120, margin: "0 auto", paddingBottom: "2rem" }}>
-      {/* Breadcrumb */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "0.625rem", fontSize: "0.8125rem" }}>
-        <Link href="/dashboard" style={{ color: "#64748B", textDecoration: "none" }}>Dashboard</Link>
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#94A3B8" }}>chevron_right</span>
-        <Link href="/trips" style={{ color: "#64748B", textDecoration: "none" }}>Trips</Link>
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#94A3B8" }}>chevron_right</span>
-        <span style={{ color: "#64748B" }}>TRP1003</span>
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#94A3B8" }}>chevron_right</span>
-        <span style={{ color: "#0F172A", fontWeight: 500 }}>Seat Map</span>
-      </div>
-
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem" }}>
-        <div>
-          <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2, margin: 0 }}>
-            Seat Map — Nagpur → Pune
-          </h1>
-          <p style={{ fontSize: "0.875rem", color: "#64748B", marginTop: "0.375rem" }}>
-            15 Oct 2026 &nbsp;|&nbsp; Bus MH-31-VB-8899 &nbsp;|&nbsp; Volvo AC Sleeper (2+1) &nbsp;|&nbsp; 42 Seats (Lower: 20, Upper: 22)
-          </p>
-        </div>
-        <Link href="/trips" style={{
-          display: "inline-flex", alignItems: "center", gap: "0.375rem",
-          padding: "0.5625rem 1rem", border: "1px solid #E2E8F0",
-          borderRadius: 8, backgroundColor: "#fff", color: "#0F172A",
-          fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
-          Back to Trips
-        </Link>
-      </div>
-
-      {/* Trip Meta Cards (5 in a row) */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr 1fr 1.2fr", gap: "1rem", marginBottom: "1.25rem" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "1.5rem" }}>
         
-        {/* Route Card */}
-        <div style={{
-          background: "#fff", borderRadius: 12, padding: "0.875rem 1rem",
-          border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          display: "flex", alignItems: "center", gap: "0.75rem"
-        }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>location_on</span>
-          </div>
+        {/* Breadcrumb & Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
           <div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Route</div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>Nagpur → Pune</div>
-            <div style={{ fontSize: "0.65rem", color: "#64748B" }}>Via Wardha, Amravati, Akola, Shegaon</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem", color: "#64748B", marginBottom: "0.25rem" }}>
+              <Link href="/trips" style={{ color: "#B91C1C", textDecoration: "none", fontWeight: 600 }}>Trips</Link>
+              <span>/</span>
+              <span style={{ fontWeight: 600 }}>Trip #YB-TRIP-9921</span>
+              <span>/</span>
+              <span>Seat Pricing &amp; Map Editor</span>
+            </div>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0F172A", margin: 0 }}>
+              Trip 36-Seat Pricing &amp; Quota Manager
+            </h1>
+          </div>
+
+          <div style={{ display: "flex", gap: "0.75rem" }}>
+            <Link
+              href="/trips"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "0.35rem",
+                padding: "0.6rem 1rem", border: "1px solid #E2E8F0",
+                borderRadius: 10, backgroundColor: "#fff", color: "#475569",
+                fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none"
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
+              Back to Trips
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleSaveAll}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "0.35rem",
+                padding: "0.6rem 1.25rem", border: "none",
+                borderRadius: 10, backgroundColor: "#B91C1C", color: "#fff",
+                fontSize: "0.8125rem", fontWeight: 700, cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(185,28,28,0.2)"
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span>
+              Save All Changes
+            </button>
           </div>
         </div>
 
-        {/* Journey Date Card */}
-        <div style={{
-          background: "#fff", borderRadius: 12, padding: "0.875rem 1rem",
-          border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          display: "flex", alignItems: "center", gap: "0.75rem"
-        }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>calendar_today</span>
+        {/* Toast Alert */}
+        {toastMessage && (
+          <div style={{
+            backgroundColor: "#ECFDF5", border: "1px solid #A7F3D0", color: "#065F46",
+            padding: "0.75rem 1rem", borderRadius: 10, fontSize: "0.8125rem", fontWeight: 700,
+            marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem"
+          }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#059669" }}>check_circle</span>
+            <span>{toastMessage}</span>
           </div>
+        )}
+
+        {/* Quick Bulk Tier Pricing Toolbar */}
+        <div style={{
+          backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: 16,
+          padding: "1rem 1.25rem", marginBottom: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+          display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem"
+        }}>
           <div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Journey Date</div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>15 Oct 2026 (Thu)</div>
+            <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Quick Bulk Tier Pricing
+            </span>
+            <div style={{ fontSize: "0.8125rem", color: "#0F172A", fontWeight: 600 }}>
+              Apply standard fare across all seats in Lower or Upper decks with 1 click
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "1rem" }}>
+            {/* Lower Deck Bulk */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#475569" }}>Lower Deck: ₹</span>
+              <input
+                type="number"
+                value={bulkLowerPrice}
+                onChange={(e) => setBulkLowerPrice(e.target.value)}
+                style={{ width: 75, padding: "0.4rem 0.5rem", borderRadius: 8, border: "1px solid #CBD5E1", fontSize: "0.8125rem", fontWeight: 700 }}
+              />
+              <button
+                type="button"
+                onClick={applyBulkLowerPricing}
+                style={{ padding: "0.4rem 0.75rem", backgroundColor: "#0F172A", color: "#fff", border: "none", borderRadius: 8, fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}
+              >
+                Apply
+              </button>
+            </div>
+
+            {/* Upper Deck Bulk */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#475569" }}>Upper Deck: ₹</span>
+              <input
+                type="number"
+                value={bulkUpperPrice}
+                onChange={(e) => setBulkUpperPrice(e.target.value)}
+                style={{ width: 75, padding: "0.4rem 0.5rem", borderRadius: 8, border: "1px solid #CBD5E1", fontSize: "0.8125rem", fontWeight: 700 }}
+              />
+              <button
+                type="button"
+                onClick={applyBulkUpperPricing}
+                style={{ padding: "0.4rem 0.75rem", backgroundColor: "#0F172A", color: "#fff", border: "none", borderRadius: 8, fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}
+              >
+                Apply
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Departure Time */}
-        <div style={{
-          background: "#fff", borderRadius: 12, padding: "0.875rem 1rem",
-          border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          display: "flex", alignItems: "center", gap: "0.75rem"
-        }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>schedule</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Departure Time</div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>09:30 PM</div>
-          </div>
-        </div>
-
-        {/* Arrival Time */}
-        <div style={{
-          background: "#fff", borderRadius: 12, padding: "0.875rem 1rem",
-          border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          display: "flex", alignItems: "center", gap: "0.75rem"
-        }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>timelapse</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Arrival Time</div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>06:15 AM</div>
-            <div style={{ fontSize: "0.65rem", color: "#64748B" }}>(16 Oct 2026)</div>
-          </div>
-        </div>
-
-        {/* Bus Info */}
-        <div style={{
-          background: "#fff", borderRadius: 12, padding: "0.875rem 1rem",
-          border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          display: "flex", alignItems: "center", gap: "0.75rem"
-        }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#B91C1C" }}>directions_bus</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Bus</div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>MH-31-VB-8899</div>
-            <div style={{ fontSize: "0.65rem", color: "#64748B" }}>Volvo AC Sleeper (2+1)</div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Deck Selector + Actions Bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-        
-        {/* Deck Switch Tabs */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button
-            onClick={() => setActiveDeck("lower")}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "0.375rem",
-              padding: "0.5625rem 1.25rem", borderRadius: 8,
-              border: "none", cursor: "pointer",
-              backgroundColor: activeDeck === "lower" ? "#B91C1C" : "#fff",
-              color: activeDeck === "lower" ? "#fff" : "#475569",
-              fontSize: "0.8125rem", fontWeight: 600,
-              boxShadow: activeDeck === "lower" ? "0 1px 2px rgba(185,28,28,0.2)" : "0 1px 2px rgba(0,0,0,0.05)"
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>directions_bus</span>
-            Lower Deck (20)
-          </button>
-
-          <button
-            onClick={() => setActiveDeck("upper")}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "0.375rem",
-              padding: "0.5625rem 1.25rem", borderRadius: 8,
-              border: activeDeck === "upper" ? "none" : "1px solid #E2E8F0",
-              cursor: "pointer",
-              backgroundColor: activeDeck === "upper" ? "#B91C1C" : "#fff",
-              color: activeDeck === "upper" ? "#fff" : "#475569",
-              fontSize: "0.8125rem", fontWeight: 600,
-              boxShadow: activeDeck === "upper" ? "0 1px 2px rgba(185,28,28,0.2)" : "0 1px 2px rgba(0,0,0,0.05)"
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>directions_bus</span>
-            Upper Deck (22)
-          </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: "flex", gap: "0.75rem" }}>
-          <button
-            onClick={handleReset}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "0.35rem",
-              padding: "0.5625rem 1rem", border: "1px solid #E2E8F0",
-              borderRadius: 8, backgroundColor: "#fff", color: "#475569",
-              fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer"
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>restart_alt</span>
-            Reset Changes
-          </button>
-
-          <button
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "0.35rem",
-              padding: "0.5625rem 1.25rem", border: "none",
-              borderRadius: 8, backgroundColor: "#B91C1C", color: "#fff",
-              fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer",
-              boxShadow: "0 1px 2px rgba(185,28,28,0.2)"
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span>
-            Save Changes
-          </button>
-        </div>
-
-      </div>
-
-      {/* Main Bus Shell Card */}
-      <div style={{
-        background: "#fff", borderRadius: 16, border: "1px solid #E2E8F0",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.04)", padding: "1.75rem 1.5rem",
-        width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center"
-      }}>
-        
-        {/* Realistic Bus Chassis Frame (Fits 100% at once) */}
-        <div style={{
-          width: "100%", maxWidth: 940, minHeight: 230, position: "relative",
-          borderRadius: "56px 22px 22px 56px",
-          border: "4px solid #334155",
-          backgroundColor: "#E2E8F0",
-          boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), inset 0 2px 4px rgba(0,0,0,0.06)",
-          display: "flex", alignItems: "stretch",
-          overflow: "visible"
-        }}>
+        {/* Main Editor Grid (Deck Selector + Visual Seat Map + Seat Edit Inspector) */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "1.5rem", alignItems: "start" }}>
           
-          {/* Top Window Strip with Segmented Panes */}
-          <div style={{
-            position: "absolute", top: -4, left: 80, right: 65, height: 6,
-            display: "flex", gap: 14, zIndex: 3, pointerEvents: "none"
-          }}>
-            {[...Array(8)].map((_, i) => (
-              <div key={`tw-${i}`} style={{
-                flex: 1, backgroundColor: "#1E293B",
-                borderRadius: "0 0 2px 2px",
-                borderBottom: "1.5px solid #94A3B8"
-              }} />
-            ))}
-          </div>
-
-          {/* Bottom Window Strip with Segmented Panes */}
-          <div style={{
-            position: "absolute", bottom: -4, left: 80, right: 65, height: 6,
-            display: "flex", gap: 14, zIndex: 3, pointerEvents: "none"
-          }}>
-            {[...Array(8)].map((_, i) => (
-              <div key={`bw-${i}`} style={{
-                flex: 1, backgroundColor: "#1E293B",
-                borderRadius: "2px 2px 0 0",
-                borderTop: "1.5px solid #94A3B8"
-              }} />
-            ))}
-          </div>
-
-          {/* Left: Driver Cabin Area */}
-          <div style={{
-            width: 86, flexShrink: 0, position: "relative",
-            borderRight: "2px dashed #94A3B8",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            padding: "0.5rem 0.25rem 0.5rem 1.25rem",
-            backgroundColor: "#E2E8F0",
-            borderRadius: "52px 0 0 52px"
-          }}>
+          {/* LEFT: VISUAL 36-SEAT SLEEPER BUS ARENA */}
+          <div style={{ backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: 20, padding: "1.5rem", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
             
-            {/* Front windshield dark glass blocks */}
-            <div style={{
-              position: "absolute", left: 5, top: 22, bottom: 22, width: 7,
-              display: "flex", flexDirection: "column", justifyContent: "space-between", pointerEvents: "none"
-            }}>
-              <div style={{ width: 7, height: 26, backgroundColor: "#1E293B", borderRadius: "3px 0 0 3px" }} />
-              <div style={{ width: 7, height: 42, backgroundColor: "#1E293B", borderRadius: "3px 0 0 3px" }} />
-              <div style={{ width: 7, height: 26, backgroundColor: "#1E293B", borderRadius: "3px 0 0 3px" }} />
-            </div>
+            {/* Deck Switch Tabs */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "1rem", borderBottom: "1px solid #F1F5F9" }}>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveDeck("lower")}
+                  style={{
+                    padding: "0.5rem 1.25rem", borderRadius: 10, border: "none", cursor: "pointer",
+                    backgroundColor: activeDeck === "lower" ? "#0F172A" : "#F1F5F9",
+                    color: activeDeck === "lower" ? "#fff" : "#475569",
+                    fontSize: "0.8125rem", fontWeight: 700
+                  }}
+                >
+                  Lower Deck (L1 – L18)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveDeck("upper")}
+                  style={{
+                    padding: "0.5rem 1.25rem", borderRadius: 10, border: "none", cursor: "pointer",
+                    backgroundColor: activeDeck === "upper" ? "#0F172A" : "#F1F5F9",
+                    color: activeDeck === "upper" ? "#fff" : "#475569",
+                    fontSize: "0.8125rem", fontWeight: 700
+                  }}
+                >
+                  Upper Deck (U1 – U18)
+                </button>
+              </div>
 
-            {/* Driver Seat at top right */}
-            <div style={{
-              position: "absolute", top: 14, right: 10,
-              width: 22, height: 28, backgroundColor: "#475569",
-              borderRadius: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
-            }} title="Driver Seat" />
-
-            {/* Boarding Step at bottom left */}
-            <div style={{
-              position: "absolute", bottom: 14, left: 24,
-              width: 30, height: 22, backgroundColor: "#475569",
-              borderRadius: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
-            }} title="Entry Step" />
-
-            {/* Steering Wheel */}
-            <div style={{
-              width: 36, height: 36, borderRadius: "50%",
-              backgroundColor: "transparent",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              marginBottom: 4, marginTop: -6
-            }}>
-              <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
-                <circle cx="18" cy="18" r="15" stroke="#334155" strokeWidth="3" />
-                <circle cx="18" cy="18" r="5" fill="#334155" />
-                <line x1="18" y1="3" x2="18" y2="13" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="5" y1="24" x2="14" y2="20" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="31" y1="24" x2="22" y2="20" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-            </div>
-
-            {/* Front / Driver label */}
-            <div style={{
-              fontSize: "0.625rem", fontWeight: 700, color: "#475569",
-              textAlign: "center", lineHeight: 1.15, textTransform: "uppercase", letterSpacing: "0.02em"
-            }}>
-              Front<br/>
-              <span style={{ fontSize: "0.58rem", color: "#64748B", textTransform: "none", fontWeight: 600 }}>[Driver]</span>
-            </div>
-          </div>
-
-          {/* Center: Passenger Cabin Seating */}
-          <div style={{
-            flex: 1, padding: "0.875rem 0.875rem", display: "flex", flexDirection: "column",
-            justifyContent: "space-between", minWidth: 0
-          }}>
-            
-            {/* Top Row Seats (1 to 10) */}
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${topRow.length}, 1fr)`,
-              gap: "0.5rem",
-              alignItems: "center",
-              justifyItems: "center"
-            }}>
-              {topRow.map(seat => {
-                const style = renderSeatContent(seat);
-                return (
-                  <div
-                    key={seat.id}
-                    style={{
-                      position: "relative", width: "100%", maxWidth: 52,
-                      display: "flex", flexDirection: "column", alignItems: "center"
-                    }}
-                  >
-                    {/* Headrest / Seat Frame Backing (extends top & bottom for bus seat look) */}
-                    <div style={{
-                      position: "absolute",
-                      top: -3,
-                      width: "68%",
-                      height: 6,
-                      backgroundColor: "#475569",
-                      borderRadius: "4px 4px 0 0",
-                      zIndex: 0
-                    }} />
-                    <div style={{
-                      position: "absolute",
-                      bottom: -3,
-                      width: "68%",
-                      height: 6,
-                      backgroundColor: "#475569",
-                      borderRadius: "0 0 4px 4px",
-                      zIndex: 0
-                    }} />
-
-                    {/* Seat Cushion Button */}
-                    <button
-                      type="button"
-                      onClick={() => cycleStatus(seat.id)}
-                      title={`Seat ${seat.number} (${seat.status}) - Click to change status`}
-                      style={{
-                        position: "relative", zIndex: 1,
-                        width: "100%", height: 50, borderRadius: 8,
-                        border: `1.5px solid ${style.border}`,
-                        backgroundColor: style.bg, color: style.color,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", transition: "transform 120ms ease, box-shadow 120ms ease",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.12)",
-                        padding: 0
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.transform = "scale(1.08)";
-                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.18)";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.12)";
-                      }}
-                    >
-                      {style.content}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Aisle Area */}
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0.35rem 0", color: "#94A3B8", fontSize: "0.6875rem",
-              fontWeight: 800, letterSpacing: "0.35em", textTransform: "uppercase",
-              userSelect: "none"
-            }}>
-              A I S L E
-            </div>
-
-            {/* Bottom Row Seats (11 to 20) */}
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${bottomRow.length}, 1fr)`,
-              gap: "0.5rem",
-              alignItems: "center",
-              justifyItems: "center"
-            }}>
-              {bottomRow.map(seat => {
-                const style = renderSeatContent(seat);
-                return (
-                  <div
-                    key={seat.id}
-                    style={{
-                      position: "relative", width: "100%", maxWidth: 52,
-                      display: "flex", flexDirection: "column", alignItems: "center"
-                    }}
-                  >
-                    {/* Headrest / Seat Frame Backing */}
-                    <div style={{
-                      position: "absolute",
-                      top: -3,
-                      width: "68%",
-                      height: 6,
-                      backgroundColor: "#475569",
-                      borderRadius: "4px 4px 0 0",
-                      zIndex: 0
-                    }} />
-                    <div style={{
-                      position: "absolute",
-                      bottom: -3,
-                      width: "68%",
-                      height: 6,
-                      backgroundColor: "#475569",
-                      borderRadius: "0 0 4px 4px",
-                      zIndex: 0
-                    }} />
-
-                    {/* Seat Cushion Button */}
-                    <button
-                      type="button"
-                      onClick={() => cycleStatus(seat.id)}
-                      title={`Seat ${seat.number} (${seat.status}) - Click to change status`}
-                      style={{
-                        position: "relative", zIndex: 1,
-                        width: "100%", height: 50, borderRadius: 8,
-                        border: `1.5px solid ${style.border}`,
-                        backgroundColor: style.bg, color: style.color,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", transition: "transform 120ms ease, box-shadow 120ms ease",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.12)",
-                        padding: 0
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.transform = "scale(1.08)";
-                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.18)";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.12)";
-                      }}
-                    >
-                      {style.content}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-          </div>
-
-          {/* Right: Emergency Exit & Rear Area */}
-          <div style={{
-            width: 76, flexShrink: 0, position: "relative",
-            borderLeft: "2px dashed #94A3B8",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "0.5rem 0.5rem",
-            backgroundColor: "#E2E8F0",
-            borderRadius: "0 18px 18px 0"
-          }}>
-            {/* Emergency Exit Panel */}
-            <div style={{
-              width: "100%", height: "82%",
-              backgroundColor: "#CBD5E1", borderRadius: 8,
-              border: "1.5px solid #94A3B8",
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center",
-              padding: "0.25rem"
-            }}>
-              <div style={{
-                fontSize: "0.625rem", fontWeight: 700, color: "#475569",
-                textAlign: "center", lineHeight: 1.25, letterSpacing: "0.02em"
-              }}>
-                Emergency<br/>Exit
+              <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "#64748B" }}>
+                Click any seat to edit price or status
               </div>
             </div>
 
-            {/* Rear Red Tail Lights */}
-            <div style={{
-              position: "absolute", right: -4, top: 16,
-              width: 5, height: 26, backgroundColor: "#DC2626",
-              borderRadius: "0 3px 3px 0",
-              boxShadow: "0 0 6px rgba(220,38,38,0.7)"
-            }} title="Tail Light" />
-            <div style={{
-              position: "absolute", right: -4, bottom: 16,
-              width: 5, height: 26, backgroundColor: "#DC2626",
-              borderRadius: "0 3px 3px 0",
-              boxShadow: "0 0 6px rgba(220,38,38,0.7)"
-            }} title="Tail Light" />
-          </div>
+            {/* RedBus-Style Sleeper Berths (1+2 Grid) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 360, margin: "0 auto", padding: "1rem 0" }}>
+              {rows.map(rowNum => {
+                const rowSeats = currentSeats.filter(s => s.row === rowNum);
+                const single = rowSeats.find(s => s.col === "left-single");
+                const aisle = rowSeats.find(s => s.col === "right-aisle");
+                const window = rowSeats.find(s => s.col === "right-window");
 
-        </div>
+                const renderBerthBtn = (seat) => {
+                  if (!seat) return <div style={{ width: 64, height: 96 }} />;
 
-      </div>
+                  const isSelected = selectedSeat && selectedSeat.id === seat.id;
+                  let bg = "#fff";
+                  let border = "#16A34A";
+                  let tagColor = "#16A34A";
 
-      {/* Legend Card */}
-      <div style={{
-        background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.05)", padding: "1rem 1.5rem",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        marginBottom: "1.25rem", flexWrap: "wrap", gap: "1rem"
-      }}>
-        {/* Available */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{ width: 36, height: 36, borderRadius: 6, border: "1.5px solid #CBD5E1", backgroundColor: "#fff" }} />
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>Available</div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Click to book / hold</div>
-          </div>
-        </div>
+                  if (seat.status === "booked") {
+                    bg = "#E2E8F0";
+                    border = "#94A3B8";
+                    tagColor = "#475569";
+                  } else if (seat.status === "ladies") {
+                    bg = "#FCE7F3";
+                    border = "#F472B6";
+                    tagColor = "#BE185D";
+                  } else if (seat.status === "blocked") {
+                    bg = "#FEE2E2";
+                    border = "#EF4444";
+                    tagColor = "#B91C1C";
+                  }
 
-        {/* Booked */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 6, backgroundColor: "#475569",
-            display: "flex", alignItems: "center", justifyContent: "center", color: "#fff"
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>lock</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>Booked</div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Already reserved</div>
-          </div>
-        </div>
+                  return (
+                    <button
+                      key={seat.id}
+                      type="button"
+                      onClick={() => handleSeatClick(seat)}
+                      style={{
+                        width: 64, height: 96, borderRadius: 14,
+                        backgroundColor: bg,
+                        border: isSelected ? "3px solid #2563EB" : `2px solid ${border}`,
+                        boxShadow: isSelected ? "0 0 0 3px rgba(37,99,235,0.3)" : "0 1px 3px rgba(0,0,0,0.05)",
+                        cursor: "pointer", display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "space-between",
+                        padding: "6px 4px", transition: "all 0.15s ease"
+                      }}
+                    >
+                      <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#0F172A" }}>{seat.number}</span>
+                      <span style={{ fontSize: "0.625rem", fontWeight: 700, color: tagColor, textTransform: "capitalize" }}>
+                        {seat.status}
+                      </span>
+                      <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#0F172A", backgroundColor: "rgba(0,0,0,0.05)", padding: "1px 4px", borderRadius: 4 }}>
+                        ₹{seat.price}
+                      </span>
+                    </button>
+                  );
+                };
 
-        {/* Held / Pending */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 6, backgroundColor: "#FDE047",
-            border: "1px solid #EAB308", display: "flex", alignItems: "center", justifyContent: "center", color: "#713F12"
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>schedule</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>Held / Pending</div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Temporarily blocked</div>
-          </div>
-        </div>
+                return (
+                  <div key={rowNum} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+                    {/* Left Single */}
+                    <div>{renderBerthBtn(single)}</div>
 
-        {/* Blocked by Admin */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 6, backgroundColor: "#DC2626",
-            display: "flex", alignItems: "center", justifyContent: "center", color: "#fff"
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>block</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>Blocked by Admin</div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Not available for booking</div>
-          </div>
-        </div>
+                    {/* Aisle */}
+                    <div style={{ flex: 1, borderRight: "1px dashed #CBD5E1", height: 60 }} />
 
-        {/* Ladies Reserved */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 6, backgroundColor: "#FBCFE8",
-            border: "1px solid #F472B6", display: "flex", alignItems: "center", justifyContent: "center", color: "#9D174D"
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>female</span>
-          </div>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A" }}>Ladies Reserved</div>
-            <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>Reserved for female passengers</div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Info & Admin Override Hints Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.25rem" }}>
-        
-        {/* How to Manage Seats */}
-        <div style={{
-          background: "#F0F9FF", borderRadius: 10, padding: "1rem 1.25rem",
-          border: "1px solid #BAE6FD", display: "flex", gap: "0.75rem"
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#0284C7", flexShrink: 0 }}>info</span>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0369A1", marginBottom: "0.35rem" }}>
-              How to Manage Seats?
+                    {/* Right Double */}
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      {renderBerthBtn(aisle)}
+                      {renderBerthBtn(window)}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.75rem", color: "#0369A1", lineHeight: 1.5 }}>
-              <li>Click on any available seat to change its status.</li>
-              <li>Use the legend above to understand seat categories.</li>
-              <li>Click &quot;Save Changes&quot; to apply your updates.</li>
-              <li>Changes will be reflected immediately in the booking system.</li>
-            </ul>
           </div>
-        </div>
 
-        {/* Admin Override */}
-        <div style={{
-          background: "#FEF2F2", borderRadius: 10, padding: "1rem 1.25rem",
-          border: "1px solid #FECACA", display: "flex", gap: "0.75rem"
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#DC2626", flexShrink: 0 }}>verified_user</span>
-          <div>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#991B1B", marginBottom: "0.35rem" }}>
-              Admin Override
-            </div>
-            <p style={{ margin: 0, fontSize: "0.75rem", color: "#991B1B", lineHeight: 1.5 }}>
-              You can block/unblock seats, release held seats, or mark seats for special reservations. Use this feature for operational adjustments only.
-            </p>
+          {/* RIGHT: SEAT INSPECTOR & PRICE EDIT MODAL */}
+          <div style={{ backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: 20, padding: "1.5rem", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
+            <h3 style={{ fontSize: "1rem", fontWeight: 800, color: "#0F172A", margin: "0 0 1rem 0", paddingBottom: "0.75rem", borderBottom: "1px solid #F1F5F9" }}>
+              Seat Inspector
+            </h3>
+
+            {selectedSeat ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: 12, backgroundColor: "#0F172A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1rem" }}>
+                      {selectedSeat.number}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.875rem", fontWeight: 800, color: "#0F172A" }}>
+                        Seat {selectedSeat.number} ({selectedSeat.deck.toUpperCase()} Deck)
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "#64748B", textTransform: "capitalize" }}>
+                        {selectedSeat.type} Sleeper • {selectedSeat.isWindow ? "Window Side" : "Aisle Side"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Edit Price */}
+                <div>
+                  <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#475569", textTransform: "uppercase", marginBottom: "0.375rem" }}>
+                    Seat Ticket Price (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={selectedSeat.price}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      handleUpdateSeatPriceAndStatus(selectedSeat.id, val, selectedSeat.status);
+                    }}
+                    style={{ width: "100%", padding: "0.6rem 0.75rem", borderRadius: 10, border: "1px solid #CBD5E1", fontSize: "0.9375rem", fontWeight: 700, boxSizing: "border-box" }}
+                  />
+                </div>
+
+                {/* Edit Status */}
+                <div>
+                  <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#475569", textTransform: "uppercase", marginBottom: "0.375rem" }}>
+                    Seat Allocation Status
+                  </label>
+                  <select
+                    value={selectedSeat.status}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      handleUpdateSeatPriceAndStatus(selectedSeat.id, selectedSeat.price, val);
+                    }}
+                    style={{ width: "100%", padding: "0.6rem 0.75rem", borderRadius: 10, border: "1px solid #CBD5E1", fontSize: "0.875rem", fontWeight: 700, backgroundColor: "#fff", boxSizing: "border-box" }}
+                  >
+                    <option value="available">Available (Public Booking)</option>
+                    <option value="ladies">Ladies Reserved (Pink Quota)</option>
+                    <option value="blocked">Blocked / Maintenance</option>
+                    <option value="booked">Booked (Locked)</option>
+                  </select>
+                </div>
+
+                {selectedSeat.passenger && (
+                  <div style={{ padding: "0.75rem", borderRadius: 10, backgroundColor: "#F8FAFC", border: "1px solid #E2E8F0" }}>
+                    <div style={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748B", textTransform: "uppercase" }}>Booked Passenger</div>
+                    <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0F172A", marginTop: "0.25rem" }}>{selectedSeat.passenger}</div>
+                  </div>
+                )}
+
+                <div style={{ fontSize: "0.75rem", color: "#64748B", lineHeight: 1.5, backgroundColor: "#F8FAFC", padding: "0.75rem", borderRadius: 10 }}>
+                  💡 Changes take effect immediately in trip search &amp; checkout calculation.
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: "2rem 1rem", color: "#94A3B8" }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 36, color: "#CBD5E1", display: "block", marginBottom: "0.5rem" }}>touch_app</span>
+                <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>Select a seat from the bus diagram to edit its price or allocation status.</div>
+              </div>
+            )}
           </div>
+
         </div>
 
       </div>
-    </div>
-
     </AdminShell>
   );
 }

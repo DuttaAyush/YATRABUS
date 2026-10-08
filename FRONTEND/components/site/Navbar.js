@@ -31,7 +31,17 @@ export default function Navbar() {
         <span>Curated Packages</span>
       </Link>
 
-      {/* 3. About Us */}
+      {/* 3. Bus Gallery */}
+      <Link
+        className={`hover:text-white transition-colors duration-200 py-1 px-2 flex items-center gap-1 drop-shadow-sm whitespace-nowrap rounded-lg hover:bg-white/10 ${
+          pathname === '/gallery' ? 'text-brand-scarlet font-bold' : ''
+        }`}
+        href="/gallery"
+      >
+        <span>Fleet Gallery</span>
+      </Link>
+
+      {/* 4. About Us */}
       <Link
         className={`hover:text-white transition-colors duration-200 py-1 px-2 flex items-center gap-1 drop-shadow-sm whitespace-nowrap rounded-lg hover:bg-white/10 ${
           pathname === '/about' ? 'text-brand-scarlet font-bold' : ''

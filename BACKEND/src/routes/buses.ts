@@ -409,7 +409,37 @@ router.get(['/search', '/routes'], async (req: Request, res: Response) => {
       }
     }
 
-    const tripsToReturn = routeWithTrips?.trips || [];
+    let tripsToReturn: any[] = routeWithTrips?.trips || [];
+
+    if (tripsToReturn.length === 0) {
+      const fallbackSpec = getProceduralRoute(qFrom, qTo);
+      const now = new Date();
+      tripsToReturn = fallbackSpec.trips.map((tSpec, idx) => {
+        const depDatetime = new Date(now);
+        depDatetime.setHours(tSpec.depHour, tSpec.depMin, 0, 0);
+        const arrDatetime = new Date(depDatetime.getTime() + Math.round(fallbackSpec.durationHours * 60 * 60 * 1000));
+        return {
+          id: `trip_proc_${idx + 1}`,
+          departureDatetime: depDatetime,
+          arrivalDatetime: arrDatetime,
+          baseFare: tSpec.fare,
+          status: 'Scheduled',
+          bus: {
+            id: `bus_proc_${idx + 1}`,
+            plateNumber: tSpec.busPlate,
+            type: tSpec.fare >= 700 ? 'BharatBenz AC Sleeper (2+1)' : 'Volvo Multi-Axle AC Seater',
+            busStyle: tSpec.fare >= 700 ? 'sleeper' : 'seater',
+            amenities: ['wifi', 'charging', 'water', 'blanket'],
+          },
+          route: {
+            originCity: qFrom,
+            destinationCity: qTo,
+            waypoints: fallbackSpec.waypoints,
+          },
+        };
+      });
+    }
+
     let results = tripsToReturn.map(mapTripToOutput);
 
     // Filter by category

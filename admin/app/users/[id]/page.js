@@ -264,6 +264,64 @@ export default function UserDetailPage({ params }) {
         ))}
       </div>
 
+      {/* Saved Passenger Profiles (Feature 4 Admin View) */}
+      <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9", overflow: "hidden", marginBottom: "1.25rem" }}>
+        <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid #F1F5F9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C" }}>group</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Saved Passenger Profiles</div>
+              <div style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Registered co-travelers and family members for quick checkout</div>
+            </div>
+          </div>
+          <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#166534", backgroundColor: "#DCFCE7", padding: "0.2rem 0.6rem", borderRadius: 999 }}>
+            4 Active Profiles
+          </span>
+        </div>
+
+        <div style={{ padding: "1.25rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
+          {[
+            { name: "Rajesh Kumar", age: 34, gender: "Male", relation: "Self", idTag: "Aadhaar Verified" },
+            { name: "Sneha Patel", age: 31, gender: "Female", relation: "Spouse", idTag: "Govt ID on File" },
+            { name: "Aarav Patel", age: 8, gender: "Male", relation: "Child", idTag: "Minor Passenger" },
+            { name: "Suresh Patel", age: 62, gender: "Male", relation: "Father", idTag: "Senior Citizen" },
+          ].map((p, idx) => (
+            <div key={idx} style={{
+              padding: "1rem", borderRadius: 10, border: "1px solid #E2E8F0",
+              backgroundColor: "#F8FAFC", display: "flex", alignItems: "flex-start", gap: "0.75rem"
+            }}>
+              <div style={{
+                width: 38, height: 38, borderRadius: 8, backgroundColor: "#fff",
+                border: "1px solid #CBD5E1", display: "flex", alignItems: "center",
+                justifyContent: "center", color: "#475569", flexShrink: 0
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                  {p.gender === "Female" ? "woman" : "man"}
+                </span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                  <span style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0F172A" }}>{p.name}</span>
+                  <span style={{
+                    fontSize: "0.625rem", fontWeight: 700, textTransform: "uppercase",
+                    padding: "0.1rem 0.4rem", borderRadius: 4, backgroundColor: "#FEE2E2", color: "#B91C1C"
+                  }}>
+                    {p.relation}
+                  </span>
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748B", marginTop: 2 }}>
+                  {p.gender} • {p.age} Years Old
+                </div>
+                <div style={{ fontSize: "0.6875rem", color: "#166534", fontWeight: 600, marginTop: 4, display: "flex", alignItems: "center", gap: 3 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 13, color: "#16A34A" }}>verified</span>
+                  {p.idTag}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Booking History */}
       <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.07)", border: "1px solid #F1F5F9", overflow: "hidden" }}>
         {/* Header */}

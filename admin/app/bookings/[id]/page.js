@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
+import AdminBoardingPassModal from "@/components/ui/AdminBoardingPassModal";
 
 export default function BusBookingDetailPage({ params }) {
   const [status, setStatus] = useState("Confirmed");
   const [copied, setCopied] = useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
 
   const copyBookingId = () => {
     navigator.clipboard?.writeText("#VB-20261015-0042");
@@ -422,34 +424,76 @@ export default function BusBookingDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Ticket & Invoice Card */}
-          <div style={CARD_STYLE}>
-            {CARD_HEADER("receipt_long", "Ticket & Invoice")}
-            <div style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.5rem" }}>
-              <button style={{
-                flex: 1, padding: "0.5rem", border: "1px solid #E2E8F0", borderRadius: 8,
-                backgroundColor: "#fff", color: "#0F172A", fontSize: "0.75rem",
-                fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center",
-                justifyContent: "center", gap: "0.3rem"
-              }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>visibility</span>
-                View E-Ticket
-              </button>
-              <button style={{
-                flex: 1, padding: "0.5rem", border: "1px solid #E2E8F0", borderRadius: 8,
-                backgroundColor: "#fff", color: "#0F172A", fontSize: "0.75rem",
-                fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center",
-                justifyContent: "center", gap: "0.3rem"
-              }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
-                Download Invoice
-              </button>
+            {/* Ticket & Invoice Card */}
+            <div style={CARD_STYLE}>
+              {CARD_HEADER("receipt_long", "Ticket & Invoice")}
+              <div style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setIsTicketModalOpen(true)}
+                  style={{
+                    flex: 1, padding: "0.5rem", border: "1px solid #B91C1C", borderRadius: 8,
+                    backgroundColor: "#FEF2F2", color: "#B91C1C", fontSize: "0.75rem",
+                    fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center",
+                    justifyContent: "center", gap: "0.3rem"
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>visibility</span>
+                  View E-Ticket
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsTicketModalOpen(true)}
+                  style={{
+                    flex: 1, padding: "0.5rem", border: "1px solid #E2E8F0", borderRadius: 8,
+                    backgroundColor: "#fff", color: "#0F172A", fontSize: "0.75rem",
+                    fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center",
+                    justifyContent: "center", gap: "0.3rem"
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>download</span>
+                  Print Pass (PDF)
+                </button>
+              </div>
             </div>
+
           </div>
 
         </div>
 
-      </div>
-    </AdminShell>
-  );
-}
+        {/* ADMIN BOARDING PASS MODAL */}
+        <AdminBoardingPassModal
+          isOpen={isTicketModalOpen}
+          onClose={() => setIsTicketModalOpen(false)}
+          ticketData={{
+            id: "VB-20261015-0042",
+            bookingId: "VB-20261015-0042",
+            customerName: "Abhishek Sharma",
+            customerPhone: "+91 98765 43210",
+            customerEmail: "abhishek.sharma@gmail.com",
+            operator: "VedBus Luxury Gold Express",
+            busType: "Volvo AC Sleeper (2+1)",
+            busPlate: "MH-31-VB-8899",
+            from: "Nagpur",
+            fromStation: "Nagpur Central Bus Stand (Ganeshpeth)",
+            to: "Pune",
+            toStation: "Pune Swargate Terminal",
+            depTime: "08:30 PM",
+            depDate: "15 Oct 2026",
+            arrTime: "06:15 AM",
+            arrDate: "16 Oct 2026",
+            duration: "9h 45m",
+            seats: ["L5", "L6"],
+            passengers: [
+              { name: "Abhishek Sharma", age: 22, gender: "Male", seat: "L5", relation: "Self" },
+              { name: "Riya Verma", age: 21, gender: "Female", seat: "L6", relation: "Spouse" },
+            ],
+            totalAmount: "₹ 2,570",
+            driverName: "Sunil Sharma (Verified Captain)",
+            driverPhone: "+91 98220 11223",
+            status: status,
+          }}
+        />
+      </AdminShell>
+    );
+  }

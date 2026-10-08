@@ -7,6 +7,7 @@ import Footer from '@/components/site/Footer';
 import { apiFetch } from '@/lib/api';
 import AuthGuard from '@/components/auth/AuthGuard';
 import { getStoredUser } from '@/lib/auth';
+import PrintableBoardingPassModal from '@/components/site/PrintableBoardingPassModal';
 
 import { useRouter } from 'next/navigation';
 
@@ -27,6 +28,7 @@ export default function CheckoutPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [createdTicketId, setCreatedTicketId] = useState('YB-994821');
   const [shareToast, setShareToast] = useState('');
+  const [isBoardingPassOpen, setIsBoardingPassOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -64,6 +66,38 @@ export default function CheckoutPage() {
             gender: idx === 0 ? 'male' : 'female',
           }))
         );
+
+        // Load saved passengers
+        const passengersKey = u?.id ? `vedbus_saved_passengers_${u.id}` : (u?.phone ? `vedbus_saved_passengers_${u.phone}` : 'vedbus_saved_passengers');
+        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('vedbus_saved_passengers');
+        if (storedP) {
+          try {
+            const parsedP = JSON.parse(storedP);
+            if (Array.isArray(parsedP) && parsedP.length > 0) {
+              setSavedPassengersList(parsedP);
+            } else {
+              setSavedPassengersList([
+                { id: 'sp1', name: u?.name || 'Rajesh Patel', age: '34', gender: 'Male', relation: 'Self' },
+                { id: 'sp2', name: 'Sneha Patel', age: '31', gender: 'Female', relation: 'Spouse' },
+                { id: 'sp3', name: 'Aarav Patel', age: '8', gender: 'Male', relation: 'Child' },
+                { id: 'sp4', name: 'Suresh Patel', age: '62', gender: 'Male', relation: 'Father' },
+              ]);
+            }
+          } catch {
+            setSavedPassengersList([
+              { id: 'sp1', name: u?.name || 'Rajesh Patel', age: '34', gender: 'Male', relation: 'Self' },
+              { id: 'sp2', name: 'Sneha Patel', age: '31', gender: 'Female', relation: 'Spouse' },
+            ]);
+          }
+        } else {
+          setSavedPassengersList([
+            { id: 'sp1', name: u?.name || 'Rajesh Patel', age: '34', gender: 'Male', relation: 'Self' },
+            { id: 'sp2', name: 'Sneha Patel', age: '31', gender: 'Female', relation: 'Spouse' },
+            { id: 'sp3', name: 'Aarav Patel', age: '8', gender: 'Male', relation: 'Child' },
+            { id: 'sp4', name: 'Suresh Patel', age: '62', gender: 'Male', relation: 'Father' },
+          ]);
+        }
+
         setHasValidBooking(true);
       } catch (err) {
         console.error('Failed to load pending booking:', err);
@@ -73,6 +107,8 @@ export default function CheckoutPage() {
       }
     }
   }, [router]);
+
+  const [savedPassengersList, setSavedPassengersList] = useState([]);
 
   // Coupon / Promo Code State
   const [couponCode, setCouponCode] = useState('');
@@ -586,7 +622,7 @@ export default function CheckoutPage() {
             {/* HORIZONTAL GRID FOR PASSENGER FORMS */}
             <div className={`grid gap-4 ${passengers.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
               {passengers.map((p, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-extrabold text-brand-scarlet bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
                       Passenger {idx + 1} — Seat {p.seat}
@@ -596,6 +632,37 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
+                  {/* QUICK SELECT FROM SAVED PASSENGERS DROPDOWN */}
+                  {savedPassengersList.length > 0 && (
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+                        <span>Select from Saved Profile</span>
+                        <span className="text-brand-scarlet text-[9px] font-bold">1-Click Autofill</span>
+                      </label>
+                      <select
+                        onChange={(e) => {
+                          const selectedProfile = savedPassengersList.find(sp => sp.id === e.target.value);
+                          if (selectedProfile) {
+                            const updated = [...passengers];
+                            updated[idx].name = selectedProfile.name;
+                            updated[idx].age = String(selectedProfile.age);
+                            updated[idx].gender = selectedProfile.gender?.toLowerCase() || 'male';
+                            setPassengers(updated);
+                          }
+                        }}
+                        defaultValue=""
+                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-300 text-xs font-bold outline-none hover:border-brand-scarlet transition-colors shadow-2xs"
+                      >
+                        <option value="" disabled>-- Choose Saved Co-Passenger --</option>
+                        {savedPassengersList.map((sp) => (
+                          <option key={sp.id} value={sp.id}>
+                            {sp.name} ({sp.gender}, Age {sp.age}) — {sp.relation || 'Saved'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                     <div className="sm:col-span-6 space-y-1">
                       <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Full Name</label>
@@ -603,7 +670,8 @@ export default function CheckoutPage() {
                         type="text"
                         value={p.name}
                         onChange={(e) => updatePassenger(idx, 'name', e.target.value)}
-                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-200 text-xs font-bold outline-none"
+                        placeholder="e.g. Ramesh Patel"
+                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-200 text-xs font-bold outline-none focus:border-brand-scarlet"
                       />
                     </div>
 
@@ -613,7 +681,8 @@ export default function CheckoutPage() {
                         type="number"
                         value={p.age}
                         onChange={(e) => updatePassenger(idx, 'age', e.target.value)}
-                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-200 text-xs font-bold outline-none"
+                        placeholder="35"
+                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-200 text-xs font-bold outline-none focus:border-brand-scarlet"
                       />
                     </div>
 
@@ -622,7 +691,7 @@ export default function CheckoutPage() {
                       <select
                         value={p.gender}
                         onChange={(e) => updatePassenger(idx, 'gender', e.target.value)}
-                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-200 text-xs font-bold outline-none"
+                        className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-200 text-xs font-bold outline-none focus:border-brand-scarlet"
                       >
                         <option value="male">Male</option>
                         <option value="female">Female</option>
@@ -1062,6 +1131,15 @@ export default function CheckoutPage() {
 
             {/* DISPATCH & NAVIGATION ACTION BUTTONS */}
             <div className="space-y-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsBoardingPassOpen(true)}
+                className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer border border-amber-400/30"
+              >
+                <span className="material-symbols-outlined text-[18px] text-amber-400">print</span>
+                <span>DOWNLOAD / PRINT BOARDING PASS (PDF)</span>
+              </button>
+
               <Link
                 href="/profile"
                 className="w-full py-3 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-red-600/20 transition-all cursor-pointer"
@@ -1073,7 +1151,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/"
-                  className="py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  className="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer border border-slate-200"
                 >
                   <span className="material-symbols-outlined text-[16px]">home</span>
                   <span>Go to Home Page</span>
@@ -1115,6 +1193,34 @@ export default function CheckoutPage() {
           </div>
         </div>
       )}
+
+      {/* PRINTABLE BOARDING PASS MODAL */}
+      <PrintableBoardingPassModal
+        isOpen={isBoardingPassOpen}
+        onClose={() => setIsBoardingPassOpen(false)}
+        ticketData={{
+          id: createdTicketId,
+          bookingId: createdTicketId,
+          operator: bookingData?.operator || 'VedBus Luxury Gold Express',
+          busType: bookingData?.busType || 'Volvo 9600 Multi-Axle 2+1 AC Sleeper',
+          busPlate: bookingData?.busPlate || 'MH-12-QZ-8812',
+          from: bookingData?.from || 'Nagpur',
+          fromStation: bookingData?.boardingPoint?.location || 'VedBus Central Hub, Dharampeth',
+          to: bookingData?.to || 'Pune',
+          toStation: bookingData?.droppingPoint?.location || 'VedBus Swargate Lounge, Pune',
+          depTime: bookingData?.depTime || '20:30',
+          depDate: bookingData?.date || 'Scheduled Journey',
+          arrTime: bookingData?.arrTime || '07:00',
+          arrDate: 'Next Morning',
+          duration: bookingData?.duration || '10h 30m',
+          seats: passengers.map(p => p.seat),
+          passengers: passengers,
+          totalFare: grandTotal,
+          driverName: 'Sunil Sharma (Verified Captain)',
+          driverPhone: '+91 98220 11223',
+          reportingTime: '20:00 (30 mins before departure)',
+        }}
+      />
 
         <Footer />
       </div>

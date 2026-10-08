@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
+import AdminBoardingPassModal from "@/components/ui/AdminBoardingPassModal";
 
 export default function PackageBookingDetailPage({ params }) {
   const [status, setStatus] = useState("Confirmed");
   const [copied, setCopied] = useState(false);
+  const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
 
   const copyBookingId = () => {
     navigator.clipboard?.writeText("#PKG-20261110-0018");
@@ -479,14 +481,32 @@ export default function PackageBookingDetailPage({ params }) {
                 </button>
               </div>
 
-              <button style={{
-                width: "100%", padding: "0.45rem", border: "1px solid #E2E8F0", borderRadius: 6,
-                backgroundColor: "#fff", color: "#475569", fontSize: "0.72rem",
-                fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center",
-                justifyContent: "center", gap: "0.25rem"
-              }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>send</span>
+              <button
+                type="button"
+                onClick={() => setIsVoucherModalOpen(true)}
+                style={{
+                  width: "100%", padding: "0.5rem", border: "1px solid #E2E8F0", borderRadius: 6,
+                  backgroundColor: "#fff", color: "#0F172A", fontSize: "0.75rem",
+                  fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center",
+                  justifyContent: "center", gap: "0.25rem", marginBottom: "0.5rem"
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>send</span>
                 Send Itinerary
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsVoucherModalOpen(true)}
+                style={{
+                  width: "100%", padding: "0.5625rem", border: "none", borderRadius: 8,
+                  backgroundColor: "#B91C1C", color: "#fff", fontSize: "0.8125rem",
+                  fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center",
+                  justifyContent: "center", gap: "0.35rem", boxShadow: "0 2px 4px rgba(185,28,28,0.3)"
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>print</span>
+                View &amp; Print Tour Voucher (PDF)
               </button>
 
             </div>
@@ -495,6 +515,43 @@ export default function PackageBookingDetailPage({ params }) {
         </div>
 
       </div>
+
+      {/* ADMIN TOUR VOUCHER & BOARDING PASS MODAL */}
+      <AdminBoardingPassModal
+        isOpen={isVoucherModalOpen}
+        onClose={() => setIsVoucherModalOpen(false)}
+        ticketData={{
+          id: "PKG-20261110-0018",
+          bookingId: "PKG-20261110-0018",
+          customerName: "Sanjay Mehta",
+          customerPhone: "+91 98234 56789",
+          customerEmail: "sanjay.mehta@gmail.com",
+          operator: "VedBus Spiritual Yatra & Holiday Circuit",
+          busType: "BharatBenz Luxury AC Coach (2+2)",
+          busPlate: "MH-14-VB-2200",
+          from: "Nagpur Hub",
+          fromStation: "Nagpur VedBus Terminal Lounge",
+          to: "Shirdi - Jyotirlinga Circuit",
+          toStation: "Hotel Sun-n-Sand, Shirdi",
+          depTime: "06:00 AM",
+          depDate: "10 Nov 2026",
+          arrTime: "08:00 PM",
+          arrDate: "15 Nov 2026",
+          duration: "5 Days / 4 Nights",
+          seats: ["S1", "S2", "S3"],
+          passengers: [
+            { name: "Sanjay Mehta", age: 48, gender: "Male", seat: "S1", relation: "Self" },
+            { name: "Sunita Mehta", age: 45, gender: "Female", seat: "S2", relation: "Spouse" },
+            { name: "Rohit Mehta", age: 19, gender: "Male", seat: "S3", relation: "Child" },
+          ],
+          totalAmount: "₹ 54,999",
+          driverName: "Kailash Patil (Dedicated Guide & Captain)",
+          driverPhone: "+91 98221 44556",
+          status: status,
+          isPackage: true,
+          packageTitle: "Shirdi & Trimbakeshwar Spiritual Yatra",
+        }}
+      />
     </AdminShell>
   );
 }

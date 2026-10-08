@@ -61,23 +61,48 @@ export default function PackageCheckoutPage({ searchParams }) {
               setTravelerCount(parsed.travelerCount);
               const newTravelers = [];
               const defaultNames = ['Rajesh Patel', 'Sneha Patel', 'Aarav Patel', 'Pooja Patel', 'Vikram Patel', 'Kavita Patel'];
-              for (let i = 0; i < parsed.travelerCount; i++) {
-                newTravelers.push({
-                  name: defaultNames[i] || `Traveler ${i + 1}`,
-                  age: i === 0 ? '34' : i === 1 ? '31' : '28',
-                  gender: i % 2 === 0 ? 'male' : 'female',
-                  idType: 'Aadhaar / Passport'
-                });
-              }
               setTravelers(newTravelers);
             }
           }
+        }
+
+        // Load saved passengers
+        const passengersKey = u?.id ? `vedbus_saved_passengers_${u.id}` : (u?.phone ? `vedbus_saved_passengers_${u.phone}` : 'vedbus_saved_passengers');
+        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('vedbus_saved_passengers');
+        if (storedP) {
+          try {
+            const parsedP = JSON.parse(storedP);
+            if (Array.isArray(parsedP) && parsedP.length > 0) {
+              setSavedPassengersList(parsedP);
+            } else {
+              setSavedPassengersList([
+                { id: 'sp1', name: u?.name || 'Rajesh Patel', age: '34', gender: 'Male', relation: 'Self' },
+                { id: 'sp2', name: 'Sneha Patel', age: '31', gender: 'Female', relation: 'Spouse' },
+                { id: 'sp3', name: 'Aarav Patel', age: '8', gender: 'Male', relation: 'Child' },
+                { id: 'sp4', name: 'Suresh Patel', age: '62', gender: 'Male', relation: 'Father' },
+              ]);
+            }
+          } catch {
+            setSavedPassengersList([
+              { id: 'sp1', name: u?.name || 'Rajesh Patel', age: '34', gender: 'Male', relation: 'Self' },
+              { id: 'sp2', name: 'Sneha Patel', age: '31', gender: 'Female', relation: 'Spouse' },
+            ]);
+          }
+        } else {
+          setSavedPassengersList([
+            { id: 'sp1', name: u?.name || 'Rajesh Patel', age: '34', gender: 'Male', relation: 'Self' },
+            { id: 'sp2', name: 'Sneha Patel', age: '31', gender: 'Female', relation: 'Spouse' },
+            { id: 'sp3', name: 'Aarav Patel', age: '8', gender: 'Male', relation: 'Child' },
+            { id: 'sp4', name: 'Suresh Patel', age: '62', gender: 'Male', relation: 'Father' },
+          ]);
         }
       } catch (err) {
         console.error('Failed to load pending package from localStorage:', err);
       }
     }
   }, [packageId]);
+
+  const [savedPassengersList, setSavedPassengersList] = useState([]);
 
   const basePkg = allPackagesData[packageId] || allPackagesData['dubai-marina'];
   const pkg = {
@@ -503,7 +528,7 @@ export default function PackageCheckoutPage({ searchParams }) {
             </h3>
 
             {travelers.map((traveler, index) => (
-              <div key={index} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3">
+              <div key={index} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
                     Traveler {index + 1} {index === 0 ? '• Primary Contact' : ''}
@@ -512,6 +537,37 @@ export default function PackageCheckoutPage({ searchParams }) {
                     Verified Passenger
                   </span>
                 </div>
+
+                {/* QUICK SELECT FROM SAVED PASSENGERS DROPDOWN */}
+                {savedPassengersList.length > 0 && (
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+                      <span>Select from Saved Profile</span>
+                      <span className="text-brand-scarlet text-[9px] font-bold">1-Click Autofill</span>
+                    </label>
+                    <select
+                      onChange={(e) => {
+                        const selectedProfile = savedPassengersList.find(sp => sp.id === e.target.value);
+                        if (selectedProfile) {
+                          const updated = [...travelers];
+                          updated[index].name = selectedProfile.name;
+                          updated[index].age = String(selectedProfile.age);
+                          updated[index].gender = selectedProfile.gender?.toLowerCase() || 'male';
+                          setTravelers(updated);
+                        }
+                      }}
+                      defaultValue=""
+                      className="w-full bg-white text-slate-900 rounded-xl px-3 py-2 border border-slate-300 text-xs font-bold outline-none hover:border-brand-scarlet transition-colors shadow-2xs"
+                    >
+                      <option value="" disabled>-- Choose Saved Co-Passenger --</option>
+                      {savedPassengersList.map((sp) => (
+                        <option key={sp.id} value={sp.id}>
+                          {sp.name} ({sp.gender}, Age {sp.age}) — {sp.relation || 'Saved'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                   <div className="md:col-span-6">

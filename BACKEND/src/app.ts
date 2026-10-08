@@ -93,10 +93,13 @@ app.get('/health', async (_req: Request, res: Response) => {
     dbStatus = 'unreachable';
   }
 
+  const { getSeatLockEngineStatus } = await import('./utils/seatLock');
+
   res.status(200).json({
     status: 'ok',
     service: 'vedbus-api',
     database: dbStatus,
+    seatLock: getSeatLockEngineStatus(),
     timestamp: new Date().toISOString(),
     env: process.env.NODE_ENV || 'development',
   });

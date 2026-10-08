@@ -69,7 +69,7 @@ router.get('/', async (req: Request, res: Response) => {
 // ── POST /api/admin/trips ─────────────────────────────────────────
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { busId, routeId, departureDatetime, arrivalDatetime, baseFare } = req.body;
+    const { busId, routeId, departureDatetime, arrivalDatetime, baseFare, seatPricingConfig, seatStatuses } = req.body;
 
     if (!busId || !routeId || !departureDatetime || !arrivalDatetime || !baseFare) {
       return sendError(res, 'busId, routeId, departureDatetime, arrivalDatetime, and baseFare are required.', 400);
@@ -103,6 +103,8 @@ router.post('/', async (req: Request, res: Response) => {
         arrivalDatetime:   arr,
         baseFare:          Number(baseFare),
         status:            'Scheduled',
+        seatPricingConfig: seatPricingConfig || undefined,
+        seatStatuses:      seatStatuses || undefined,
       },
       include: { bus: true, route: true },
     });

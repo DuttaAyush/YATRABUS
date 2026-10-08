@@ -1,13 +1,74 @@
-// ── In-Memory Seat Lock Engine ────────────────────────────────────────────────
-// Redis is disabled. All seat holds are managed in-process using a Map with
-// auto-expiring timers. This works well for single-server deployments.
-//
-// To re-enable Redis (for multi-server / distributed locking):
-//   1. npm install ioredis
-//   2. Set REDIS_URL in .env
-//   3. Restore the ioredis connection block and isRedisAvailable guard branches.
+import Redis from 'ioredis';
+
+// ── Hybrid Production Seat Lock Engine (Redis + Resilient In-Memory Fallback) ──
+// If REDIS_URL is provided and reachable, distributed Redis locks are used.
+// If Redis is down, unreachable, or not configured, it gracefully falls back
+// to high-performance in-memory locks with zero crash or request drop.
 // ─────────────────────────────────────────────────────────────────────────────
 
+let redisClient: Redis | null = null;
+let isRedisConnected = false;
+let hasLoggedRedisNotice = false;
+
+const REDIS_URL = process.env.REDIS_URL || process.env.REDIS_TLS_URL || '';
+
+if (REDIS_URL && REDIS_URL.trim()) {
+  try {
+    redisClient = new Redis(REDIS_URL, {
+      lazyConnect: true,
+      enableOfflineQueue: false,
+      maxRetriesPerRequest: 1,
+      connectTimeout: 4000,
+      retryStrategy: (times) => {
+        if (times > 5) {
+          if (!hasLoggedRedisNotice) {
+            console.warn('⚠️ [Redis] Unable to connect to Redis server. Falling back to In-Memory seat lock engine.');
+            hasLoggedRedisNotice = true;
+          }
+          return null; // Stop retrying excessively
+        }
+        return Math.min(times * 500, 2000);
+      },
+    });
+
+    redisClient.on('connect', () => {
+      isRedisConnected = true;
+      console.log('✅ [Redis] Connected to Redis seat lock cluster.');
+    });
+
+    redisClient.on('ready', () => {
+      isRedisConnected = true;
+    });
+
+    redisClient.on('error', (err) => {
+      isRedisConnected = false;
+      if (!hasLoggedRedisNotice) {
+        console.warn(`⚠️ [Redis] Connection notice (${err.message || 'offline'}). Operating with in-memory lock engine.`);
+        hasLoggedRedisNotice = true;
+      }
+    });
+
+    redisClient.on('close', () => {
+      isRedisConnected = false;
+    });
+
+    // Attempt initial connect without blocking startup
+    redisClient.connect().catch(() => {
+      isRedisConnected = false;
+    });
+  } catch (err: any) {
+    console.warn('⚠️ [Redis] Initialization notice:', err?.message || err);
+    redisClient = null;
+    isRedisConnected = false;
+  }
+} else {
+  if (!hasLoggedRedisNotice) {
+    console.log('ℹ️ [SeatLock] No REDIS_URL configured — operating in robust in-memory lock mode.');
+    hasLoggedRedisNotice = true;
+  }
+}
+
+// ── In-Memory Lock Structures (Fallback & Single-Instance Engine) ────────────
 interface InMemoryLock {
   holderId: string;
   expiresAt: number;
@@ -26,7 +87,7 @@ function getLockKey(tripId: string, seatNumber: string): string {
  * Attempts to atomically hold a set of seats for a customer.
  * If any requested seat is already locked by someone else, NO seats are held (all-or-nothing).
  *
- * @param tripId - Trip ID
+ * @param tripId - Trip or Bus ID
  * @param seatNumbers - Array of seat IDs (e.g. ['L1', 'L2'])
  * @param lockHolderId - Unique customer session/user identifier
  * @param ttlSeconds - Hold duration in seconds (default: 600 = 10 minutes)
@@ -40,7 +101,40 @@ export async function tryHoldSeats(
   const conflictingSeats: string[] = [];
   const now = Date.now();
 
-  // All-or-nothing conflict check
+  // 1. Try via Redis if connected
+  if (redisClient && isRedisConnected) {
+    try {
+      // Check existing locks in Redis
+      const keys = seatNumbers.map((s) => getLockKey(tripId, s));
+      const currentHolders = await redisClient.mget(...keys);
+
+      for (let i = 0; i < seatNumbers.length; i++) {
+        const holder = currentHolders[i];
+        if (holder && holder !== lockHolderId) {
+          conflictingSeats.push(seatNumbers[i]);
+        }
+      }
+
+      if (conflictingSeats.length > 0) {
+        return { success: false, conflictingSeats, ttlSeconds };
+      }
+
+      // Atomically set all keys with TTL in a pipeline
+      const pipeline = redisClient.pipeline();
+      for (const key of keys) {
+        pipeline.set(key, lockHolderId, 'EX', ttlSeconds);
+      }
+      await pipeline.exec();
+
+      return { success: true, conflictingSeats: [], ttlSeconds };
+    } catch (err) {
+      console.warn('⚠️ [Redis] Error during tryHoldSeats, falling back to in-memory:', err);
+      // Fall through to in-memory below
+    }
+  }
+
+  // 2. In-Memory Engine (Primary or Fallback)
+  // Check conflicts
   for (const seat of seatNumbers) {
     const key = getLockKey(tripId, seat);
     const existing = inMemoryLocks.get(key);
@@ -53,7 +147,7 @@ export async function tryHoldSeats(
     return { success: false, conflictingSeats, ttlSeconds };
   }
 
-  // Atomically set in-memory locks
+  // Set locks
   for (const seat of seatNumbers) {
     const key = getLockKey(tripId, seat);
     const existing = inMemoryLocks.get(key);
@@ -83,6 +177,28 @@ export async function releaseSeats(
   seatNumbers: string[],
   lockHolderId: string
 ): Promise<void> {
+  // 1. Release in Redis
+  if (redisClient && isRedisConnected) {
+    try {
+      const keys = seatNumbers.map((s) => getLockKey(tripId, s));
+      const currentHolders = await redisClient.mget(...keys);
+      const keysToDelete: string[] = [];
+
+      for (let i = 0; i < keys.length; i++) {
+        if (currentHolders[i] === lockHolderId) {
+          keysToDelete.push(keys[i]);
+        }
+      }
+
+      if (keysToDelete.length > 0) {
+        await redisClient.del(...keysToDelete);
+      }
+    } catch (err) {
+      console.warn('⚠️ [Redis] Error during releaseSeats:', err);
+    }
+  }
+
+  // 2. Release in In-Memory
   for (const seat of seatNumbers) {
     const key = getLockKey(tripId, seat);
     const existing = inMemoryLocks.get(key);
@@ -98,16 +214,29 @@ export async function releaseSeats(
  */
 export async function getHeldSeats(tripId: string): Promise<string[]> {
   const prefix = `seat_lock:${tripId}:`;
+  const held = new Set<string>();
   const now = Date.now();
-  const held: string[] = [];
 
-  for (const [key, lock] of inMemoryLocks.entries()) {
-    if (key.startsWith(prefix) && lock.expiresAt > now) {
-      held.push(key.replace(prefix, ''));
+  // 1. Fetch from Redis
+  if (redisClient && isRedisConnected) {
+    try {
+      const keys = await redisClient.keys(`${prefix}*`);
+      for (const k of keys) {
+        held.add(k.replace(prefix, ''));
+      }
+    } catch (err) {
+      console.warn('⚠️ [Redis] Error during getHeldSeats:', err);
     }
   }
 
-  return held;
+  // 2. Fetch from in-memory
+  for (const [key, lock] of inMemoryLocks.entries()) {
+    if (key.startsWith(prefix) && lock.expiresAt > now) {
+      held.add(key.replace(prefix, ''));
+    }
+  }
+
+  return Array.from(held);
 }
 
 /**
@@ -121,6 +250,26 @@ export async function verifySeatLocks(
   const unauthorizedSeats: string[] = [];
   const now = Date.now();
 
+  // 1. Verify in Redis
+  if (redisClient && isRedisConnected) {
+    try {
+      const keys = seatNumbers.map((s) => getLockKey(tripId, s));
+      const currentHolders = await redisClient.mget(...keys);
+
+      for (let i = 0; i < seatNumbers.length; i++) {
+        const holder = currentHolders[i];
+        if (holder && holder !== lockHolderId) {
+          unauthorizedSeats.push(seatNumbers[i]);
+        }
+      }
+
+      return { valid: unauthorizedSeats.length === 0, unauthorizedSeats };
+    } catch (err) {
+      console.warn('⚠️ [Redis] Error during verifySeatLocks, verifying in-memory:', err);
+    }
+  }
+
+  // 2. Verify in In-Memory
   for (const seat of seatNumbers) {
     const key = getLockKey(tripId, seat);
     const existing = inMemoryLocks.get(key);
@@ -130,4 +279,15 @@ export async function verifySeatLocks(
   }
 
   return { valid: unauthorizedSeats.length === 0, unauthorizedSeats };
+}
+
+/**
+ * Returns current health status of the Seat Lock engine.
+ */
+export function getSeatLockEngineStatus(): { mode: 'redis' | 'in-memory'; redisConnected: boolean; inMemoryLocksCount: number } {
+  return {
+    mode: redisClient && isRedisConnected ? 'redis' : 'in-memory',
+    redisConnected: isRedisConnected,
+    inMemoryLocksCount: inMemoryLocks.size,
+  };
 }

@@ -84,17 +84,19 @@ enum TripStatus {
 }
 
 model Trip {
-  id               String     @id @default(uuid())
-  busId            String
-  routeId          String
+  id                String     @id @default(uuid())
+  busId             String
+  routeId           String
   departureDatetime DateTime
   arrivalDatetime   DateTime
-  baseFare         Decimal    @db.Decimal(10, 2)
-  status           TripStatus @default(Scheduled)
+  baseFare          Decimal    @db.Decimal(10, 2)
+  status            TripStatus @default(Scheduled)
+  seatPricingConfig Json?      // e.g. { "L1": 850, "L2": 700, "U1": 650, "_tier_upper": 650, "_tier_lower": 750 }
+  seatStatuses      Json?      // e.g. { "L4": "ladies", "L9": "blocked" }
 
-  bus              Bus        @relation(fields: [busId], references: [id])
-  route            Route      @relation(fields: [routeId], references: [id])
-  bookings         BusBooking[]
+  bus               Bus        @relation(fields: [busId], references: [id])
+  route             Route      @relation(fields: [routeId], references: [id])
+  bookings          BusBooking[]
 }
 
 enum BookingStatus {
