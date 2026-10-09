@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import { authenticateJWT, AuthRequest } from '../middleware/auth';
 import { sendSuccess, sendError } from '../utils/response';
-import { tryHoldSeats, releaseSeats, getHeldSeats, verifySeatLocks } from '../utils/seatLock';
+import { tryHoldSeats, releaseSeats, getHeldSeats, verifySeatLocks, SEAT_HOLD_DURATION_SECONDS } from '../utils/seatLock';
 
 const router = Router();
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'yatrabus_dev_access_secret_key_super_secure_random_123456789';
@@ -109,8 +109,8 @@ router.post('/hold', async (req: Request, res: Response) => {
       // If DB is offline, proceed to lock manager
     }
 
-    // 2. Try to acquire lock in lock engine (10-minute hold = 600s)
-    const holdResult = await tryHoldSeats(String(targetTripId), seatIds, String(lockHolderId), 600);
+    // 2. Try to acquire lock in lock engine (duration defined in SEAT_HOLD_DURATION_SECONDS)
+    const holdResult = await tryHoldSeats(String(targetTripId), seatIds, String(lockHolderId), SEAT_HOLD_DURATION_SECONDS);
 
     if (!holdResult.success) {
       return res.status(409).json({
@@ -120,17 +120,18 @@ router.post('/hold', async (req: Request, res: Response) => {
       });
     }
 
+    const holdMinutes = Math.max(1, Math.round(SEAT_HOLD_DURATION_SECONDS / 60));
     return res.status(200).json({
       success: true,
-      message: 'Seats held successfully for 10 minutes.',
+      message: `Seats held successfully for ${holdMinutes} minute${holdMinutes > 1 ? 's' : ''}.`,
       lockHolderId,
       heldSeats: seatIds,
-      expiresInSeconds: 600,
+      expiresInSeconds: SEAT_HOLD_DURATION_SECONDS,
       data: {
         tripId: targetTripId,
         lockHolderId,
         heldSeats: seatIds,
-        expiresInSeconds: 600,
+        expiresInSeconds: SEAT_HOLD_DURATION_SECONDS,
       },
     });
   } catch (err) {

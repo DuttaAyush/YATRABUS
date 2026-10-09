@@ -28,7 +28,7 @@ export default function BusHero() {
   const [isFromOpen, setIsFromOpen] = useState(false);
   const [isToOpen, setIsToOpen] = useState(false);
   const [isPassengerOpen, setIsPassengerOpen] = useState(false);
-  const [passengers, setPassengers] = useState(1);
+  const [passengers, setPassengers] = useState(2);
   const [selectedDate, setSelectedDate] = useState({
     mainText: 'Tomorrow, 24 Oct',
     subText: 'Thursday',

@@ -42,7 +42,7 @@ function SearchContent() {
   });
   const [passengerCount, setPassengerCount] = useState(() => {
     const p = parseInt(searchParams.get('passengers'));
-    return !isNaN(p) && p > 0 ? p : 1;
+    return !isNaN(p) && p > 0 ? p : 2;
   });
 
   const getDayOfWeek = (rawDepDate, fallback) => {
@@ -105,10 +105,25 @@ function SearchContent() {
     setTimeout(() => setToastMessage(''), 3000);
   };
 
+  // Instant live sync of search parameters into URL without needing "Update Search"
+  const syncSearchLive = (nextFrom = fromCity, nextTo = toCity, nextDateText = selectedDate?.mainText, nextPax = passengerCount) => {
+    const params = new URLSearchParams();
+    if (nextFrom) params.set('from', nextFrom);
+    if (nextTo) params.set('to', nextTo);
+    if (nextDateText) params.set('date', nextDateText);
+    params.set('passengers', nextPax.toString());
+    const newUri = `/search?${params.toString()}`;
+    router.replace(newUri, { scroll: false });
+    triggerToast('Search updated');
+  };
+
   const handleSwapCities = () => {
-    const temp = fromCity;
-    setFromCity(toCity);
-    setToCity(temp);
+    const newFrom = toCity;
+    const newTo = fromCity;
+    setFromCity(newFrom);
+    setToCity(newTo);
+    fetchBuses(newFrom, newTo);
+    syncSearchLive(newFrom, newTo, selectedDate?.mainText, passengerCount);
   };
 
   const handleDateSelect = (dateResult) => {
@@ -116,20 +131,34 @@ function SearchContent() {
       mainText: dateResult.mainText,
       subText: dateResult.subText,
     });
+    syncSearchLive(fromCity, toCity, dateResult.mainText, passengerCount);
+  };
+
+  const handlePassengerSelect = (count) => {
+    setPassengerCount(count);
+    setIsPassengerOpen(false);
+    syncSearchLive(fromCity, toCity, selectedDate?.mainText, count);
+  };
+
+  const handleFromCitySelect = (city) => {
+    setFromCity(city);
+    setIsFromOpen(false);
+    fetchBuses(city, toCity);
+    syncSearchLive(city, toCity, selectedDate?.mainText, passengerCount);
+  };
+
+  const handleToCitySelect = (city) => {
+    setToCity(city);
+    setIsToOpen(false);
+    fetchBuses(fromCity, city);
+    syncSearchLive(fromCity, city, selectedDate?.mainText, passengerCount);
   };
 
   const handleUpdateSearch = () => {
     closeAllDropdowns();
     setIsMobileSearchExpanded(false);
-    const params = new URLSearchParams();
-    if (fromCity) params.set('from', fromCity);
-    if (toCity) params.set('to', toCity);
-    if (selectedDate?.mainText) params.set('date', selectedDate.mainText);
-    if (passengerCount > 1) params.set('passengers', passengerCount.toString());
-    const newUri = `/search?${params.toString()}`;
-    router.push(newUri);
     fetchBuses(fromCity, toCity);
-    triggerToast('Search updated');
+    syncSearchLive(fromCity, toCity, selectedDate?.mainText, passengerCount);
   };
 
   const closeAllDropdowns = () => {
@@ -248,10 +277,7 @@ function SearchContent() {
                         <button
                           key={city}
                           type="button"
-                          onClick={() => {
-                            setFromCity(city);
-                            setIsFromOpen(false);
-                          }}
+                          onClick={() => handleFromCitySelect(city)}
                           className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                             fromCity === city
                               ? 'bg-red-50 text-brand-scarlet'
@@ -300,10 +326,7 @@ function SearchContent() {
                         <button
                           key={city}
                           type="button"
-                          onClick={() => {
-                            setToCity(city);
-                            setIsToOpen(false);
-                          }}
+                          onClick={() => handleToCitySelect(city)}
                           className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                             toCity === city
                               ? 'bg-red-50 text-brand-scarlet'
@@ -367,10 +390,7 @@ function SearchContent() {
                         <button
                           key={count}
                           type="button"
-                          onClick={() => {
-                            setPassengerCount(count);
-                            setIsPassengerOpen(false);
-                          }}
+                          onClick={() => handlePassengerSelect(count)}
                           className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                             passengerCount === count
                               ? 'bg-red-50 text-brand-scarlet'

@@ -81,7 +81,9 @@ function getLockKey(tripId: string, seatNumber: string): string {
   return `seat_lock:${tripId}:${seatNumber}`;
 }
 
-// ── Public Interface ──────────────────────────────────────────────────────────
+// ── Global Seat Hold Duration Configuration ─────────────────────────────────
+// Set to 120 seconds (2 minutes). To change hold duration, simply edit this number!
+export const SEAT_HOLD_DURATION_SECONDS = 120;
 
 /**
  * Attempts to atomically hold a set of seats for a customer.
@@ -90,13 +92,13 @@ function getLockKey(tripId: string, seatNumber: string): string {
  * @param tripId - Trip or Bus ID
  * @param seatNumbers - Array of seat IDs (e.g. ['L1', 'L2'])
  * @param lockHolderId - Unique customer session/user identifier
- * @param ttlSeconds - Hold duration in seconds (default: 600 = 10 minutes)
+ * @param ttlSeconds - Hold duration in seconds (defaults to SEAT_HOLD_DURATION_SECONDS)
  */
 export async function tryHoldSeats(
   tripId: string,
   seatNumbers: string[],
   lockHolderId: string,
-  ttlSeconds = 600
+  ttlSeconds = SEAT_HOLD_DURATION_SECONDS
 ): Promise<{ success: boolean; conflictingSeats: string[]; ttlSeconds: number }> {
   const conflictingSeats: string[] = [];
   const now = Date.now();

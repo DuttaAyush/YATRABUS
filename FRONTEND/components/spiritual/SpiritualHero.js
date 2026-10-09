@@ -49,7 +49,36 @@ export default function SpiritualHero() {
   const [scrollScale, setScrollScale] = useState(1);
   const [textY, setTextY] = useState(0);
   const [textOpacity, setTextOpacity] = useState(1);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
+
+  useEffect(() => {
+    setIsLoaded(true);
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const calculatedScale = 1 + Math.min(Math.max(scrollY, 0) / 800, 1) * 0.25;
+          const calculatedY = Math.min(Math.max(scrollY, 0) * 0.35, 150);
+          const calculatedOpacity = Math.max(1 - Math.max(scrollY, 0) / 550, 0);
+
+          setScrollScale(calculatedScale);
+          setTextY(calculatedY);
+          setTextOpacity(calculatedOpacity);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -81,14 +110,15 @@ export default function SpiritualHero() {
     setIsFromOpen(false);
     setIsToOpen(false);
     setIsPassengerOpen(false);
-    const query = devsthan.trim() || 'Varanasi';
+    const destination = devsthan.trim() || 'Varanasi';
     const params = new URLSearchParams({
-      category: 'Spiritual',
-      q: query,
       from: fromCity.trim() || 'Nagpur',
+      to: destination,
+      date: selectedDate?.mainText || 'Tomorrow, 24 Oct',
       passengers: String(passengers),
+      category: 'Spiritual',
     });
-    router.push(`/packages?${params.toString()}`);
+    router.push(`/search?${params.toString()}`);
   };
 
   return (

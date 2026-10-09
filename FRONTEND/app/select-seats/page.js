@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 import { apiFetch } from '@/lib/api';
+import AuthGuard from '@/components/auth/AuthGuard';
 
 // ── 36-Seat RedBus-Style Sleeper Layout Definition ──────────────────────────
 // Lower Deck: 18 Seats (L1 to L18) - 1+2 Sleeper Configuration
@@ -89,8 +90,8 @@ function CinemaSeatBookingContent() {
     }
   }, [busIdParam, router]);
 
-  // Target passengers from search flow
-  const targetPassengers = parseInt(searchParams.get('passengers')) || 1;
+  // Target passengers from search flow (default: 2)
+  const targetPassengers = parseInt(searchParams.get('passengers')) || 2;
 
   const busInfo = {
     id: busIdParam || '1',
@@ -888,7 +889,13 @@ export default function CinemaSeatBookingPage() {
         <div className="w-10 h-10 border-4 border-brand-scarlet border-t-transparent rounded-full animate-spin"></div>
       </div>
     }>
-      <CinemaSeatBookingContent />
+      <AuthGuard
+        title="Login to Select Seats"
+        subtitle="Please log in or sign up to view live seat availability and reserve your seats."
+        redirectTo="/search"
+      >
+        <CinemaSeatBookingContent />
+      </AuthGuard>
     </Suspense>
   );
 }
