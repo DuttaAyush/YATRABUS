@@ -157,9 +157,9 @@ export default function SpiritualHero() {
               ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
               : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, opacity 0.9s ease-out 0.2s'
           }}
-          className="spiritual-hero-title text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)] font-spiritual font-bold not-italic"
+          className="text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight mb-4 max-w-4xl mx-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)] font-serif font-medium"
         >
-          India&apos;s Dedicated <span className="bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 bg-clip-text text-transparent font-spiritual font-bold not-italic">Spiritual Yatra</span> &amp; Sacred Darshan Booking
+          India&apos;s Dedicated <span className="bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 bg-clip-text text-transparent font-serif font-medium">Spiritual Yatra</span> &amp; Sacred Darshan Booking
         </h1>
 
         <p
@@ -170,7 +170,7 @@ export default function SpiritualHero() {
               ? 'transform 0.1s ease-out, opacity 0.1s ease-out'
               : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s, opacity 0.9s ease-out 0.35s'
           }}
-          className="text-base md:text-lg text-amber-100/90 max-w-2xl mx-auto mb-8 font-semibold drop-shadow-md leading-relaxed"
+          className="text-base md:text-lg text-amber-100/90 max-w-2xl mx-auto mb-8 font-medium drop-shadow-md leading-relaxed"
         >
           Direct AC BharatBenz sleeper buses, guaranteed VIP Darshan passes, pure Satvik meals, and verified temple-proximate stays with assigned bus numbers.
         </p>

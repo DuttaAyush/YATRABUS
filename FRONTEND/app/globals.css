@@ -123,32 +123,26 @@ h1, h2, h3, h4, h5, h6, .font-serif, .hero-title, .section-heading {
   font-weight: 500;
 }
 
-/* Dedicated Spiritual Heading Font - Non-Italic & Regal Architectural Roman Serif (Marcellus / Cinzel) */
+/* Dedicated Spiritual Heading Font - Non-Italic & Regal Architectural Roman Serif (Marcellus / Cinzel) for Section Titles */
 .font-spiritual,
 h1.font-spiritual,
 h2.font-spiritual,
 h3.font-spiritual,
 h4.font-spiritual,
-.spiritual-page h1,
 .spiritual-page h2,
 .spiritual-page h3,
-.spiritual-page .hero-title,
 .spiritual-page .section-heading {
   font-family: var(--font-spiritual, 'Marcellus', 'Cinzel', serif) !important;
   font-style: normal !important;
   letter-spacing: -0.01em;
 }
 
-/* Make Spiritual Hero & main headings a bit more bold */
-.spiritual-hero-title,
-.spiritual-page h1,
+/* Make Spiritual explicit heading classes bold */
 h1.font-spiritual {
   font-weight: 700 !important;
   -webkit-text-stroke: 0.35px rgba(255, 255, 255, 0.9);
 }
 
-.spiritual-hero-title span,
-.spiritual-page h1 span,
 h1.font-spiritual span {
   font-weight: 700 !important;
   -webkit-text-stroke: 0.35px rgba(253, 230, 138, 0.85);
