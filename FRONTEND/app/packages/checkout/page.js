@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 import { apiFetch } from '@/lib/api';
@@ -10,10 +10,10 @@ import { allPackagesData } from '@/lib/data/packagesData';
 import AuthGuard from '@/components/auth/AuthGuard';
 import { getStoredUser } from '@/lib/auth';
 
-export default function PackageCheckoutPage({ searchParams }) {
+function PackageCheckoutContent() {
   const router = useRouter();
-  const resolvedSearchParams = use(searchParams) || {};
-  const packageId = resolvedSearchParams.package;
+  const searchParams = useSearchParams();
+  const packageId = searchParams.get('package');
 
   useEffect(() => {
     if (!packageId) {
@@ -887,5 +887,17 @@ export default function PackageCheckoutPage({ searchParams }) {
         <Footer />
       </div>
     </AuthGuard>
+  );
+}
+
+export default function PackageCheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-brand-scarlet border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <PackageCheckoutContent />
+    </Suspense>
   );
 }
