@@ -186,9 +186,9 @@ export default function DatePickerPopover({
     : 'top-full mt-3.5';
 
   const alignClasses = align === 'left'
-    ? 'left-0'
+    ? 'left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0'
     : align === 'right'
-    ? 'right-0'
+    ? 'left-1/2 -translate-x-1/2 sm:right-0 sm:left-auto sm:translate-x-0'
     : 'left-1/2 -translate-x-1/2';
 
   const arrowClasses = computedPosition === 'top'
@@ -200,7 +200,7 @@ export default function DatePickerPopover({
       ref={popoverRef}
       onClick={(e) => e.stopPropagation()}
       aria-label="Date Picker Bubble"
-      className={`absolute ${positionClasses} ${alignClasses} z-[99999] w-80 sm:w-88 max-w-[calc(100vw-1.5rem)] bg-white/98 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(15,23,42,0.35)] border border-slate-200/90 p-4 text-slate-800 animate-in fade-in zoom-in-95 duration-200`}
+      className={`absolute ${positionClasses} ${alignClasses} z-[99999] w-80 sm:w-88 max-w-[calc(100vw-1.5rem)] bg-white/98 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(15,23,42,0.35)] border border-slate-200/90 p-3 sm:p-4 text-slate-800 animate-in fade-in zoom-in-95 duration-200`}
     >
       {/* Speech Bubble Arrow Indicator */}
       <div className={`absolute ${arrowClasses}`} />
@@ -307,7 +307,7 @@ export default function DatePickerPopover({
               type="button"
               disabled={isPast}
               onClick={(e) => handleDayClick(e, dayNum)}
-              className={`h-8 w-8 mx-auto rounded-full flex items-center justify-center text-xs transition-all ${
+              className={`h-7 w-7 sm:h-8 sm:w-8 mx-auto rounded-full flex items-center justify-center text-[11px] sm:text-xs transition-all ${
                 isPast
                   ? 'text-slate-300 cursor-not-allowed'
                   : isSelected

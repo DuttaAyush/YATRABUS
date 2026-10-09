@@ -153,19 +153,7 @@ export default function DomesticPackages() {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [isClosing, setIsClosing] = useState(false);
   const [cardScrollTop, setCardScrollTop] = useState(0);
-  const [packages, setPackages] = useState(domesticData);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/packages?category=Domestic')
-      .then(res => res.json())
-      .then(data => {
-        const items = Array.isArray(data) ? data : data.data || [];
-        if (items.length > 0) {
-          setPackages(items);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const packages = domesticData;
 
   const cardContainerRef = useRef(null);
   const touchStartY = useRef(0);

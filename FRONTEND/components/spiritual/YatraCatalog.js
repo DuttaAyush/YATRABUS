@@ -83,32 +83,7 @@ export default function YatraCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [modalPkg, setModalPkg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [packages, setPackages] = useState(yatraPackages);
-
-  useEffect(() => {
-    apiFetch('/api/packages?category=Spiritual')
-      .then(res => res.json())
-      .then(data => {
-        const items = Array.isArray(data) ? data : data.data || [];
-        if (items.length > 0) {
-          const mapped = items.map(p => ({
-            ...p,
-            tags: (Array.isArray(p.tags) && p.tags.length > 0)
-              ? p.tags
-              : (Array.isArray(p.highlights) && p.highlights.length > 0)
-                ? p.highlights
-                : ['Verified Darshan', 'Satvik Meals', 'AC Transit'],
-            destinations: p.destinations || p.subtitle || 'Sacred Teerth Circuit',
-            badge: p.badge || 'VIP Darshan Pass Included',
-            price: p.price || (p.pricePerPerson ? `₹${Number(p.pricePerPerson).toLocaleString('en-IN')}` : '₹6,499'),
-            duration: p.duration || `${p.durationDays || 4} Days / ${(p.durationDays || 4) - 1} Nights`,
-            image: p.image || '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
-          }));
-          setPackages(mapped);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const packages = yatraPackages;
 
   const filteredPackages = packages.filter(pkg => {
     if (activeFilter === 'all') return true;

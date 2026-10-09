@@ -61,6 +61,7 @@ model Bus {
   status       BusStatus @default(Active)
   lastServiced DateTime?
   busStyle     String?
+  images       Json?
 
   trips        Trip[]
 }

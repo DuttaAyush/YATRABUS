@@ -374,7 +374,7 @@ export default function Header() {
               className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/30 bg-white/15 hover:bg-brand-scarlet text-white backdrop-blur-xl font-bold text-xs transition-all duration-200 shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
             >
               <span className="material-symbols-outlined text-[16px]">account_circle</span>
-              <span>Sign In / Register</span>
+              <span>Sign In</span>
             </button>
           )}
 

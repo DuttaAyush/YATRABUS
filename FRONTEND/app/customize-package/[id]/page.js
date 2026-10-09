@@ -140,7 +140,7 @@ export default function CustomizePackagePage({ params }) {
       </div>
 
       {/* MAIN CUSTOMIZATION ARENA */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT COLUMN: CUSTOMIZATION OPTIONS */}
         <div className="lg:col-span-8 space-y-6">
@@ -398,6 +398,21 @@ export default function CustomizePackagePage({ params }) {
           </div>
         </div>
       </main>
+
+      {/* MOBILE STICKY BOTTOM ACTION BAR */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden p-3 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-2xl flex items-center justify-between">
+        <div>
+          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Total</div>
+          <div className="text-lg font-black text-brand-scarlet">₹{grandTotal}</div>
+        </div>
+        <button
+          type="button"
+          onClick={handleConfirmAndBook}
+          className="py-2.5 px-5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>CONFIRM &amp; BOOK ➔</span>
+        </button>
+      </div>
 
       <Footer />
     </div>

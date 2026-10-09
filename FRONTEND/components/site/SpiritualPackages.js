@@ -160,19 +160,7 @@ export default function SpiritualPackages() {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [isClosing, setIsClosing] = useState(false);
   const [cardScrollTop, setCardScrollTop] = useState(0);
-  const [packages, setPackages] = useState(spiritualData);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/packages?category=Spiritual')
-      .then(res => res.json())
-      .then(data => {
-        const items = Array.isArray(data) ? data : data.data || [];
-        if (items.length > 0) {
-          setPackages(items);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const packages = spiritualData;
 
   const cardContainerRef = useRef(null);
   const touchStartY = useRef(0);

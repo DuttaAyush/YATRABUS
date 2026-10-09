@@ -382,7 +382,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* MAIN CHECKOUT ARENA */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT COLUMN: PASSENGER FORM, ADDONS, PAYMENT */}
         <div className="lg:col-span-8 space-y-6">
@@ -480,6 +480,11 @@ export default function CheckoutPage() {
                   <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
                   <span>Green = Your Selected Seats</span>
                 </span>
+              </div>
+
+              {/* Mobile Swipe Hint */}
+              <div className="text-[10px] text-slate-500 font-medium mb-1.5 flex items-center gap-1 sm:hidden">
+                <span>⇄ Swipe to view coach layout</span>
               </div>
 
               {/* Compact Horizontal Bus Frame */}
@@ -1076,6 +1081,23 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
+
+      {/* MOBILE STICKY BOTTOM ACTION BAR */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden p-3 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-2xl flex items-center justify-between">
+        <div>
+          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Total</div>
+          <div className="text-lg font-black text-brand-scarlet">₹{grandTotal}</div>
+        </div>
+        <button
+          type="button"
+          onClick={handlePayNow}
+          disabled={isProcessing}
+          className={`py-2.5 px-5 rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95 ${isProcessing ? 'opacity-75 cursor-not-allowed' : ''}`}
+        >
+          <span className="material-symbols-outlined text-[16px]">lock</span>
+          <span>{isProcessing ? 'PROCESSING...' : 'PAY NOW'}</span>
+        </button>
+      </div>
 
       {/* SIMULATED SUCCESS TICKET CONFIRMATION MODAL */}
       {isSuccessModalOpen && (

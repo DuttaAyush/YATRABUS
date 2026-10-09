@@ -59,17 +59,7 @@ export default function IndiaLocalCatalog() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [modalPkg, setModalPkg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [packages, setPackages] = useState(domesticPackagesData);
-
-  useEffect(() => {
-    apiFetch('/api/packages?category=Domestic')
-      .then(res => res.json())
-      .then(data => {
-        const items = Array.isArray(data) ? data : data.data || [];
-        if (items.length > 0) setPackages(items);
-      })
-      .catch(() => {});
-  }, []);
+  const packages = domesticPackagesData;
 
   const filteredPackages = activeFilter === 'all'
     ? packages

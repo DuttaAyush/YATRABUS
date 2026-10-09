@@ -305,19 +305,7 @@ export default function InternationalPackages() {
   const [activeTab, setActiveTab] = useState('itinerary'); // 'itinerary' | 'summary' | 'inclusions'
   const [isClosing, setIsClosing] = useState(false);
   const [cardScrollTop, setCardScrollTop] = useState(0);
-  const [packages, setPackages] = useState(packagesData);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/packages?category=International')
-      .then(res => res.json())
-      .then(data => {
-        const items = Array.isArray(data) ? data : data.data || [];
-        if (items.length > 0) {
-          setPackages(items);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const packages = packagesData;
 
   const cardContainerRef = useRef(null);
   const touchStartY = useRef(0);

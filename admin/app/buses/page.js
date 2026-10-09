@@ -32,8 +32,24 @@ const AMENITY_ICONS = [
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function BusThumbnail({ style }) {
+function BusThumbnail({ style, image }) {
   const isRed = style === "red";
+  if (image) {
+    return (
+      <div style={{
+        width: 52, height: 36, borderRadius: 6, flexShrink: 0,
+        overflow: "hidden", border: "1px solid #E2E8F0",
+        backgroundColor: "#F8FAFC",
+      }}>
+        <img
+          src={image}
+          alt="Bus photo"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          onError={(e) => { e.currentTarget.style.display = "none"; }}
+        />
+      </div>
+    );
+  }
   return (
     <div style={{
       width: 52, height: 36, borderRadius: 6, flexShrink: 0,
@@ -130,16 +146,23 @@ export default function BusesPage() {
       .then(data => {
         const busList = Array.isArray(data) ? data : data.data || [];
         if (busList.length > 0) {
-          const mappedBuses = busList.map(b => ({
-            id: b.id,
-            plate: b.plateNumber,
-            type: b.type,
-            seats: b.totalSeats,
-            amenities: b.amenities || {},
-            status: b.status === "In_Maintenance" ? "In Maintenance" : b.status,
-            serviced: b.lastServiced ? new Date(b.lastServiced).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "N/A",
-            busStyle: b.busStyle || "silver"
-          }));
+          const mappedBuses = busList.map(b => {
+            const imgs = Array.isArray(b.images) ? b.images : [];
+            const primaryImg = imgs.find(i => typeof i === 'object' && i.isPrimary) || imgs[0];
+            const primaryUrl = typeof primaryImg === 'string' ? primaryImg : primaryImg?.url;
+            return {
+              id: b.id,
+              plate: b.plateNumber,
+              type: b.type,
+              seats: b.totalSeats,
+              amenities: b.amenities || {},
+              status: b.status === "In_Maintenance" ? "In Maintenance" : b.status,
+              serviced: b.lastServiced ? new Date(b.lastServiced).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "N/A",
+              busStyle: b.busStyle || "silver",
+              images: imgs,
+              primaryImage: primaryUrl || null,
+            };
+          });
           setBuses(mappedBuses);
         }
         setIsLoading(false);
@@ -358,22 +381,31 @@ export default function BusesPage() {
                   {/* Registration */}
                   <td style={{ padding: "0.75rem 1rem" }}>
                     <Link
-                      href={`/buses/${b.plate}/edit`}
+                      href={`/buses/${b.id || b.plate}/edit`}
                       style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none" }}
                     >
-                      <BusThumbnail style={b.busStyle} />
-                      <span style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0F172A", transition: "color 150ms" }}
-                        onMouseEnter={e => e.currentTarget.style.color = "#B91C1C"}
-                        onMouseLeave={e => e.currentTarget.style.color = "#0F172A"}
-                      >
-                        {b.plate}
-                      </span>
+                      <BusThumbnail style={b.busStyle} image={b.primaryImage} />
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                          <span style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0F172A", transition: "color 150ms" }}
+                            onMouseEnter={e => e.currentTarget.style.color = "#B91C1C"}
+                            onMouseLeave={e => e.currentTarget.style.color = "#0F172A"}
+                          >
+                            {b.plate}
+                          </span>
+                          {b.images && b.images.length > 0 && (
+                            <span style={{ fontSize: "0.6875rem", backgroundColor: "#EFF6FF", color: "#1D4ED8", padding: "1px 6px", borderRadius: 4, fontWeight: 600 }}>
+                              📷 {b.images.length}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </Link>
                   </td>
 
                   {/* Bus Type */}
                   <td style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", color: "#475569" }}>
-                    <Link href={`/buses/${b.plate}/edit`} style={{ textDecoration: "none", color: "inherit", fontWeight: 500 }}>
+                    <Link href={`/buses/${b.id || b.plate}/edit`} style={{ textDecoration: "none", color: "inherit", fontWeight: 500 }}>
                       {b.type}
                     </Link>
                   </td>

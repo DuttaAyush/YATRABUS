@@ -304,6 +304,59 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/buses/gallery ─────────────────────────────────────────
+// Public — aggregated photos and gallery items from active fleet
+router.get('/gallery', async (_req: Request, res: Response) => {
+  try {
+    const buses = await prisma.bus.findMany({
+      where: { status: 'Active' },
+      select: {
+        id: true,
+        plateNumber: true,
+        type: true,
+        busStyle: true,
+        totalSeats: true,
+        amenities: true,
+        images: true,
+      },
+    });
+
+    const galleryItems: any[] = [];
+    buses.forEach((b) => {
+      if (Array.isArray(b.images) && b.images.length > 0) {
+        b.images.forEach((img: any, idx: number) => {
+          const url = typeof img === 'string' ? img : img?.url;
+          if (url) {
+            galleryItems.push({
+              id: `${b.id}-${idx}`,
+              busId: b.id,
+              busPlate: b.plateNumber,
+              busType: b.type,
+              title: (typeof img === 'object' && img.caption) ? img.caption : `${b.type} (${b.plateNumber})`,
+              category: (typeof img === 'object' && img.category) ? img.category : (b.busStyle || 'sleeper'),
+              categoryName: (typeof img === 'object' && img.categoryName) ? img.categoryName : 'Fleet Gallery',
+              image: url,
+              description: (typeof img === 'object' && img.description) ? img.description : `Official luxury coach of YatraBus / VedBus fleet. Registration ${b.plateNumber}.`,
+              badge: (typeof img === 'object' && img.badge) ? img.badge : (b.busStyle === 'sleeper' ? '36-Berth Sleeper' : 'Executive Coach'),
+              isPrimary: typeof img === 'object' ? !!img.isPrimary : idx === 0,
+            });
+          }
+        });
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      totalFleetBuses: buses.length,
+      count: galleryItems.length,
+      items: galleryItems,
+    });
+  } catch (err) {
+    console.error('[buses/gallery GET]', err);
+    return res.status(200).json({ success: true, count: 0, items: [] });
+  }
+});
+
 // ── GET /api/buses/search & /api/buses/routes ─────────────────────
 // Public — search trips with filters
 router.get(['/search', '/routes'], async (req: Request, res: Response) => {

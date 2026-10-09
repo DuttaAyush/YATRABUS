@@ -259,12 +259,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-xl animate-fadeIn overflow-y-auto"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-xl animate-fadeIn overflow-y-auto overscroll-contain"
       onClick={onClose}
     >
       {/* FLOATING GLASS CONTAINER (CENTERED & CONSTRAINED) */}
       <div
-        className="bg-white/95 backdrop-blur-2xl rounded-[28px] sm:rounded-[32px] overflow-hidden max-w-4xl lg:max-w-5xl w-full border border-white/60 shadow-2xl grid grid-cols-1 md:grid-cols-12 relative animate-scaleUp my-auto max-h-[85vh] sm:max-h-[90vh]"
+        className="bg-white/95 backdrop-blur-2xl rounded-[28px] sm:rounded-[32px] overflow-hidden max-w-4xl lg:max-w-5xl w-full border border-white/60 shadow-2xl grid grid-cols-1 md:grid-cols-12 relative animate-scaleUp my-auto max-h-[92dvh] sm:max-h-[90vh] overflow-y-auto overscroll-contain"
         onClick={(e) => e.stopPropagation()}
       >
         {/* CLOSE BUTTON */}
@@ -278,7 +278,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         </button>
 
         {/* LEFT COLUMN: FORM SECTION */}
-        <div className="md:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between bg-white/90 space-y-4 sm:space-y-6 overflow-y-auto max-h-[85vh] sm:max-h-[90vh] no-scrollbar">
+        <div className="md:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between bg-white/90 space-y-4 sm:space-y-6 overflow-y-auto max-h-[92dvh] sm:max-h-[90vh] overscroll-contain no-scrollbar">
           {/* Header & Logo */}
           <div>
             <div className="flex items-center justify-between gap-4 mb-3 sm:mb-4">
@@ -780,7 +780,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         </div>
 
         {/* RIGHT COLUMN: HERO BACKGROUND IMAGE & FEATURE BADGES */}
-        <div className="md:col-span-5 relative hidden md:flex flex-col justify-between p-6 sm:p-8 text-white overflow-hidden bg-slate-950 max-h-[85vh] sm:max-h-[90vh]">
+        <div className="md:col-span-5 relative hidden md:flex flex-col justify-between p-6 sm:p-8 text-white overflow-hidden bg-slate-950 max-h-[92dvh] sm:max-h-[90vh]">
           <img
             src="/images/domestic-hero.jpg"
             alt="VedBus Luxury Coach on Expressway"

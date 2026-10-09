@@ -27,7 +27,7 @@ router.get('/', async (req: Request, res: Response) => {
 // ── POST /api/admin/fleet ─────────────────────────────────────────
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { plateNumber, type, totalSeats, amenities, busStyle } = req.body;
+    const { plateNumber, type, totalSeats, amenities, busStyle, images } = req.body;
 
     if (!plateNumber || !type || !totalSeats) {
       return sendError(res, 'plateNumber, type, and totalSeats are required.', 400);
@@ -46,6 +46,7 @@ router.post('/', async (req: Request, res: Response) => {
         totalSeats:  Number(totalSeats),
         amenities:   amenities || {},
         busStyle:    busStyle || 'seater',
+        images:      images !== undefined ? images : [],
         status:      'Active',
       },
     });
@@ -61,8 +62,13 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
-    const bus = await prisma.bus.findUnique({
-      where: { id },
+    const bus = await prisma.bus.findFirst({
+      where: {
+        OR: [
+          { id },
+          { plateNumber: id },
+        ],
+      },
       include: {
         trips: {
           orderBy: { departureDatetime: 'desc' },
@@ -85,9 +91,16 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.patch('/:id', async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
-    const { type, totalSeats, amenities, busStyle, status, lastServiced } = req.body;
+    const { type, totalSeats, amenities, busStyle, status, lastServiced, images } = req.body;
 
-    const bus = await prisma.bus.findUnique({ where: { id } });
+    const bus = await prisma.bus.findFirst({
+      where: {
+        OR: [
+          { id },
+          { plateNumber: id },
+        ],
+      },
+    });
     if (!bus) return sendError(res, 'Bus not found.', 404);
 
     const validStatuses = ['Active', 'In_Maintenance', 'Retired'];
@@ -96,13 +109,14 @@ router.patch('/:id', async (req: Request, res: Response) => {
     }
 
     const updated = await prisma.bus.update({
-      where: { id },
+      where: { id: bus.id },
       data: {
         ...(type         && { type }),
         ...(totalSeats   && { totalSeats: Number(totalSeats) }),
         ...(amenities    && { amenities }),
         ...(busStyle     && { busStyle }),
         ...(status       && { status }),
+        ...(images !== undefined && { images }),
         ...(lastServiced && { lastServiced: new Date(lastServiced) }),
       },
     });
@@ -119,8 +133,13 @@ router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
     const force = req.query.force === 'true';
-    const bus = await prisma.bus.findUnique({
-      where: { id },
+    const bus = await prisma.bus.findFirst({
+      where: {
+        OR: [
+          { id },
+          { plateNumber: id },
+        ],
+      },
       include: { _count: { select: { trips: true } } },
     });
 
@@ -128,18 +147,18 @@ router.delete('/:id', async (req: Request, res: Response) => {
 
     if (bus._count.trips > 0) {
       if (force) {
-        const trips = await prisma.trip.findMany({ where: { busId: id }, select: { id: true } });
+        const trips = await prisma.trip.findMany({ where: { busId: bus.id }, select: { id: true } });
         const tripIds = trips.map(t => t.id);
         if (tripIds.length > 0) {
           await prisma.busBooking.deleteMany({ where: { tripId: { in: tripIds } } });
-          await prisma.trip.deleteMany({ where: { busId: id } });
+          await prisma.trip.deleteMany({ where: { busId: bus.id } });
         }
       } else {
         return sendError(res, `Cannot delete bus with ${bus._count.trips} associated trip(s). Retire it instead, or use ?force=true.`, 409);
       }
     }
 
-    await prisma.bus.delete({ where: { id } });
+    await prisma.bus.delete({ where: { id: bus.id } });
     return sendSuccess(res, null, 'Bus removed from fleet.');
   } catch (err) {
     console.error('[admin/fleet/:id DELETE]', err);

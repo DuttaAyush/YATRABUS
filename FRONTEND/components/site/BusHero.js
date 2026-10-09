@@ -164,8 +164,8 @@ export default function BusHero() {
         </div>
 
         {/* ULTRA-TRANSPARENT GLASS SEARCH BAR CAPSULE */}
-        <div ref={searchContainerRef} className="w-full max-w-6xl relative z-30">
-          <div className="rounded-full p-1 sm:p-2 md:py-2 md:pl-4 md:pr-4 bg-white/[0.07] backdrop-blur-md border border-white/15 shadow-2xl relative">
+        <div ref={searchContainerRef} className="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-6xl mx-auto relative z-30">
+          <div className="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-full rounded-full p-1 sm:p-2 md:py-2 md:pl-4 md:pr-4 bg-white/[0.07] backdrop-blur-md border border-white/15 shadow-2xl relative">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -295,7 +295,7 @@ export default function BusHero() {
                 {isToOpen && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute top-full left-0 mt-3 w-64 sm:w-72 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-2 z-50 text-left animate-fadeIn"
+                    className="absolute top-full right-0 sm:right-auto sm:left-0 mt-3 w-64 sm:w-72 max-w-[calc(100vw-2rem)] bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-2 z-50 text-left animate-fadeIn"
                   >
                     <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300/80 px-3 py-1.5 border-b border-white/10 flex items-center justify-between">
                       <span>Select Destination City</span>
@@ -402,7 +402,7 @@ export default function BusHero() {
                 {isPassengerOpen && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute top-full right-0 sm:right-auto sm:left-0 mt-3 w-64 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-3 z-50 text-left animate-fadeIn"
+                    className="absolute top-full right-0 sm:right-auto sm:left-0 mt-3 w-64 sm:w-72 max-w-[calc(100vw-2rem)] bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-3 z-50 text-left animate-fadeIn"
                   >
                     <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300/80 pb-2 border-b border-white/10 flex items-center justify-between">
                       <span>Number of Passengers</span>
@@ -457,10 +457,11 @@ export default function BusHero() {
               </div>
 
               {/* 5. SEARCH BUTTON */}
-              <div className="shrink-0 p-0.5 sm:p-1">
+              <div className="shrink-0 flex-shrink-0 p-0.5 sm:p-1">
                 <button
                   type="submit"
-                  className="w-8 h-8 sm:w-9 sm:h-9 md:w-auto md:px-7 md:py-3.5 rounded-full bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center justify-center md:gap-2 shadow-lg md:shadow-xl md:shadow-red-600/35 hover:scale-[1.03] active:scale-95 cursor-pointer shrink-0"
+                  aria-label="Search buses"
+                  className="w-8 h-8 sm:w-9 sm:h-9 md:w-auto md:px-7 md:py-3.5 rounded-full bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center justify-center md:gap-2 shadow-lg md:shadow-xl md:shadow-red-600/35 hover:scale-[1.03] active:scale-95 cursor-pointer shrink-0 flex-shrink-0"
                   title="Search buses"
                 >
                   <span className="material-symbols-outlined text-[16px] sm:text-[18px] md:text-[20px]">search</span>

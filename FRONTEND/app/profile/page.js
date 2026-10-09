@@ -549,7 +549,7 @@ export default function CustomerProfilePage() {
               </span>
             </button>
 
-            {/* Card 2: Yatra Wallet */}
+            {/* Card 2: VedBus Wallet */}
             <button
               type="button"
               onClick={() => setActiveTab('wallet')}
@@ -560,7 +560,7 @@ export default function CustomerProfilePage() {
               </div>
               <div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 block">
-                  YATRA WALLET
+                  VEDBUS WALLET
                 </span>
                 <span className="text-xs sm:text-sm font-black text-red-600 block leading-tight">
                   ₹0
@@ -575,18 +575,18 @@ export default function CustomerProfilePage() {
         </div>
 
         {/* BOTTOM OVERLAPPING TAB SWITCHER CAPSULE SHEET */}
-        <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16 relative z-20 pb-2">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-full p-1.5 border border-slate-200/80 shadow-lg flex items-center justify-between overflow-x-auto no-scrollbar gap-1 sm:gap-2">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-10 lg:px-14 xl:px-16 relative z-20 pb-2">
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-full p-1.5 border border-slate-200/80 shadow-lg flex items-center justify-start sm:justify-between overflow-x-auto no-scrollbar touch-pan-x overscroll-x-contain gap-1 sm:gap-2">
             {[
               { label: `Upcoming Trips (${upcomingTrips.length})`, key: 'upcoming', icon: 'confirmation_number' },
               { label: 'Past Journeys & Reviews', key: 'past', icon: 'history' },
-              { label: 'Yatra Wallet & Points', key: 'wallet', icon: 'account_balance_wallet' },
+              { label: 'VedBus Wallet & Points', key: 'wallet', icon: 'account_balance_wallet' },
               { label: `Saved Passengers (${savedPassengers.length})`, key: 'passengers', icon: 'group' },
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 min-w-[150px] sm:min-w-0 py-2 sm:py-2.5 px-3.5 sm:px-5 rounded-xl sm:rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                className={`shrink-0 sm:flex-1 min-w-max sm:min-w-0 py-2 sm:py-2.5 px-3.5 sm:px-5 rounded-xl sm:rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer ${
                   activeTab === tab.key
                     ? 'bg-brand-scarlet text-white shadow-md shadow-red-600/30'
                     : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80'
@@ -1114,7 +1114,7 @@ export default function CustomerProfilePage() {
           </div>
         )}
 
-        {/* TAB 3: YATRA WALLET */}
+        {/* TAB 3: VEDBUS WALLET */}
         {activeTab === 'wallet' && (
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-slate-900 text-white flex justify-between items-center shadow-lg">
@@ -1697,7 +1697,7 @@ export default function CustomerProfilePage() {
                 <span>100% Instant Wallet Refund Guaranteed</span>
               </div>
               <p className="text-amber-800">
-                Amount of <strong>₹{(cancelModalTrip.totalFare || cancelModalTrip.totalAmount || 850).toLocaleString('en-IN')}</strong> will be credited directly to your Yatra Wallet with 0 cancellation penalty.
+                Amount of <strong>₹{(cancelModalTrip.totalFare || cancelModalTrip.totalAmount || 850).toLocaleString('en-IN')}</strong> will be credited directly to your VedBus Wallet with 0 cancellation penalty.
               </p>
             </div>
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import AdminShell from "@/components/layout/AdminShell";
 import { adminFetch } from "@/lib/api";
 
@@ -12,38 +12,26 @@ const BUS_TYPES = [
   {
     id: "bharatbenz-sleeper",
     name: "BharatBenz AC Sleeper (2+1)",
-    shortDesc: "Premium comfort with spacious sleepers and modern amenities",
-    fullDesc: "Premium comfort with spacious sleepers and modern amenities for a superior travel experience.",
-    style: "silver",
-    features: [
-      { icon: "king_bed",     label: "Spacious Sleepers", color: "#B91C1C" },
-      { icon: "auto_awesome", label: "Modern Interiors",  color: "#D97706" },
-      { icon: "verified",     label: "Enhanced Safety",   color: "#059669" },
-    ],
+    shortDesc: "Premium comfort with 36 spacious sleepers and modern amenities",
+    fullDesc: "Premium comfort with 36 spacious sleepers and modern amenities for a superior travel experience.",
+    style: "sleeper",
+    defaultSeats: 36,
   },
   {
     id: "volvo-multiaxle",
-    name: "Volvo Multi-Axle",
+    name: "Volvo Multi-Axle AC Sleeper",
     shortDesc: "Luxury travel with enhanced stability and superior comfort",
     fullDesc: "Luxury travel with enhanced stability and superior comfort across all long-distance routes.",
-    style: "red",
-    features: [
-      { icon: "airline_seat_recline_extra", label: "Luxury Seats",    color: "#B91C1C" },
-      { icon: "speed",                       label: "Smooth Ride",     color: "#D97706" },
-      { icon: "ac_unit",                     label: "Climate Control", color: "#059669" },
-    ],
+    style: "sleeper",
+    defaultSeats: 40,
   },
   {
     id: "seater-recliner",
-    name: "Seater (Recliner)",
-    shortDesc: "Comfortable recliner seats for a pleasant journey",
-    fullDesc: "Comfortable recliner seats with great legroom for a pleasant and affordable journey.",
-    style: "silver",
-    features: [
-      { icon: "event_seat",  label: "Recliner Seats",  color: "#B91C1C" },
-      { icon: "wifi",        label: "Free Wi-Fi",      color: "#D97706" },
-      { icon: "visibility",  label: "Panoramic View",  color: "#059669" },
-    ],
+    name: "Volvo 9600 Seater (Recliner)",
+    shortDesc: "Comfortable recliner pushback seats for day intercity journeys",
+    fullDesc: "Comfortable recliner pushback seats with ample legroom for a pleasant and affordable journey.",
+    style: "seater",
+    defaultSeats: 44,
   },
 ];
 
@@ -54,21 +42,83 @@ const AMENITIES = [
   { id: "water",    label: "Water Bottle",      icon: "water_drop" },
   { id: "snacks",   label: "Snacks",            icon: "restaurant" },
   { id: "gps",      label: "Live GPS Tracking", icon: "gps_fixed" },
+  { id: "sos",      label: "Emergency SOS",     icon: "emergency" },
 ];
 
-const STATUS_DOTS = { "Active": "#22C55E", "In Maintenance": "#F59E0B", "Retired": "#F87171" };
+const STATUS_DOTS = { "Active": "#22C55E", "In_Maintenance": "#F59E0B", "Retired": "#F87171" };
+
+const PHOTO_CATEGORIES = [
+  { id: "sleeper",   name: "Sleeper Berths" },
+  { id: "interiors", name: "Cabin Ambiance" },
+  { id: "exterior",  name: "Exterior Fleet" },
+  { id: "amenities", name: "Amenities & Tech" },
+];
+
+const CURATED_FLEET_PRESETS = [
+  {
+    url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200&auto=format&fit=crop",
+    category: "sleeper",
+    categoryName: "Sleeper Berths",
+    caption: "36-Berth Luxury Sleeper Coach (1+2 Layout)",
+    badge: "Flagship Sleeper",
+    isPrimary: true,
+  },
+  {
+    url: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=1200&auto=format&fit=crop",
+    category: "sleeper",
+    categoryName: "Sleeper Berths",
+    caption: "Lower Deck Single Window Berth with UV Tint",
+    badge: "Solo Traveler Choice",
+    isPrimary: false,
+  },
+  {
+    url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1200&auto=format&fit=crop",
+    category: "sleeper",
+    categoryName: "Sleeper Berths",
+    caption: "Upper Deck Double Sharing Berth with Reading Console",
+    badge: "Couples & Family",
+    isPrimary: false,
+  },
+  {
+    url: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=1200&auto=format&fit=crop",
+    category: "interiors",
+    categoryName: "Cabin Ambiance",
+    caption: "Ambient Starlight LED Ceiling with Low Noise Acoustic Panels",
+    badge: "Mood Lighting",
+    isPrimary: false,
+  },
+  {
+    url: "https://images.unsplash.com/photo-1557223562-6c77ef16210f?q=80&w=1200&auto=format&fit=crop",
+    category: "exterior",
+    categoryName: "Exterior Fleet",
+    caption: "Aerodynamic Volvo Multi-Axle Exterior Coach",
+    badge: "Euro-6 Luxury",
+    isPrimary: false,
+  },
+  {
+    url: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?q=80&w=1200&auto=format&fit=crop",
+    category: "amenities",
+    categoryName: "Amenities & Tech",
+    caption: "Dedicated 45W Type-C Fast Charger & Bedside Switch",
+    badge: "Fast Charging",
+    isPrimary: false,
+  },
+];
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function SectionCard({ icon, title, subtitle, children }) {
+function SectionCard({ icon, title, subtitle, children, rightAction }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", marginBottom: "1rem", overflow: "hidden" }}>
-      <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "flex-start", gap: "0.625rem" }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C", flexShrink: 0, marginTop: 1 }}>{icon}</span>
-        <div>
-          <div style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>{title}</div>
-          {subtitle && <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 1 }}>{subtitle}</div>}
+    <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", marginBottom: "1.25rem", overflow: "hidden" }}>
+      <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C", flexShrink: 0 }}>{icon}</span>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>{title}</div>
+            {subtitle && <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 1 }}>{subtitle}</div>}
+          </div>
         </div>
+        {rightAction}
       </div>
       <div style={{ padding: "1.25rem" }}>{children}</div>
     </div>
@@ -83,128 +133,127 @@ function Label({ children, required }) {
   );
 }
 
-function BusIllustration({ busStyle, size = "large" }) {
-  const isRed = busStyle === "red";
-  const h = size === "large" ? 180 : 100;
-  return (
-    <div style={{
-      width: "100%", height: h, borderRadius: 8,
-      background: isRed
-        ? "linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)"
-        : "linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      position: "relative", overflow: "hidden",
-    }}>
-      {/* decorative circles */}
-      <div style={{ position: "absolute", bottom: -20, right: -20, width: 80, height: 80, borderRadius: "50%", backgroundColor: isRed ? "#FEE2E2" : "#E2E8F0", opacity: 0.5 }} />
-      <div style={{ position: "absolute", top: -15, left: -15, width: 60, height: 60, borderRadius: "50%", backgroundColor: isRed ? "#FEE2E2" : "#E2E8F0", opacity: 0.4 }} />
-      <span className="material-symbols-outlined" style={{ fontSize: size === "large" ? 88 : 52, color: isRed ? "#B91C1C" : "#94A3B8", position: "relative", zIndex: 1 }}>directions_bus</span>
-    </div>
-  );
-}
-
-function BusTypeCard({ bus, selected, onSelect }) {
-  return (
-    <div
-      onClick={onSelect}
-      style={{
-        border: `${selected ? 2 : 1}px solid ${selected ? "#B91C1C" : "#E2E8F0"}`,
-        borderRadius: 10, padding: "0.875rem",
-        cursor: "pointer", transition: "all 150ms",
-        backgroundColor: selected ? "#FFFBFB" : "#fff",
-        position: "relative",
-      }}
-    >
-      {/* Radio button */}
-      <div style={{
-        width: 16, height: 16, borderRadius: "50%",
-        border: `2px solid ${selected ? "#B91C1C" : "#CBD5E1"}`,
-        backgroundColor: selected ? "#B91C1C" : "#fff",
-        marginBottom: "0.75rem",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexShrink: 0,
-      }}>
-        {selected && <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#fff" }} />}
-      </div>
-
-      {/* Bus illustration */}
-      <BusIllustration busStyle={bus.style} size="small" />
-
-      {/* Info */}
-      <div style={{ marginTop: "0.625rem" }}>
-        <div style={{ fontWeight: 600, fontSize: "0.8125rem", color: "#0F172A", marginBottom: "0.25rem" }}>{bus.name}</div>
-        <div style={{ fontSize: "0.72rem", color: "#94A3B8", lineHeight: 1.4 }}>{bus.shortDesc}</div>
-      </div>
-    </div>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default function NewBusPage() {
   const router = useRouter();
-  const [isSubmitting,      setIsSubmitting]      = useState(false);
-  const [errorMsg,          setErrorMsg]          = useState("");
-  const [selectedBusType,   setSelectedBusType]   = useState(BUS_TYPES[0].id);
-  const [selectedAmenities, setSelectedAmenities] = useState(new Set(["wifi", "charging", "blanket", "gps"]));
-  const [status,            setStatus]            = useState("Active");
-  const [notes,             setNotes]             = useState("");
-  const [regPlate,          setRegPlate]          = useState("");
-  const [seats,             setSeats]             = useState(40);
 
-  const toggleAmenity = (id) => setSelectedAmenities(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const currentBus = BUS_TYPES.find(b => b.id === selectedBusType) || BUS_TYPES[0];
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const [regPlate, setRegPlate] = useState("");
+  const [seats, setSeats] = useState(36);
+  const [busTypeName, setBusTypeName] = useState("BharatBenz AC Sleeper (2+1)");
+  const [busStyle, setBusStyle] = useState("sleeper");
+  const [selectedAmenities, setSelectedAmenities] = useState(new Set(["wifi", "charging", "blanket", "gps", "water"]));
+  const [status, setStatus] = useState("Active");
+
+  // Gallery Photos
+  const [photos, setPhotos] = useState(CURATED_FLEET_PRESETS.slice(0, 3));
+  const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [newPhotoCategory, setNewPhotoCategory] = useState("sleeper");
+  const [newPhotoCaption, setNewPhotoCaption] = useState("");
+  const [newPhotoBadge, setNewPhotoBadge] = useState("");
+
+  const toggleAmenity = (id) => {
+    setSelectedAmenities(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleAddPhoto = (e) => {
+    e.preventDefault();
+    if (!newPhotoUrl.trim()) return;
+    const catObj = PHOTO_CATEGORIES.find(c => c.id === newPhotoCategory);
+    const newEntry = {
+      url: newPhotoUrl.trim(),
+      category: newPhotoCategory,
+      categoryName: catObj ? catObj.name : "Fleet Gallery",
+      caption: newPhotoCaption.trim() || `${busTypeName} View`,
+      badge: newPhotoBadge.trim() || (photos.length === 0 ? "Primary Cover" : ""),
+      isPrimary: photos.length === 0,
+    };
+    setPhotos(prev => [...prev, newEntry]);
+    setNewPhotoUrl("");
+    setNewPhotoCaption("");
+    setNewPhotoBadge("");
+  };
+
+  const handleRemovePhoto = (index) => {
+    setPhotos(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      if (prev[index]?.isPrimary && updated.length > 0) {
+        updated[0].isPrimary = true;
+      }
+      return updated;
+    });
+  };
+
+  const handleSetPrimary = (index) => {
+    setPhotos(prev => prev.map((p, i) => ({
+      ...p,
+      isPrimary: i === index,
+    })));
+  };
+
+  const handleLoadCuratedPresets = () => {
+    setPhotos(CURATED_FLEET_PRESETS);
+  };
 
   const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
+    if (!regPlate.trim()) {
+      alert("Registration plate number is required");
+      return;
+    }
+
+    setIsSaving(true);
     setErrorMsg("");
-    const plate = regPlate.trim().toUpperCase();
-    if (!plate) {
-      setErrorMsg("Registration Plate Number is required (e.g. MH-31-AZ-9999).");
-      return;
-    }
-    const seatCount = parseInt(seats, 10);
-    if (isNaN(seatCount) || seatCount < 10) {
-      setErrorMsg("Total seats must be a valid number (minimum 10).");
-      return;
-    }
+    setSuccessMsg("");
 
-    setIsSubmitting(true);
+    const amenitiesObj = {};
+    AMENITIES.forEach(a => {
+      amenitiesObj[a.id] = selectedAmenities.has(a.id);
+    });
+
     try {
-      const amenitiesObj = {};
-      AMENITIES.forEach(a => {
-        amenitiesObj[a.id] = selectedAmenities.has(a.id);
-      });
-
       const res = await adminFetch("/api/admin/fleet", {
         method: "POST",
         body: JSON.stringify({
-          plateNumber: plate,
-          type: currentBus.name,
-          totalSeats: seatCount,
+          plateNumber: regPlate.trim().toUpperCase(),
+          type: busTypeName,
+          totalSeats: Number(seats),
           amenities: amenitiesObj,
-          busStyle: currentBus.style || "silver",
+          busStyle,
+          status,
+          images: photos,
         }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        router.push("/buses");
+        setSuccessMsg("New bus registered and added to fleet successfully!");
+        setTimeout(() => {
+          router.push("/buses");
+        }, 1200);
       } else {
         setErrorMsg(data.message || "Failed to add bus to fleet");
       }
     } catch (err) {
-      setErrorMsg(err.message || "Failed to communicate with server");
+      setErrorMsg("Error: " + err.message);
     } finally {
-      setIsSubmitting(false);
+      setIsSaving(false);
     }
   };
 
   const inputStyle = {
-    width: "100%", paddingLeft: 34, paddingRight: 12, paddingTop: 9, paddingBottom: 9,
+    width: "100%", paddingLeft: 12, paddingRight: 12, paddingTop: 9, paddingBottom: 9,
     border: "1px solid #E2E8F0", borderRadius: 8, fontSize: "0.875rem",
     color: "#0F172A", backgroundColor: "#fff", outline: "none", boxSizing: "border-box",
   };
+
+  const primaryPhoto = photos.find(p => p.isPrimary) || photos[0];
 
   return (
     <AdminShell>
@@ -217,67 +266,288 @@ export default function NewBusPage() {
         <span style={{ color: "#0F172A", fontWeight: 500 }}>Register New Bus</span>
       </div>
 
-      {/* Title */}
-      <div style={{ marginBottom: "1.25rem" }}>
-        <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2, margin: 0 }}>
-          Register New Bus
-        </h1>
-        <p style={{ fontSize: "0.875rem", color: "#64748B", marginTop: "0.375rem" }}>Add a new bus to your fleet with complete details.</p>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+        <div>
+          <h1 style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2, margin: 0 }}>
+            Register New Bus
+          </h1>
+          <p style={{ fontSize: "0.875rem", color: "#64748B", marginTop: "0.375rem", marginBottom: 0 }}>
+            Add a new coach to your fleet with 36-seat sleeper layout, amenities, and gallery showcase photos.
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <Link href="/buses" style={{
+            padding: "0.5625rem 1rem", borderRadius: 8, border: "1px solid #CBD5E1",
+            color: "#475569", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500,
+          }}>
+            Cancel
+          </Link>
+          <button
+            onClick={handleSubmit}
+            disabled={isSaving}
+            style={{
+              padding: "0.5625rem 1.5rem", borderRadius: 8, border: "none",
+              backgroundColor: "#B91C1C", color: "#fff", fontSize: "0.875rem", fontWeight: 600,
+              cursor: isSaving ? "not-allowed" : "pointer", display: "inline-flex", alignItems: "center", gap: "0.5rem",
+              boxShadow: "0 2px 4px rgba(185, 28, 28, 0.2)",
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add_circle</span>
+            {isSaving ? "Registering Bus..." : "Register Bus & Photos"}
+          </button>
+        </div>
       </div>
 
-      {/* Two-column layout */}
-      <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
+      {/* Alerts */}
+      {errorMsg && (
+        <div style={{ padding: "0.875rem 1.25rem", borderRadius: 8, backgroundColor: "#FEF2F2", border: "1px solid #FCA5A5", color: "#991B1B", marginBottom: "1rem", fontSize: "0.875rem" }}>
+          ⚠️ {errorMsg}
+        </div>
+      )}
+      {successMsg && (
+        <div style={{ padding: "0.875rem 1.25rem", borderRadius: 8, backgroundColor: "#ECFDF5", border: "1px solid #6EE7B7", color: "#065F46", marginBottom: "1rem", fontSize: "0.875rem" }}>
+          ✅ {successMsg}
+        </div>
+      )}
 
-        {/* ── LEFT COLUMN ── */}
+      <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
+        
+        {/* ── LEFT COLUMN: Core Details & Photo Manager ── */}
         <div style={{ flex: 1, minWidth: 0 }}>
 
-          {/* Section 1: Basic Information */}
-          <SectionCard icon="directions_bus" title="Basic Information" subtitle="Enter the basic details of the bus">
+          {/* Section 1: Basic Specifications */}
+          <SectionCard icon="directions_bus" title="Basic Information" subtitle="Coach registration and seating capacity">
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               <div>
                 <Label required>Registration Plate Number</Label>
-                <div style={{ position: "relative" }}>
-                  <span className="material-symbols-outlined" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#94A3B8", pointerEvents: "none" }}>directions_bus</span>
-                  <input
-                    value={regPlate}
-                    onChange={e => setRegPlate(e.target.value)}
-                    placeholder="e.g. MH 31 AB 1234"
-                    style={inputStyle}
-                  />
-                </div>
+                <input
+                  value={regPlate}
+                  onChange={e => setRegPlate(e.target.value)}
+                  placeholder="e.g. MH 31 AP 4921"
+                  style={inputStyle}
+                />
               </div>
               <div>
-                <Label required>Total Seats</Label>
-                <div style={{ position: "relative" }}>
-                  <span className="material-symbols-outlined" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#94A3B8", pointerEvents: "none" }}>event_seat</span>
-                  <input
-                    type="number"
-                    value={seats}
-                    onChange={e => setSeats(Number(e.target.value))}
-                    min={1} max={60}
-                    style={inputStyle}
-                  />
-                </div>
+                <Label required>Total Seats (Sleeper Layout)</Label>
+                <input
+                  type="number"
+                  value={seats}
+                  onChange={e => setSeats(Number(e.target.value))}
+                  min={1} max={60}
+                  style={inputStyle}
+                />
+                <span style={{ fontSize: "0.72rem", color: "#64748B", marginTop: 3, display: "block" }}>
+                  Standard RedBus sleeper layout is 36 seats (18 Lower + 18 Upper).
+                </span>
+              </div>
+            </div>
+
+            <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div>
+                <Label required>Coach Model / Type</Label>
+                <input
+                  value={busTypeName}
+                  onChange={e => setBusTypeName(e.target.value)}
+                  placeholder="e.g. BharatBenz AC Sleeper (2+1)"
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <Label required>Bus Layout Style</Label>
+                <select
+                  value={busStyle}
+                  onChange={e => setBusStyle(e.target.value)}
+                  style={{ ...inputStyle, cursor: "pointer" }}
+                >
+                  <option value="sleeper">Sleeper (1+2 RedBus 36-Berth)</option>
+                  <option value="seater">Seater / Recliner Pushback</option>
+                </select>
               </div>
             </div>
           </SectionCard>
 
-          {/* Section 2: Bus Type */}
-          <SectionCard icon="directions_bus" title="Bus Type" subtitle="Select the type of bus">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.875rem" }}>
-              {BUS_TYPES.map(bt => (
-                <BusTypeCard
-                  key={bt.id}
-                  bus={bt}
-                  selected={selectedBusType === bt.id}
-                  onSelect={() => setSelectedBusType(bt.id)}
-                />
-              ))}
+          {/* Section 2: Fleet Gallery & Photo Manager */}
+          <SectionCard
+            icon="photo_library"
+            title="Bus Photo & Fleet Gallery Manager"
+            subtitle={`Upload or assign photos for this bus (${photos.length} photos ready). Shown on Customer /gallery page.`}
+            rightAction={
+              <button
+                type="button"
+                onClick={handleLoadCuratedPresets}
+                style={{
+                  padding: "0.375rem 0.75rem", borderRadius: 6, border: "1px solid #BFDBFE",
+                  backgroundColor: "#EFF6FF", color: "#1D4ED8", fontSize: "0.75rem", fontWeight: 600,
+                  cursor: "pointer", display: "flex", alignItems: "center", gap: "0.375rem",
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>add_photo_alternate</span>
+                Load Curated 36-Seat Photos
+              </button>
+            }
+          >
+            {/* Existing Photos Grid */}
+            {photos.length === 0 ? (
+              <div style={{
+                padding: "2rem", border: "2px dashed #E2E8F0", borderRadius: 10,
+                textAlign: "center", backgroundColor: "#F8FAFC", marginBottom: "1.25rem",
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 36, color: "#94A3B8" }}>add_photo_alternate</span>
+                <div style={{ fontWeight: 600, color: "#334155", marginTop: "0.5rem" }}>No photos uploaded for this bus yet</div>
+                <div style={{ fontSize: "0.8125rem", color: "#64748B", marginTop: "0.25rem" }}>
+                  Add photos using the form below or click &quot;Load Curated 36-Seat Photos&quot; to populate standard luxury pictures.
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
+                {photos.map((photo, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      borderRadius: 10, border: `1.5px solid ${photo.isPrimary ? "#B91C1C" : "#E2E8F0"}`,
+                      overflow: "hidden", backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                      display: "flex", flexDirection: "column",
+                    }}
+                  >
+                    {/* Photo Thumbnail */}
+                    <div style={{ position: "relative", width: "100%", height: 130, backgroundColor: "#0F172A" }}>
+                      <img
+                        src={photo.url}
+                        alt={photo.caption || "Bus photo"}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        onError={(e) => {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600&auto=format&fit=crop";
+                        }}
+                      />
+                      {photo.isPrimary && (
+                        <span style={{
+                          position: "absolute", top: 8, left: 8, backgroundColor: "#B91C1C", color: "#fff",
+                          fontSize: "0.6875rem", fontWeight: 700, padding: "2px 8px", borderRadius: 4,
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+                        }}>
+                          ★ Primary Cover
+                        </span>
+                      )}
+                      <span style={{
+                        position: "absolute", bottom: 8, right: 8, backgroundColor: "rgba(15,23,42,0.75)",
+                        color: "#fff", fontSize: "0.6875rem", padding: "2px 6px", borderRadius: 4,
+                      }}>
+                        {photo.categoryName || photo.category}
+                      </span>
+                    </div>
+
+                    {/* Photo Info & Actions */}
+                    <div style={{ padding: "0.75rem", flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: "0.8125rem", color: "#0F172A", marginBottom: 2 }}>
+                          {photo.caption || "Bus Photo"}
+                        </div>
+                        {photo.badge && (
+                          <span style={{ fontSize: "0.6875rem", color: "#B91C1C", backgroundColor: "#FEF2F2", padding: "1px 6px", borderRadius: 4, display: "inline-block" }}>
+                            {photo.badge}
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "0.75rem", paddingTop: "0.5rem", borderTop: "1px solid #F1F5F9" }}>
+                        {!photo.isPrimary ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimary(idx)}
+                            style={{
+                              border: "none", background: "none", color: "#2563EB", fontSize: "0.75rem",
+                              fontWeight: 600, cursor: "pointer", padding: 0,
+                            }}
+                          >
+                            Make Cover
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: "0.75rem", color: "#059669", fontWeight: 600 }}>Active Cover</span>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePhoto(idx)}
+                          style={{
+                            border: "none", background: "none", color: "#EF4444", fontSize: "0.75rem",
+                            fontWeight: 600, cursor: "pointer", padding: 0,
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add New Photo Form */}
+            <div style={{ backgroundColor: "#F8FAFC", borderRadius: 8, border: "1px solid #E2E8F0", padding: "1rem" }}>
+              <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "#1E293B", marginBottom: "0.75rem" }}>
+                Add Photo to Bus Fleet
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                <div>
+                  <Label required>Image Direct URL / CDN Link</Label>
+                  <input
+                    value={newPhotoUrl}
+                    onChange={e => setNewPhotoUrl(e.target.value)}
+                    placeholder="https://images.unsplash.com/... or Cloudinary URL"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <Label>Category</Label>
+                  <select
+                    value={newPhotoCategory}
+                    onChange={e => setNewPhotoCategory(e.target.value)}
+                    style={{ ...inputStyle, cursor: "pointer" }}
+                  >
+                    {PHOTO_CATEGORIES.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr auto", gap: "0.75rem", alignItems: "flex-end" }}>
+                <div>
+                  <Label>Caption / Title</Label>
+                  <input
+                    value={newPhotoCaption}
+                    onChange={e => setNewPhotoCaption(e.target.value)}
+                    placeholder="e.g. Upper Deck 2-Sharing Cabin"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <Label>Badge Tag</Label>
+                  <input
+                    value={newPhotoBadge}
+                    onChange={e => setNewPhotoBadge(e.target.value)}
+                    placeholder="e.g. Solo Traveler Choice"
+                    style={inputStyle}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddPhoto}
+                  style={{
+                    padding: "0.6rem 1.25rem", borderRadius: 8, border: "none",
+                    backgroundColor: "#0F172A", color: "#fff", fontSize: "0.8125rem",
+                    fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap",
+                  }}
+                >
+                  + Add Photo
+                </button>
+              </div>
             </div>
           </SectionCard>
 
           {/* Section 3: Amenities */}
-          <SectionCard icon="settings" title="Amenities" subtitle="Select the amenities available in this bus">
+          <SectionCard icon="settings" title="Amenities" subtitle="On-board facilities offered in this coach">
             <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
               {AMENITIES.map(a => {
                 const on = selectedAmenities.has(a.id);
@@ -286,206 +556,103 @@ export default function NewBusPage() {
                     key={a.id}
                     onClick={() => toggleAmenity(a.id)}
                     style={{
-                      flex: "1 1 calc(16.66% - 0.625rem)", minWidth: 80,
-                      border: `1px solid ${on ? "#FCA5A5" : "#E2E8F0"}`,
-                      borderRadius: 8, padding: "0.75rem 0.5rem 0.625rem",
+                      flex: "1 1 calc(16.66% - 0.625rem)", minWidth: 90,
+                      border: `1.5px solid ${on ? "#FCA5A5" : "#E2E8F0"}`,
+                      borderRadius: 8, padding: "0.75rem 0.5rem",
                       cursor: "pointer", textAlign: "center",
                       backgroundColor: on ? "#FEF2F2" : "#fff",
-                      position: "relative", transition: "all 150ms",
+                      transition: "all 150ms",
                     }}
                   >
-                    {/* Checkbox */}
-                    <div style={{
-                      position: "absolute", top: 7, right: 7,
-                      width: 16, height: 16, borderRadius: 3,
-                      border: `1.5px solid ${on ? "#B91C1C" : "#CBD5E1"}`,
-                      backgroundColor: on ? "#B91C1C" : "#fff",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                      {on && <span className="material-symbols-outlined" style={{ fontSize: 11, color: "#fff" }}>check</span>}
-                    </div>
-                    {/* Icon */}
-                    <span className="material-symbols-outlined" style={{ fontSize: 22, color: on ? "#B91C1C" : "#94A3B8", marginBottom: "0.3rem", display: "block" }}>{a.icon}</span>
-                    {/* Label */}
-                    <span style={{ fontSize: "0.7rem", color: on ? "#991B1B" : "#64748B", fontWeight: on ? 600 : 400, lineHeight: 1.2 }}>{a.label}</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 24, color: on ? "#B91C1C" : "#94A3B8", display: "block", marginBottom: 4 }}>
+                      {a.icon}
+                    </span>
+                    <span style={{ fontSize: "0.75rem", color: on ? "#991B1B" : "#64748B", fontWeight: on ? 600 : 500 }}>
+                      {a.label}
+                    </span>
                   </div>
                 );
               })}
             </div>
           </SectionCard>
-
-          {/* Section 4: Status + Notes side by side */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "1rem", marginBottom: "1rem" }}>
-            {/* Status */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", overflow: "hidden" }}>
-              <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "flex-start", gap: "0.625rem" }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C", flexShrink: 0, marginTop: 1 }}>schedule</span>
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Status</div>
-                  <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 1 }}>Set the current status of the bus</div>
-                </div>
-              </div>
-              <div style={{ padding: "1.25rem" }}>
-                <div style={{ position: "relative" }}>
-                  <span style={{
-                    position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)",
-                    width: 8, height: 8, borderRadius: "50%",
-                    backgroundColor: STATUS_DOTS[status] || "#94A3B8",
-                    pointerEvents: "none", zIndex: 1,
-                  }} />
-                  <select
-                    value={status}
-                    onChange={e => setStatus(e.target.value)}
-                    style={{
-                      width: "100%",
-                      paddingLeft: 26, paddingRight: 28, paddingTop: 9, paddingBottom: 9,
-                      border: "1px solid #E2E8F0", borderRadius: 8,
-                      fontSize: "0.875rem", color: "#0F172A",
-                      backgroundColor: "#fff", outline: "none", appearance: "none",
-                      cursor: "pointer",
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2394A3B8' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 10px center",
-                    }}
-                  >
-                    <option>Active</option>
-                    <option>In Maintenance</option>
-                    <option>Retired</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Notes */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", overflow: "hidden" }}>
-              <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "flex-start", gap: "0.625rem" }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C", flexShrink: 0, marginTop: 1 }}>description</span>
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Additional Notes <span style={{ fontWeight: 400, color: "#94A3B8", fontSize: "0.8125rem" }}>(Optional)</span></div>
-                  <div style={{ fontSize: "0.75rem", color: "#94A3B8", marginTop: 1 }}>Any additional information about this bus</div>
-                </div>
-              </div>
-              <div style={{ padding: "1rem 1.25rem", position: "relative" }}>
-                <textarea
-                  value={notes}
-                  onChange={e => setNotes(e.target.value.slice(0, 500))}
-                  placeholder="E.g. Special instructions, maintenance details, etc..."
-                  rows={3}
-                  style={{
-                    width: "100%", padding: "0.5rem 0.75rem",
-                    border: "1px solid #E2E8F0", borderRadius: 8,
-                    fontSize: "0.8125rem", color: "#0F172A",
-                    resize: "none", outline: "none",
-                    backgroundColor: "#fff", boxSizing: "border-box",
-                    fontFamily: "inherit",
-                  }}
-                />
-                <div style={{ position: "absolute", bottom: 20, right: 24, fontSize: "0.72rem", color: "#94A3B8" }}>{notes.length}/500</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Error Message */}
-          {errorMsg && (
-            <div style={{
-              backgroundColor: "#FEF2F2",
-              border: "1px solid #F87171",
-              borderRadius: 8,
-              padding: "0.75rem 1rem",
-              marginBottom: "1rem",
-              color: "#991B1B",
-              fontSize: "0.875rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>error</span>
-              {errorMsg}
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.25rem" }}>
-            <Link href="/buses" style={{
-              display: "inline-flex", alignItems: "center", gap: "0.375rem",
-              padding: "0.5625rem 1.125rem",
-              border: "1px solid #E2E8F0", borderRadius: 8,
-              backgroundColor: "#fff", color: "#475569",
-              fontSize: "0.875rem", fontWeight: 500, textDecoration: "none",
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
-              Cancel
-            </Link>
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.375rem",
-                padding: "0.5625rem 1.5rem",
-                border: "none", borderRadius: 8,
-                backgroundColor: isSubmitting ? "#94A3B8" : "#B91C1C", color: "#fff",
-                fontSize: "0.875rem", fontWeight: 600, cursor: isSubmitting ? "not-allowed" : "pointer",
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span>
-              {isSubmitting ? "Saving Bus..." : "Save Bus"}
-            </button>
-          </div>
         </div>
 
-        {/* ── RIGHT COLUMN ── */}
-        <div style={{ width: 300, flexShrink: 0, position: "sticky", top: 80 }}>
+        {/* ── RIGHT COLUMN: Status & Live Preview ── */}
+        <div style={{ width: 320, flexShrink: 0, position: "sticky", top: 80 }}>
 
-          {/* Bus Preview */}
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", marginBottom: "1rem", overflow: "hidden" }}>
-            <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "flex-start", gap: "0.625rem" }}>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#B91C1C" }}>visibility</span>
-              </div>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "#0F172A" }}>Bus Preview</div>
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8", marginTop: 1 }}>Visual representation of the selected bus type</div>
+          {/* Status */}
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", marginBottom: "1.25rem", overflow: "hidden" }}>
+            <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "center", gap: "0.625rem" }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C" }}>schedule</span>
+              <span style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Fleet Status</span>
+            </div>
+            <div style={{ padding: "1.25rem" }}>
+              <Label required>Operational Status</Label>
+              <div style={{ position: "relative" }}>
+                <span style={{
+                  position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)",
+                  width: 8, height: 8, borderRadius: "50%",
+                  backgroundColor: STATUS_DOTS[status] || "#22C55E",
+                }} />
+                <select
+                  value={status}
+                  onChange={e => setStatus(e.target.value)}
+                  style={{ ...inputStyle, paddingLeft: 28, cursor: "pointer" }}
+                >
+                  <option value="Active">Active (Operational)</option>
+                  <option value="In_Maintenance">In Maintenance</option>
+                  <option value="Retired">Retired</option>
+                </select>
               </div>
             </div>
+          </div>
+
+          {/* Bus Live Card Preview */}
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", overflow: "hidden" }}>
+            <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #F8FAFC", display: "flex", alignItems: "center", gap: "0.625rem" }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#B91C1C" }}>visibility</span>
+              <span style={{ fontWeight: 600, fontSize: "0.9375rem", color: "#0F172A" }}>Customer Card Preview</span>
+            </div>
             <div style={{ padding: "1rem" }}>
-              <BusIllustration busStyle={currentBus.style} size="large" />
+              {/* Photo Preview */}
+              <div style={{ width: "100%", height: 160, borderRadius: 8, overflow: "hidden", backgroundColor: "#0F172A", position: "relative" }}>
+                {primaryPhoto ? (
+                  <img
+                    src={primaryPhoto.url}
+                    alt="Bus Cover"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#94A3B8" }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 48 }}>directions_bus</span>
+                  </div>
+                )}
+                <span style={{
+                  position: "absolute", top: 8, right: 8, backgroundColor: "rgba(0,0,0,0.7)",
+                  color: "#fff", fontSize: "0.6875rem", padding: "2px 6px", borderRadius: 4,
+                }}>
+                  📷 {photos.length} Photos
+                </span>
+              </div>
+
               <div style={{ marginTop: "0.875rem" }}>
-                <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0F172A", marginBottom: "0.375rem" }}>{currentBus.name}</div>
-                <div style={{ fontSize: "0.75rem", color: "#64748B", lineHeight: 1.5, marginBottom: "0.875rem" }}>{currentBus.fullDesc}</div>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  {currentBus.features.map(f => (
-                    <div key={f.label} style={{
-                      flex: 1, textAlign: "center",
-                      padding: "0.5rem 0.25rem",
-                      backgroundColor: "#F8FAFC", borderRadius: 8,
-                      border: "1px solid #F1F5F9",
-                    }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 18, color: f.color, display: "block", marginBottom: "0.2rem" }}>{f.icon}</span>
-                      <span style={{ fontSize: "0.65rem", color: "#64748B", lineHeight: 1.2 }}>{f.label}</span>
-                    </div>
-                  ))}
+                <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0F172A" }}>{busTypeName}</div>
+                <div style={{ fontSize: "0.8125rem", color: "#64748B", marginTop: 2 }}>Plate: {regPlate || "MH-XX-XX-XXXX"}</div>
+                
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
+                  <div style={{ flex: 1, backgroundColor: "#F8FAFC", padding: "0.5rem", borderRadius: 6, textAlign: "center", border: "1px solid #F1F5F9" }}>
+                    <div style={{ fontSize: "0.6875rem", color: "#64748B" }}>Total Berths</div>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0F172A" }}>{seats}</div>
+                  </div>
+                  <div style={{ flex: 1, backgroundColor: "#F8FAFC", padding: "0.5rem", borderRadius: 6, textAlign: "center", border: "1px solid #F1F5F9" }}>
+                    <div style={{ fontSize: "0.6875rem", color: "#64748B" }}>Layout</div>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#B91C1C" }}>{busStyle === "sleeper" ? "1+2 RedBus" : "2+2 Recliner"}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Important Notes */}
-          <div style={{ background: "#F0F9FF", borderRadius: 10, padding: "1rem", border: "1px solid #BAE6FD" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 17, color: "#0284C7" }}>info</span>
-              <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "#0369A1" }}>Important Notes</span>
-            </div>
-            <ul style={{ margin: 0, padding: "0 0 0 1rem" }}>
-              {[
-                "Ensure the registration number is accurate.",
-                "Select all applicable amenities.",
-                "The bus will be available for trip assignment once registered.",
-                "You can update the details later from the bus list.",
-              ].map(note => (
-                <li key={note} style={{ fontSize: "0.75rem", color: "#0369A1", marginBottom: "0.375rem", lineHeight: 1.4 }}>{note}</li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </AdminShell>

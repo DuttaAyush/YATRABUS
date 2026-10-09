@@ -109,6 +109,7 @@ function CinemaSeatBookingContent() {
   };
 
   const [activeDeckTab, setActiveDeckTab] = useState('both'); // 'both' | 'lower' | 'upper'
+  const [mobileActiveDeck, setMobileActiveDeck] = useState('lower'); // 'lower' | 'upper' for mobile deck tab switcher
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [bookedSeatIds, setBookedSeatIds] = useState([]);
   const [holdAlertMessage, setHoldAlertMessage] = useState('');
@@ -325,7 +326,7 @@ function CinemaSeatBookingContent() {
   // Helper to render an individual sleeper berth capsule exactly matching uploaded reference
   const renderSleeperCapsule = (seat) => {
     if (!seat) {
-      return <div className="w-[52px] h-[100px] opacity-0 pointer-events-none" />;
+      return <div className="w-[48px] sm:w-[54px] h-[96px] sm:h-[106px] opacity-0 pointer-events-none" />;
     }
 
     const status = getSeatStatus(seat);
@@ -423,9 +424,9 @@ function CinemaSeatBookingContent() {
     const rows = [1, 2, 3, 4, 5, 6];
 
     return (
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col w-full max-w-[340px]">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-sm flex flex-col w-full max-w-[340px]">
         {/* Deck Header with Steering Wheel Icon for Lower Deck */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <span className="text-base font-extrabold text-slate-900 font-serif capitalize">{deckName}</span>
             <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">18 Seats</span>
@@ -433,8 +434,8 @@ function CinemaSeatBookingContent() {
 
           {/* Steering Wheel Icon for Lower Deck */}
           {isLower && (
-            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 shadow-xs" title="Driver Cabin">
-              <svg className="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 shadow-xs" title="Driver Cabin">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <circle cx="12" cy="12" r="3" />
                 <line x1="12" y1="2" x2="12" y2="9" />
@@ -447,7 +448,7 @@ function CinemaSeatBookingContent() {
         </div>
 
         {/* Bus Cabin Sleeper Berth Grid (1+2 Columns) */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3.5 sm:gap-4">
           {rows.map((rowNum) => {
             const rowSeats = seatsArray.filter(s => s.row === rowNum);
             const singleSeat = rowSeats.find(s => s.col === 'left-single');
@@ -455,23 +456,23 @@ function CinemaSeatBookingContent() {
             const windowSeat = rowSeats.find(s => s.col === 'right-window');
 
             return (
-              <div key={rowNum} className="flex items-center justify-between gap-3">
+              <div key={rowNum} className="flex items-center justify-between gap-2 sm:gap-3">
                 {/* Left Column: Single Sleeper Berth */}
-                <div className="w-[54px] flex justify-center">
-                  {singleSeat ? renderSleeperCapsule(singleSeat) : <div className="w-[54px] h-[106px]" />}
+                <div className="w-[48px] sm:w-[54px] flex justify-center">
+                  {singleSeat ? renderSleeperCapsule(singleSeat) : <div className="w-[48px] sm:w-[54px] h-[96px] sm:h-[106px]" />}
                 </div>
 
                 {/* Center Aisle Indicator */}
                 <div className="flex-1 flex justify-center items-center">
-                  <div className="w-px h-16 border-r border-dashed border-slate-200"></div>
+                  <div className="w-px h-14 sm:h-16 border-r border-dashed border-slate-200"></div>
                 </div>
 
                 {/* Right Columns: Double 2-Sharing Sleeper Berths */}
-                <div className="flex items-center gap-2">
-                  <div className="w-[54px] flex justify-center">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-[48px] sm:w-[54px] flex justify-center">
                     {renderSleeperCapsule(aisleSeat)}
                   </div>
-                  <div className="w-[54px] flex justify-center">
+                  <div className="w-[48px] sm:w-[54px] flex justify-center">
                     {renderSleeperCapsule(windowSeat)}
                   </div>
                 </div>
@@ -488,29 +489,29 @@ function CinemaSeatBookingContent() {
       <Header />
 
       {/* TOP ROUTE DETAILS STRIP & QUOTA BANNER */}
-      <div className="bg-white border-b border-slate-200 shadow-xs py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+      <div className="bg-white border-b border-slate-200 shadow-xs py-3 sm:py-4 px-4 sm:px-6 lg:px-8 sticky top-16 sm:top-18 lg:top-20 z-30">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href={`/search?from=${encodeURIComponent(busInfo.from)}&to=${encodeURIComponent(busInfo.to)}&date=${encodeURIComponent(busInfo.date)}&passengers=${targetPassengers}`}
-              className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-brand-scarlet border border-slate-200 flex items-center justify-center transition-all shadow-sm shrink-0"
               title="Back to Bus Search"
             >
-              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+              <span className="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>
             </Link>
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-0.5">
                 <span className="text-xs font-extrabold text-brand-scarlet uppercase tracking-widest">{busInfo.from} ➔ {busInfo.to}</span>
                 <span className="text-xs text-slate-400">• {busInfo.date}</span>
                 <span className="text-xs font-bold text-slate-500">• Dep: {busInfo.depTime}</span>
               </div>
-              <h1 className="text-lg sm:text-2xl font-serif font-bold text-slate-900 flex flex-wrap items-center gap-2">
+              <h1 className="text-base sm:text-2xl font-serif font-bold text-slate-900 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span>{busInfo.operator}</span>
-                <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-slate-900 text-amber-300 border border-slate-800 flex items-center gap-1">
+                <span className="text-[11px] sm:text-xs font-sans font-bold px-2 py-0.5 rounded-full bg-slate-900 text-amber-300 border border-slate-800 flex items-center gap-1">
                   <span>🚍</span>
                   <span>{busInfo.busPlate}</span>
                 </span>
-                <span className="text-xs font-sans font-normal text-slate-500">
+                <span className="text-[11px] sm:text-xs font-sans font-normal text-slate-500">
                   (36-Berth AC Sleeper 2+1)
                 </span>
               </h1>
@@ -518,22 +519,22 @@ function CinemaSeatBookingContent() {
           </div>
 
           {/* PASSENGER QUOTA INDICATOR & GALLERY LINK */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="bg-blue-50 px-3.5 py-1.5 rounded-xl border border-blue-200 text-xs font-bold text-blue-900 flex items-center gap-1.5 shadow-xs">
-              <span className="material-symbols-outlined text-[16px] text-blue-600">group</span>
-              <span>Seats: {selectedSeats.length} of {targetPassengers} Selected</span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="bg-blue-50 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl border border-blue-200 text-xs font-bold text-blue-900 flex items-center gap-1.5 shadow-xs">
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-blue-600">group</span>
+              <span>Seats: {selectedSeats.length} of {targetPassengers}</span>
             </div>
 
             <Link
               href="/gallery"
               target="_blank"
-              className="bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-xl border border-purple-200 text-xs font-bold text-purple-900 flex items-center gap-1.5 transition-colors shadow-xs"
+              className="bg-purple-50 hover:bg-purple-100 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl border border-purple-200 text-xs font-bold text-purple-900 flex items-center gap-1.5 transition-colors shadow-xs"
             >
-              <span className="material-symbols-outlined text-[16px] text-purple-600">photo_library</span>
-              <span>View Bus Photos (18)</span>
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-purple-600">photo_library</span>
+              <span>Bus Photos</span>
             </Link>
 
-            <div className="bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-1.5 shadow-xs">
+            <div className="bg-emerald-50 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-1.5 shadow-xs">
               <span className="material-symbols-outlined text-[15px]">verified</span>
               <span>RTO Certified</span>
             </div>
@@ -555,30 +556,30 @@ function CinemaSeatBookingContent() {
       )}
 
       {/* MAIN CONTAINER */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28 lg:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT / CENTER: BUS CABIN WITH LOWER & UPPER DECK SIDE-BY-SIDE */}
         <div className="lg:col-span-8 space-y-6 flex flex-col items-center">
           
           {/* GENDER POLICY HELPER & DECK CONTROLS */}
-          <div className="w-full bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="w-full bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400 block mb-1">
                 RedBus Adjacent Seat Safety Rule
               </span>
-              <p className="text-xs font-semibold text-slate-700">
+              <p className="text-xs font-semibold text-slate-700 leading-relaxed">
                 In 2-sharing berths, 2 unrelated males &amp; females cannot book together. Families &amp; couples booking together in 1 transaction are permitted.
               </p>
             </div>
 
             {/* Solo Traveler Gender Selector */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center justify-between sm:justify-start gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
               <span className="text-xs font-bold text-slate-500">I am:</span>
               <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200">
                 <button
                   type="button"
                   onClick={() => setTravelerGenderPreference('male')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 cursor-pointer ${
                     travelerGenderPreference === 'male' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -587,7 +588,7 @@ function CinemaSeatBookingContent() {
                 <button
                   type="button"
                   onClick={() => setTravelerGenderPreference('female')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 cursor-pointer ${
                     travelerGenderPreference === 'female' ? 'bg-pink-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -598,34 +599,74 @@ function CinemaSeatBookingContent() {
           </div>
 
           {/* SEAT MAP LEGEND */}
-          <div className="w-full bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs">
-            <div className="flex flex-wrap items-center justify-around gap-4 text-xs font-semibold text-slate-600">
+          <div className="w-full bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200 shadow-xs">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-around gap-2.5 sm:gap-4 text-xs font-semibold text-slate-600">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-6 rounded-md bg-white border-2 border-[#16A34A]" />
-                <span>Available (₹700)</span>
+                <div className="w-4 h-6 rounded-md bg-white border-2 border-[#16A34A] shrink-0" />
+                <span className="truncate">Available (₹{busInfo.price})</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-6 rounded-md bg-white border-2 border-blue-600 ring-1 ring-blue-300" />
-                <span className="font-bold text-blue-700">Selected</span>
+                <div className="w-4 h-6 rounded-md bg-white border-2 border-blue-600 ring-1 ring-blue-300 shrink-0" />
+                <span className="font-bold text-blue-700 truncate">Selected</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-6 rounded-md bg-[#E2E8F0] border border-slate-300 flex items-center justify-center text-[10px] text-blue-600">♂</div>
-                <span>Sold (Male)</span>
+                <div className="w-4 h-6 rounded-md bg-[#E2E8F0] border border-slate-300 flex items-center justify-center text-[10px] text-blue-600 shrink-0">♂</div>
+                <span className="truncate">Sold (Male)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-6 rounded-md bg-[#FCE7F3] border border-pink-300 flex items-center justify-center text-[10px] text-pink-600">♀</div>
-                <span>Sold (Female)</span>
+                <div className="w-4 h-6 rounded-md bg-[#FCE7F3] border border-pink-300 flex items-center justify-center text-[10px] text-pink-600 shrink-0">♀</div>
+                <span className="truncate">Sold (Female)</span>
               </div>
             </div>
           </div>
 
-          {/* SIDE-BY-SIDE LOWER & UPPER DECKS (Total 36 Seats) */}
+          {/* MOBILE DECK SWITCHER TABS (<md) */}
+          <div className="w-full md:hidden bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setMobileActiveDeck('lower')}
+              className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                mobileActiveDeck === 'lower'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80 font-black'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🚌 Lower Deck (18 Seats)</span>
+              {selectedSeats.filter(s => s.deck === 'lower').length > 0 && (
+                <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
+                  {selectedSeats.filter(s => s.deck === 'lower').length}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileActiveDeck('upper')}
+              className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                mobileActiveDeck === 'upper'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80 font-black'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🛌 Upper Deck (18 Seats)</span>
+              {selectedSeats.filter(s => s.deck === 'upper').length > 0 && (
+                <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
+                  {selectedSeats.filter(s => s.deck === 'upper').length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* SIDE-BY-SIDE LOWER & UPPER DECKS (Total 36 Seats) - Tabbed on <md, Side-by-side on md+ */}
           <div className="w-full flex flex-col md:flex-row items-center md:items-start justify-center gap-6">
             {/* 1. LOWER DECK */}
-            {renderDeckGrid('Lower deck', lowerDeck36, true)}
+            <div className={`w-full max-w-[340px] justify-center ${mobileActiveDeck === 'lower' ? 'flex' : 'hidden md:flex'}`}>
+              {renderDeckGrid('Lower deck', lowerDeck36, true)}
+            </div>
 
             {/* 2. UPPER DECK */}
-            {renderDeckGrid('Upper deck', upperDeck36, false)}
+            <div className={`w-full max-w-[340px] justify-center ${mobileActiveDeck === 'upper' ? 'flex' : 'hidden md:flex'}`}>
+              {renderDeckGrid('Upper deck', upperDeck36, false)}
+            </div>
           </div>
         </div>
 
@@ -717,6 +758,34 @@ function CinemaSeatBookingContent() {
           </div>
         </div>
       </main>
+
+      {/* STICKY BOTTOM CHECKOUT ACTION BAR FOR MOBILE (<lg) */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden p-3 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-2xl flex items-center justify-between gap-3">
+        <div className="flex flex-col min-w-0 pl-1">
+          <div className="flex items-center gap-1.5 text-xs font-black text-slate-900 truncate">
+            <span>{selectedSeats.length} {selectedSeats.length === 1 ? 'Seat' : 'Seats'}</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-brand-scarlet text-sm">₹{selectedSeats.reduce((sum, s) => sum + (s.price || busInfo.price), 0)}</span>
+          </div>
+          <span className="text-[10px] font-semibold text-slate-500 truncate">
+            {selectedSeats.length === 0 ? `Select up to ${targetPassengers} seat(s)` : `${targetPassengers} passenger(s) target`}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleProceedClick}
+          disabled={selectedSeats.length === 0}
+          className={`px-4 sm:px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-1.5 active:scale-95 shrink-0 ${
+            selectedSeats.length > 0
+              ? 'bg-brand-scarlet hover:bg-brand-hover text-white cursor-pointer shadow-red-600/20'
+              : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+          }`}
+        >
+          <span>PROCEED TO CHECKOUT</span>
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+      </div>
 
       {/* REDBUS GENDER SAFETY MODAL */}
       {genderSafetyModal.isOpen && (

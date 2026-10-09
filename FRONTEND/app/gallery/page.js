@@ -191,18 +191,34 @@ const fleetImages = [
 export default function BusGalleryPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [allImages, setAllImages] = useState(fleetImages);
+
+  React.useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    fetch(`${apiUrl}/api/buses/gallery`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.items) && data.items.length > 0) {
+          // Prepend live fleet bus images assigned by admin
+          setAllImages([...data.items, ...fleetImages]);
+        }
+      })
+      .catch(err => {
+        console.warn('Using fallback curated gallery images:', err);
+      });
+  }, []);
 
   const categories = [
-    { key: 'all', label: 'All Photos', count: fleetImages.length },
-    { key: 'sleeper', label: 'Sleeper Berths', count: fleetImages.filter(i => i.category === 'sleeper').length },
-    { key: 'interiors', label: 'Cabin Ambiance', count: fleetImages.filter(i => i.category === 'interiors').length },
-    { key: 'amenities', label: 'Amenities & Tech', count: fleetImages.filter(i => i.category === 'amenities').length },
-    { key: 'exterior', label: 'Exterior Fleet', count: fleetImages.filter(i => i.category === 'exterior').length },
+    { key: 'all', label: 'All Photos', count: allImages.length },
+    { key: 'sleeper', label: 'Sleeper Berths', count: allImages.filter(i => i.category === 'sleeper').length },
+    { key: 'interiors', label: 'Cabin Ambiance', count: allImages.filter(i => i.category === 'interiors').length },
+    { key: 'amenities', label: 'Amenities & Tech', count: allImages.filter(i => i.category === 'amenities').length },
+    { key: 'exterior', label: 'Exterior Fleet', count: allImages.filter(i => i.category === 'exterior').length },
   ];
 
   const filteredImages = activeCategory === 'all'
-    ? fleetImages
-    : fleetImages.filter(img => img.category === activeCategory);
+    ? allImages
+    : allImages.filter(img => img.category === activeCategory);
 
   const handleNext = () => {
     if (!selectedImage) return;
