@@ -69,7 +69,7 @@ export default function AdminsManagementPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const u = JSON.parse(localStorage.getItem("admin_user") || localStorage.getItem("vedbus_admin_user") || "{}");
+        const u = JSON.parse(localStorage.getItem("admin_user") || "{}");
         if (u.id) setCurrentAdminId(u.id);
       } catch {}
     }

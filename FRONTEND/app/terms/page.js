@@ -22,7 +22,7 @@ export default function TermsPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">1. Agreement to Terms</h2>
               <p>
-                By accessing or using this website, mobile application, or services, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not use our services.
+                By accessing or using this website, mobile application, or services operated by <strong>Roshni Tours &amp; Travels</strong> (&ldquo;Legal Venture&rdquo;), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not use our services.
               </p>
             </section>
 

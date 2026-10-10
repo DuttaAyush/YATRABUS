@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
             <section className="space-y-2">
               <h2 className="text-lg font-bold text-slate-900 font-serif">1. Information We Collect</h2>
               <p>
-                When you book tickets or travel packages with us, we collect personal information necessary to process your reservation, including full name, mobile number, email address, age, gender, and payment details.
+                When you book tickets or travel packages with us (operated under legal entity <strong>Roshni Tours &amp; Travels</strong>), we collect personal information necessary to process your reservation, including full name, mobile number, email address, age, gender, and payment details.
               </p>
             </section>
 

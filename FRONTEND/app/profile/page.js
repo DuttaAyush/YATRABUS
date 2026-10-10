@@ -79,8 +79,7 @@ export default function CustomerProfilePage() {
       if (typeof window !== 'undefined') {
         const localUser = getStoredUser();
         const userTripsKey = localUser?.id ? `user_trips_${localUser.id}` : (localUser?.phone ? `user_trips_${localUser.phone}` : 'user_trips');
-        const legacyKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : 'vedbus_user_trips');
-        const stored = localStorage.getItem(userTripsKey) || localStorage.getItem(legacyKey);
+        const stored = localStorage.getItem(userTripsKey);
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
@@ -110,10 +109,9 @@ export default function CustomerProfilePage() {
     }
 
     const userTripsKey = localUser?.id ? `user_trips_${localUser.id}` : (localUser?.phone ? `user_trips_${localUser.phone}` : 'user_trips');
-    const legacyTripsKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : 'vedbus_user_trips');
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem(userTripsKey) || localStorage.getItem(legacyTripsKey);
+        const stored = localStorage.getItem(userTripsKey);
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
@@ -131,10 +129,9 @@ export default function CustomerProfilePage() {
 
     // Load user saved passengers
     const passengersKey = localUser?.id ? `saved_passengers_${localUser.id}` : (localUser?.phone ? `saved_passengers_${localUser.phone}` : 'saved_passengers');
-    const legacyPassengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
     if (typeof window !== 'undefined') {
       try {
-        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem(legacyPassengersKey) || localStorage.getItem('saved_passengers') || localStorage.getItem('vedbus_saved_passengers');
+        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('saved_passengers');
         if (storedP) {
           const parsedP = JSON.parse(storedP);
           if (Array.isArray(parsedP) && parsedP.length > 0) {

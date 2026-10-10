@@ -54,7 +54,7 @@ export default function Footer() {
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div className="flex flex-wrap items-center gap-4">
-            <span>© 2025 YatraBus Technologies India Pvt. Ltd. All rights reserved.</span>
+            <span>© 2025 Roshni Tours &amp; Travels. All rights reserved.</span>
             <span className="hidden sm:inline">•</span>
             <Link className="hover:text-slate-300 transition-colors" href="/terms">Terms</Link>
             <Link className="hover:text-slate-300 transition-colors" href="/privacy-policy">Privacy</Link>

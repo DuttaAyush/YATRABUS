@@ -1,4 +1,5 @@
-# VEDBUS — Luxury Bus Ticketing & Tour Packages Platform
+# YATRABUS — Luxury Bus Ticketing & Tour Packages Platform
+# Operated under Legal Venture: Roshni Tours & Travels
 
 [![Express 5.2.1](https://img.shields.io/badge/Express-5.2.1-green.svg)](https://expressjs.com/)
 [![Next.js 16.3.5](https://img.shields.io/badge/Next.js-16.3.5-black.svg)](https://nextjs.org/)
@@ -6,7 +7,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-blue.svg)](https://www.postgresql.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 
-VEDBUS is an enterprise-grade luxury bus reservation and spiritual/domestic tour package booking platform. Built with a unified **Express 5** backend serving both a **Next.js customer portal** and an **administrative dashboard**.
+YATRABUS (operated by Roshni Tours & Travels) is an enterprise-grade luxury bus reservation and spiritual/domestic tour package booking platform. Built with a unified **Express 5** backend serving both a **Next.js customer portal** and an **administrative dashboard**.
 
 ---
 
@@ -14,7 +15,7 @@ VEDBUS is an enterprise-grade luxury bus reservation and spiritual/domestic tour
 
 ```
                       ┌──────────────────────────────────────────────┐
-                      │            VEDBUS Monorepo                   │
+                      │           YATRABUS Monorepo                  │
                       └──────────────────────┬───────────────────────┘
                                              │
                ┌─────────────────────────────┼─────────────────────────────┐
@@ -131,7 +132,7 @@ After running `npm run seed` in the `BACKEND` directory, log in with:
 
 | Portal | URL | Role | Email | Password |
 |---|---|---|---|---|
-| **Admin Portal** | `http://localhost:3001` | `ADMIN` | `admin@vedbus.com` | `Password@123` |
+| **Admin Portal** | `http://localhost:3001` | `ADMIN` | `admin@yatrabus.in` | `Password@123` |
 | **Customer Portal** | `http://localhost:3000` | `USER` | `rahul.sharma@example.com` | `Password@123` |
 
 ---
@@ -174,4 +175,4 @@ cd ../ADMIN && npm run build      # Exits 0, 21/21 routes compiled
 ---
 
 ## 📄 License
-Proprietary software © 2026 VEDBUS. All rights reserved.
+Proprietary software © 2026 Roshni Tours & Travels. All rights reserved.

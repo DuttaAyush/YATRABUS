@@ -256,7 +256,7 @@ function CinemaSeatBookingContent() {
 
     let lockHolderId = 'holder_guest';
     if (typeof window !== 'undefined') {
-      lockHolderId = localStorage.getItem('lock_holder_id') || localStorage.getItem('vedbus_lock_holder_id') || `holder_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      lockHolderId = localStorage.getItem('lock_holder_id') || `holder_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       localStorage.setItem('lock_holder_id', lockHolderId);
     }
 

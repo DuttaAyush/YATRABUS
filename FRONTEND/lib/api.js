@@ -13,7 +13,7 @@ export async function apiFetch(endpoint, options = {}) {
   // Try reading token from localStorage as fallback (dev mode or if cookie is not set)
   const token =
     (typeof window !== 'undefined' &&
-      (localStorage.getItem('auth_token') || localStorage.getItem('token') || localStorage.getItem('vedbus_token') || localStorage.getItem('vedbus_user_token'))) ||
+      (localStorage.getItem('auth_token') || localStorage.getItem('token'))) ||
     null;
 
   const headers = {

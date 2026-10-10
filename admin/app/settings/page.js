@@ -38,7 +38,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("admin_user") || localStorage.getItem("vedbus_admin_user");
+        const stored = localStorage.getItem("admin_user");
         if (stored) {
           const u = JSON.parse(stored);
           setCurrentUser(u);

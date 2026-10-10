@@ -652,7 +652,7 @@ export default function Header() {
           setIsAuthModalOpen(false);
           if (typeof window !== 'undefined') {
             try {
-              const u = localStorage.getItem('auth_user') || localStorage.getItem('vedbus_user');
+              const u = localStorage.getItem('auth_user');
               if (u) setCurrentUser(JSON.parse(u));
             } catch {}
           }
