@@ -1,7 +1,7 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export async function adminFetch(endpoint, options = {}) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('vedbus_admin_token') : null;
+  const token = typeof window !== 'undefined' ? (localStorage.getItem('admin_token') || localStorage.getItem('vedbus_admin_token')) : null;
   const headers = {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -21,6 +21,7 @@ export async function adminFetch(endpoint, options = {}) {
         const cloned = res.clone();
         const data = await cloned.json();
         if (data?.message && (data.message.includes('expired') || data.message.includes('Invalid access token') || data.message.includes('malformed'))) {
+          localStorage.removeItem('admin_token');
           localStorage.removeItem('vedbus_admin_token');
         }
       } catch {}

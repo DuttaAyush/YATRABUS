@@ -42,8 +42,8 @@ export const authenticateJWT = (
 
   if (authHeader?.startsWith('Bearer ')) {
     token = authHeader.split(' ')[1];
-  } else if (req.cookies?.vedbus_access) {
-    token = req.cookies.vedbus_access as string;
+  } else if (req.cookies?.yatra_access || req.cookies?.vedbus_access) {
+    token = (req.cookies.yatra_access || req.cookies.vedbus_access) as string;
   }
 
   if (!token) {

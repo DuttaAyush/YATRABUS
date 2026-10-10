@@ -97,7 +97,7 @@ app.get('/health', async (_req: Request, res: Response) => {
 
   res.status(200).json({
     status: 'ok',
-    service: 'vedbus-api',
+    service: 'yatrabus-api',
     database: dbStatus,
     seatLock: getSeatLockEngineStatus(),
     timestamp: new Date().toISOString(),

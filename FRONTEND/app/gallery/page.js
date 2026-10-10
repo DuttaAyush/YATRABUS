@@ -178,7 +178,7 @@ const fleetImages = [
   },
   {
     id: 18,
-    title: 'VedBus Platinum Express Fleet Lineup',
+    title: 'Platinum Express Fleet Lineup',
     category: 'exterior',
     categoryName: 'Exterior Fleet',
     image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200&auto=format&fit=crop',

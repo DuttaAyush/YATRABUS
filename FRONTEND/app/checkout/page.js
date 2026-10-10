@@ -41,8 +41,8 @@ export default function CheckoutPage() {
 
         // Direct URL access check:
         // Must have active checkout flag in sessionStorage initiated from /select-seats
-        const activeFlow = sessionStorage.getItem('vedbus_active_checkout_flow');
-        const saved = sessionStorage.getItem('vedbus_pending_booking') || localStorage.getItem('vedbus_pending_booking');
+        const activeFlow = sessionStorage.getItem('active_checkout_flow');
+        const saved = sessionStorage.getItem('pending_booking') || localStorage.getItem('pending_booking');
 
         if (!activeFlow || !saved) {
           setHasValidBooking(false);
@@ -68,8 +68,8 @@ export default function CheckoutPage() {
         );
 
         // Load saved passengers
-        const passengersKey = u?.id ? `vedbus_saved_passengers_${u.id}` : (u?.phone ? `vedbus_saved_passengers_${u.phone}` : 'vedbus_saved_passengers');
-        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('vedbus_saved_passengers');
+        const passengersKey = u?.id ? `saved_passengers_${u.id}` : (u?.phone ? `saved_passengers_${u.phone}` : 'saved_passengers');
+        const storedP = localStorage.getItem(passengersKey);
         if (storedP) {
           try {
             const parsedP = JSON.parse(storedP);
@@ -228,7 +228,7 @@ export default function CheckoutPage() {
         busType: bookingData?.busType || 'Volvo B11R AC Sleeper',
         busPlate: bookingData?.busPlate || 'MH-12-QZ-8812',
         from: bookingData?.from || 'Nagpur',
-        fromStation: bookingData?.boardingPoint?.location || 'Dharampeth VedBus Terminal',
+        fromStation: bookingData?.boardingPoint?.location || 'Dharampeth Central Terminal',
         depTime: bookingData?.depTime || '20:30',
         depDate: bookingData?.date || 'Tomorrow, 24 Oct',
         to: bookingData?.to || 'Pune',
@@ -252,14 +252,14 @@ export default function CheckoutPage() {
 
       try {
         const u = getStoredUser();
-        const userTripsKey = u?.id ? `vedbus_user_trips_${u.id}` : (u?.phone ? `vedbus_user_trips_${u.phone}` : 'vedbus_user_trips');
+        const userTripsKey = u?.id ? `user_trips_${u.id}` : (u?.phone ? `user_trips_${u.phone}` : 'user_trips');
         const existingRaw = localStorage.getItem(userTripsKey);
         const existing = existingRaw ? JSON.parse(existingRaw) : [];
         localStorage.setItem(userTripsKey, JSON.stringify([newTrip, ...(Array.isArray(existing) ? existing : [])]));
-        localStorage.removeItem('vedbus_pending_booking');
+        localStorage.removeItem('pending_booking');
         if (typeof sessionStorage !== 'undefined') {
-          sessionStorage.removeItem('vedbus_pending_booking');
-          sessionStorage.removeItem('vedbus_active_checkout_flow');
+          sessionStorage.removeItem('pending_booking');
+          sessionStorage.removeItem('active_checkout_flow');
         }
       } catch (err) {
         console.error('Failed to save trip to localStorage:', err);
@@ -273,13 +273,13 @@ export default function CheckoutPage() {
   const handleShareTicket = async () => {
     const routeTitle = `${bookingData?.from || 'Nagpur'} ➔ ${bookingData?.to || 'Pune'}`;
     const seatList = passengers.map(p => p.seat).join(', ');
-    const shareText = `🎟️ VedBus Boarding Pass #${createdTicketId}\nRoute: ${routeTitle}\nDate: ${bookingData?.date || 'Tomorrow, 24 Oct'}\nSeats: ${seatList}\nBus: ${bookingData?.busPlate || 'MH-12-QZ-8812'} (${bookingData?.operator || 'VRL Travels Express'})\nTotal Paid: ₹${grandTotal}`;
+    const shareText = `🎟️ Boarding Pass #${createdTicketId}\nRoute: ${routeTitle}\nDate: ${bookingData?.date || 'Tomorrow, 24 Oct'}\nSeats: ${seatList}\nBus: ${bookingData?.busPlate || 'MH-12-QZ-8812'} (${bookingData?.operator || 'Luxury Gold Express'})\nTotal Paid: ₹${grandTotal}`;
     const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${createdTicketId}` : '';
 
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: `VedBus Ticket #${createdTicketId}`,
+          title: `Boarding Pass #${createdTicketId}`,
           text: shareText,
           url: shareUrl,
         });
@@ -392,7 +392,7 @@ export default function CheckoutPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-extrabold text-brand-scarlet uppercase tracking-wider">
-                  {bookingData?.operator || 'VedBus Verified Fleet'}
+                  {bookingData?.operator || 'Verified Fleet'}
                 </span>
                 <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-mono font-bold">
                   {bookingData?.busPlate}
@@ -836,7 +836,7 @@ export default function CheckoutPage() {
                     Google Pay, PhonePe, Paytm, or BHIM. Zero processing fee charged.
                   </p>
                   <div className="mt-2 text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md inline-block">
-                    UPI ID: vedbus@icici
+                    UPI ID: payment@icici
                   </div>
                 </div>
               </div>
@@ -988,12 +988,12 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setCouponCode('VEDBUS2026');
-                      handleApplyCoupon('VEDBUS2026');
+                      setCouponCode('YATRA2026');
+                      handleApplyCoupon('YATRA2026');
                     }}
                     className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200 font-mono font-bold hover:bg-amber-100 transition-all cursor-pointer"
                   >
-                    VEDBUS2026 (15% OFF)
+                    YATRA2026 (15% OFF)
                   </button>
                 </div>
               </div>
@@ -1055,7 +1055,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex justify-between text-emerald-700 font-bold">
-                <span>VedBus Aggregator Markup</span>
+                <span>Aggregator Markup</span>
                 <span>₹0 (FREE)</span>
               </div>
 
@@ -1223,13 +1223,13 @@ export default function CheckoutPage() {
         ticketData={{
           id: createdTicketId,
           bookingId: createdTicketId,
-          operator: bookingData?.operator || 'VedBus Luxury Gold Express',
+          operator: bookingData?.operator || 'Luxury Gold Express',
           busType: bookingData?.busType || 'Volvo 9600 Multi-Axle 2+1 AC Sleeper',
           busPlate: bookingData?.busPlate || 'MH-12-QZ-8812',
           from: bookingData?.from || 'Nagpur',
-          fromStation: bookingData?.boardingPoint?.location || 'VedBus Central Hub, Dharampeth',
+          fromStation: bookingData?.boardingPoint?.location || 'Central Hub, Dharampeth',
           to: bookingData?.to || 'Pune',
-          toStation: bookingData?.droppingPoint?.location || 'VedBus Swargate Lounge, Pune',
+          toStation: bookingData?.droppingPoint?.location || 'Swargate Lounge, Pune',
           depTime: bookingData?.depTime || '20:30',
           depDate: bookingData?.date || 'Scheduled Journey',
           arrTime: bookingData?.arrTime || '07:00',

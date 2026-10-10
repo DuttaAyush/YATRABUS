@@ -51,7 +51,7 @@ function PackageCheckoutContent() {
           if (u.phone) setContactPhone(u.phone);
         }
 
-        const stored = localStorage.getItem('vedbus_pending_package');
+        const stored = localStorage.getItem('pending_package');
         if (stored) {
           const parsed = JSON.parse(stored);
           if (parsed && (parsed.pkgId === packageId || !packageId || packageId === 'dubai-marina')) {
@@ -67,8 +67,8 @@ function PackageCheckoutContent() {
         }
 
         // Load saved passengers
-        const passengersKey = u?.id ? `vedbus_saved_passengers_${u.id}` : (u?.phone ? `vedbus_saved_passengers_${u.phone}` : 'vedbus_saved_passengers');
-        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('vedbus_saved_passengers');
+        const passengersKey = u?.id ? `saved_passengers_${u.id}` : (u?.phone ? `saved_passengers_${u.phone}` : 'saved_passengers');
+        const storedP = localStorage.getItem(passengersKey);
         if (storedP) {
           try {
             const parsedP = JSON.parse(storedP);
@@ -169,7 +169,7 @@ function PackageCheckoutContent() {
 
   const handlePayNow = async (e) => {
     e.preventDefault();
-    let newBookingId = `VEDBUS-PKG-${Math.floor(100000 + Math.random() * 900000)}`;
+    let newBookingId = `PKG-${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
       const res = await apiFetch('/api/packages/book', {
@@ -221,11 +221,12 @@ function PackageCheckoutContent() {
     if (typeof window !== 'undefined') {
       try {
         const u = getStoredUser();
-        const userTripsKey = u?.id ? `vedbus_user_trips_${u.id}` : (u?.phone ? `vedbus_user_trips_${u.phone}` : 'vedbus_user_trips');
-        const existing = JSON.parse(localStorage.getItem(userTripsKey) || '[]');
+        const userTripsKey = u?.id ? `user_trips_${u.id}` : (u?.phone ? `user_trips_${u.phone}` : 'user_trips');
+        const existingRaw = localStorage.getItem(userTripsKey);
+        const existing = existingRaw ? JSON.parse(existingRaw) : [];
         const updated = [newTrip, ...(Array.isArray(existing) ? existing : [])];
         localStorage.setItem(userTripsKey, JSON.stringify(updated));
-        localStorage.removeItem('vedbus_pending_package');
+        localStorage.removeItem('pending_package');
       } catch (err) {
         console.error('Failed to save package booking to localStorage:', err);
       }
@@ -235,11 +236,11 @@ function PackageCheckoutContent() {
   };
 
   const handleSharePackage = () => {
-    const shareText = `🎉 VedBus Tour Booking Confirmed #${createdBookingId}!\nPackage: ${pkg.title}\nDuration: ${pkg.duration}\nTravelers: ${travelerCount} Person(s)\nHotel: ${hotelUpgrade === '5star' ? '5★ Luxury' : hotelUpgrade === '4star' ? '4★ Deluxe' : '3★ Standard'}\nAmount Paid: ₹${grandTotal.toLocaleString('en-IN')}`;
+    const shareText = `🎉 Tour Booking Confirmed #${createdBookingId}!\nPackage: ${pkg.title}\nDuration: ${pkg.duration}\nTravelers: ${travelerCount} Person(s)\nHotel: ${hotelUpgrade === '5star' ? '5★ Luxury' : hotelUpgrade === '4star' ? '4★ Deluxe' : '3★ Standard'}\nAmount Paid: ₹${grandTotal.toLocaleString('en-IN')}`;
     const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile` : '';
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator.share({
-        title: `VedBus Booking #${createdBookingId}`,
+        title: `Tour Booking #${createdBookingId}`,
         text: shareText,
         url: shareUrl,
       }).then(() => {
@@ -763,7 +764,7 @@ function PackageCheckoutContent() {
               </div>
 
               <div className="flex justify-between items-center text-emerald-700 font-bold pt-1 border-t border-slate-100">
-                <span>VedBus Booking Fee</span>
+                <span>Platform Booking Fee</span>
                 <span className="bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-emerald-800">₹0 (FREE)</span>
               </div>
             </div>

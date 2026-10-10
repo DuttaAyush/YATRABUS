@@ -37,7 +37,7 @@ export default function ContactForm() {
           {/* LEFT SIDE: INSPIRATIONAL TRAVEL & SUPPORT IMAGE */}
           <div className="lg:col-span-5 relative min-h-[320px] lg:min-h-full flex flex-col justify-between p-8 text-white bg-slate-950 overflow-hidden group">
             <img
-              alt="VedBus Customer Support Concierge"
+              alt="Customer Support Concierge"
               className="absolute inset-0 w-full h-full object-cover object-center opacity-65 group-hover:scale-105 transition-transform duration-700"
               src="/images/domestic-hero.jpg"
               loading="lazy"
@@ -79,7 +79,7 @@ export default function ContactForm() {
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Email Concierge</span>
-                    <span className="text-sm font-bold text-white">support@vedbus.in</span>
+                    <span className="text-sm font-bold text-white">support@yatrabus.com</span>
                   </div>
                 </div>
               </div>
@@ -96,7 +96,7 @@ export default function ContactForm() {
                 Send Us a Message
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Fill in your details below and our VedBus expert will connect with you shortly.
+                Fill in your details below and our travel expert will connect with you shortly.
               </p>
             </div>
 
@@ -107,7 +107,7 @@ export default function ContactForm() {
                 </div>
                 <h4 className="text-lg font-bold text-emerald-950 font-serif">Thank You for Reaching Out!</h4>
                 <p className="text-xs text-emerald-800 max-w-md mx-auto">
-                  Your request has been received successfully. A VedBus concierge specialist will contact you on <strong>{formData.mobile}</strong> shortly.
+                  Your request has been received successfully. A travel concierge specialist will contact you on <strong>{formData.mobile}</strong> shortly.
                 </p>
               </div>
             ) : (

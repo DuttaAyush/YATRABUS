@@ -95,7 +95,7 @@ function CinemaSeatBookingContent() {
 
   const busInfo = {
     id: busIdParam || '1',
-    operator: searchParams.get('operator') || 'VedBus Gold Express',
+    operator: searchParams.get('operator') || 'Luxury Gold Express',
     busPlate: searchParams.get('busPlate') || 'MH-12-QZ-8812',
     busType: searchParams.get('busType') || 'BharatBenz AC Sleeper (2+1)',
     category: searchParams.get('category') || 'sleeper',
@@ -145,12 +145,12 @@ function CinemaSeatBookingContent() {
 
   const [boardingPoint, setBoardingPoint] = useState({
     id: 'b1',
-    location: `${busInfo.depLocation} - VedBus Main Terminal`,
+    location: `${busInfo.depLocation} - Main Terminal`,
     time: busInfo.depTime,
   });
   const [droppingPoint, setDroppingPoint] = useState({
     id: 'd1',
-    location: `${busInfo.arrLocation} - VedBus Central Bay`,
+    location: `${busInfo.arrLocation} - Central Bay`,
     time: busInfo.arrTime,
   });
 
@@ -256,8 +256,8 @@ function CinemaSeatBookingContent() {
 
     let lockHolderId = 'holder_guest';
     if (typeof window !== 'undefined') {
-      lockHolderId = localStorage.getItem('vedbus_lock_holder_id') || `holder_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-      localStorage.setItem('vedbus_lock_holder_id', lockHolderId);
+      lockHolderId = localStorage.getItem('lock_holder_id') || localStorage.getItem('vedbus_lock_holder_id') || `holder_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      localStorage.setItem('lock_holder_id', lockHolderId);
     }
 
     try {
@@ -301,9 +301,9 @@ function CinemaSeatBookingContent() {
     };
 
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('vedbus_active_checkout_flow', 'true');
-      sessionStorage.setItem('vedbus_pending_booking', JSON.stringify(bookingPayload));
-      localStorage.setItem('vedbus_pending_booking', JSON.stringify(bookingPayload));
+      sessionStorage.setItem('active_checkout_flow', 'true');
+      sessionStorage.setItem('pending_booking', JSON.stringify(bookingPayload));
+      localStorage.setItem('pending_booking', JSON.stringify(bookingPayload));
     }
     router.push('/checkout');
   };

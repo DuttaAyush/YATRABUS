@@ -31,11 +31,11 @@ export default function Header() {
       setIsAuthModalOpen(true);
     };
 
-    window.addEventListener('vedbus-auth-change', loadUser);
+    window.addEventListener('auth-change', loadUser);
     window.addEventListener('storage', loadUser);
     window.addEventListener('open-auth-modal', handleOpenAuth);
     return () => {
-      window.removeEventListener('vedbus-auth-change', loadUser);
+      window.removeEventListener('auth-change', loadUser);
       window.removeEventListener('storage', loadUser);
       window.removeEventListener('open-auth-modal', handleOpenAuth);
     };
@@ -164,7 +164,7 @@ export default function Header() {
           >
             <div className="px-2 sm:px-2.5 py-1 bg-white/95 backdrop-blur-md rounded-xl border border-white/30 shadow-md flex items-center justify-center">
               <img
-                alt="VedBus Logo"
+                alt="YatraBus Logo"
                 className="h-6 sm:h-7 w-auto object-contain"
                 src="/images/logo.png"
                 fetchPriority="high"
@@ -312,7 +312,7 @@ export default function Header() {
                       src={getUserAvatar(currentUser)}
                     />
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{currentUser.name || 'VedBus Traveler'}</p>
+                      <p className="text-xs font-bold text-white truncate">{currentUser.name || 'Traveler'}</p>
                       <p className="text-[10px] text-slate-400 truncate">{currentUser.email || currentUser.phone || '+91 98765 43210'}</p>
                     </div>
                   </div>
@@ -415,7 +415,7 @@ export default function Header() {
               <div className="flex items-center gap-2">
                 <div className="px-2 py-1 bg-white/95 rounded-lg border border-white/30 shadow-sm flex items-center justify-center">
                   <img
-                    alt="VedBus Logo"
+                    alt="YatraBus Logo"
                     className="h-5 sm:h-6 w-auto object-contain"
                     src="/images/logo.png"
                   />
@@ -446,7 +446,7 @@ export default function Header() {
                     src={getUserAvatar(currentUser)}
                   />
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">{currentUser?.name || 'VedBus Traveler'}</p>
+                    <p className="text-xs font-bold text-white truncate">{currentUser?.name || 'Traveler'}</p>
                     <p className="text-[10px] text-slate-300 truncate">{currentUser?.email || currentUser?.phone || 'View Profile'}</p>
                   </div>
                 </div>
@@ -548,7 +548,7 @@ export default function Header() {
               {/* 2. Explore Navigation Links */}
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-1">
-                  Explore VedBus
+                  Explore Routes
                 </p>
                 <div className="space-y-1">
                   <Link
@@ -652,7 +652,7 @@ export default function Header() {
           setIsAuthModalOpen(false);
           if (typeof window !== 'undefined') {
             try {
-              const u = localStorage.getItem('vedbus_user');
+              const u = localStorage.getItem('auth_user') || localStorage.getItem('vedbus_user');
               if (u) setCurrentUser(JSON.parse(u));
             } catch {}
           }

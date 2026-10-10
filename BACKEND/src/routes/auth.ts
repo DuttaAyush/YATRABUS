@@ -10,7 +10,7 @@ import { sendSuccess, sendError } from '../utils/response';
 
 const router = Router();
 
-const REFRESH_COOKIE = 'vedbus_refresh';
+const REFRESH_COOKIE = 'yatra_refresh';
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
@@ -102,6 +102,10 @@ router.post('/login', async (req: Request, res: Response) => {
       // Dev-only fallback mock users — NEVER in production
       if (process.env.NODE_ENV !== 'production') {
         const isSuperAdminEmail =
+          identifier === 'admin@yatrabus.com' ||
+          identifier === 'admin@yatrabus.in' ||
+          identifier === 'superadmin@yatrabus.com' ||
+          identifier === 'superadmin@yatrabus.in' ||
           identifier === 'admin@vedbus.com' ||
           identifier === 'admin@vedbus.in' ||
           identifier === 'superadmin@vedbus.com' ||
@@ -143,6 +147,10 @@ router.post('/login', async (req: Request, res: Response) => {
     // Dev fallback if DB returned null (e.g. user not yet seeded in database)
     if (!user && process.env.NODE_ENV !== 'production') {
       const isSuperAdminEmail =
+        identifier === 'admin@yatrabus.com' ||
+        identifier === 'admin@yatrabus.in' ||
+        identifier === 'superadmin@yatrabus.com' ||
+        identifier === 'superadmin@yatrabus.in' ||
         identifier === 'admin@vedbus.com' ||
         identifier === 'admin@vedbus.in' ||
         identifier === 'superadmin@vedbus.com' ||
@@ -196,7 +204,7 @@ router.post('/login', async (req: Request, res: Response) => {
     const refreshToken = generateRefreshToken(user.id, user.role);
 
     res.cookie(REFRESH_COOKIE, refreshToken, COOKIE_OPTIONS);
-    res.cookie('vedbus_access', accessToken, {
+    res.cookie('yatra_access', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict' as const,
@@ -219,6 +227,8 @@ router.post('/login', async (req: Request, res: Response) => {
 
 // ── POST /api/auth/logout ─────────────────────────────────────────
 router.post('/logout', (req: Request, res: Response) => {
+  res.clearCookie('yatra_access', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
+  res.clearCookie('yatra_refresh', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
   res.clearCookie('vedbus_access', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
   res.clearCookie('vedbus_refresh', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
   return sendSuccess(res, null, 'Logged out successfully.');
@@ -226,7 +236,7 @@ router.post('/logout', (req: Request, res: Response) => {
 
 // ── POST /api/auth/refresh ────────────────────────────────────────
 router.post('/refresh', (req: Request, res: Response) => {
-  const token = req.cookies?.[REFRESH_COOKIE];
+  const token = req.cookies?.[REFRESH_COOKIE] || req.cookies?.vedbus_refresh;
 
   if (!token) {
     return sendError(res, 'Refresh token missing. Please login again.', 401);
@@ -235,7 +245,7 @@ router.post('/refresh', (req: Request, res: Response) => {
   try {
     const payload     = verifyRefreshToken(token);
     const accessToken = generateAccessToken(payload.id, payload.role);
-    res.cookie('vedbus_access', accessToken, {
+    res.cookie('yatra_access', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict' as const,

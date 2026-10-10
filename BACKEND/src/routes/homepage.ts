@@ -5,7 +5,7 @@ const router = Router();
 
 const DEFAULT_HOMEPAGE_DATA = {
   offers: [
-    { code: 'VEDBUS2026', discountPercentage: 15, maxDiscountAmount: 300, validUntil: '2026-12-31' },
+    { code: 'YATRA2026', discountPercentage: 15, maxDiscountAmount: 300, validUntil: '2026-12-31' },
     { code: 'YATRA10', discountPercentage: 10, maxDiscountAmount: 200, validUntil: '2026-12-31' },
     { code: 'PILGRIM15', discountPercentage: 15, maxDiscountAmount: 1500, validUntil: '2026-12-31' },
   ],
@@ -17,9 +17,9 @@ const DEFAULT_HOMEPAGE_DATA = {
     { id: 'bengaluru-hyderabad', from: 'Bengaluru', to: 'Hyderabad', distanceKm: 570, totalTrips: 4, price: 890, depTime: '21:00', arrTime: '06:30', duration: '9h 30m', plate: 'KA-01-HY-5522', busType: 'BharatBenz Executive AC Seater', badge: 'Tech Corridor Express' },
   ],
   featuredPackages: [
-    { id: 'chardham', title: 'Char Dham Yatra & Haridwar Special', category: 'Spiritual', price: '₹24,499', durationDays: 10, duration: '10 Days / 9 Nights', image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg', badge: 'VIP Darshan Pass Included' },
-    { id: 'dubai-combo', title: 'Dubai Desert Safari & Marina Skyline', category: 'International', price: '₹48,999', durationDays: 5, duration: '5 Days / 4 Nights', image: '/images/vedbus_international_holiday_travel_packages_1.jpg', badge: '4-Star Marina Hotel & Visa Included' },
-    { id: 'himachal-manali', title: 'Himachal & Manali Mountain Escape', category: 'Domestic', price: '₹9,499', durationDays: 5, duration: '5 Days / 4 Nights', image: '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_13.jpg', badge: 'Scenic Hill Station' },
+    { id: 'chardham', title: 'Char Dham Yatra & Haridwar Special', category: 'Spiritual', price: '₹24,499', durationDays: 10, duration: '10 Days / 9 Nights', image: '/images/yatra_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg', badge: 'VIP Darshan Pass Included' },
+    { id: 'dubai-combo', title: 'Dubai Desert Safari & Marina Skyline', category: 'International', price: '₹48,999', durationDays: 5, duration: '5 Days / 4 Nights', image: '/images/yatra_international_holiday_travel_packages_1.jpg', badge: '4-Star Marina Hotel & Visa Included' },
+    { id: 'himachal-manali', title: 'Himachal & Manali Mountain Escape', category: 'Domestic', price: '₹9,499', durationDays: 5, duration: '5 Days / 4 Nights', image: '/images/yatra_all_india_spiritual_darshan_bus_tickets_holiday_packages_13.jpg', badge: 'Scenic Hill Station' },
   ]
 };
 

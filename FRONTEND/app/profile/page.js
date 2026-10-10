@@ -35,7 +35,7 @@ export default function CustomerProfilePage() {
     setSelectedBoardingPassTrip({
       id: trip.bookingId || trip.id,
       bookingId: trip.bookingId || trip.id,
-      operator: trip.operator || (trip.isPackage ? 'VedBus Spiritual Tour Fleet' : 'VedBus Luxury Gold Express'),
+      operator: trip.operator || (trip.isPackage ? 'Spiritual Tour Fleet' : 'Luxury Gold Express'),
       busType: trip.busType || (trip.isPackage ? (trip.transportMode === 'private-suv' ? 'Innova Crysta SUV' : 'BharatBenz Luxury Coach') : 'Volvo 9600 AC Sleeper'),
       busPlate: trip.busPlate || 'MH-12-QZ-8812',
       from: trip.from || (trip.isPackage ? (trip.route?.split('➔')[0]?.trim() || 'Nagpur') : 'Nagpur'),
@@ -78,8 +78,9 @@ export default function CustomerProfilePage() {
 
       if (typeof window !== 'undefined') {
         const localUser = getStoredUser();
-        const userTripsKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : 'vedbus_user_trips');
-        const stored = localStorage.getItem(userTripsKey);
+        const userTripsKey = localUser?.id ? `user_trips_${localUser.id}` : (localUser?.phone ? `user_trips_${localUser.phone}` : 'user_trips');
+        const legacyKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : 'vedbus_user_trips');
+        const stored = localStorage.getItem(userTripsKey) || localStorage.getItem(legacyKey);
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
@@ -108,10 +109,11 @@ export default function CustomerProfilePage() {
       setUserProfile(localUser);
     }
 
-    const userTripsKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : null);
-    if (userTripsKey && typeof window !== 'undefined') {
+    const userTripsKey = localUser?.id ? `user_trips_${localUser.id}` : (localUser?.phone ? `user_trips_${localUser.phone}` : 'user_trips');
+    const legacyTripsKey = localUser?.id ? `vedbus_user_trips_${localUser.id}` : (localUser?.phone ? `vedbus_user_trips_${localUser.phone}` : 'vedbus_user_trips');
+    if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem(userTripsKey);
+        const stored = localStorage.getItem(userTripsKey) || localStorage.getItem(legacyTripsKey);
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
@@ -128,10 +130,11 @@ export default function CustomerProfilePage() {
     }
 
     // Load user saved passengers
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    const passengersKey = localUser?.id ? `saved_passengers_${localUser.id}` : (localUser?.phone ? `saved_passengers_${localUser.phone}` : 'saved_passengers');
+    const legacyPassengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
     if (typeof window !== 'undefined') {
       try {
-        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem('vedbus_saved_passengers');
+        const storedP = localStorage.getItem(passengersKey) || localStorage.getItem(legacyPassengersKey) || localStorage.getItem('saved_passengers') || localStorage.getItem('vedbus_saved_passengers');
         if (storedP) {
           const parsedP = JSON.parse(storedP);
           if (Array.isArray(parsedP) && parsedP.length > 0) {
@@ -145,7 +148,6 @@ export default function CustomerProfilePage() {
             ];
             setSavedPassengers(defaults);
             localStorage.setItem(passengersKey, JSON.stringify(defaults));
-            localStorage.setItem('vedbus_saved_passengers', JSON.stringify(defaults));
           }
         } else {
           const defaults = [
@@ -156,7 +158,6 @@ export default function CustomerProfilePage() {
           ];
           setSavedPassengers(defaults);
           localStorage.setItem(passengersKey, JSON.stringify(defaults));
-          localStorage.setItem('vedbus_saved_passengers', JSON.stringify(defaults));
         }
       } catch {}
     }
@@ -182,7 +183,7 @@ export default function CustomerProfilePage() {
         
         const mappedBus = busBookings.map(b => ({
           id: b.id,
-          operator: b.trip?.bus?.busStyle === 'sleeper' ? 'VedBus Luxury Gold Express' : 'VedBus Express',
+          operator: b.trip?.bus?.busStyle === 'sleeper' ? 'Luxury Gold Express' : 'Express Fleet',
           busType: b.trip?.bus?.type || 'Volvo Multi-Axle AC Sleeper',
           busPlate: b.trip?.bus?.plateNumber || 'MH-12-QZ-8812',
           from: b.trip?.route?.originCity || 'Nagpur',
@@ -213,7 +214,7 @@ export default function CustomerProfilePage() {
           subtitle: pb.package?.category || 'Holiday',
           category: pb.package?.category || 'Spiritual',
           duration: `${pb.package?.durationDays || 5} Days`,
-          image: pb.package?.itinerary?.image || '/images/vedbus_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
+          image: pb.package?.itinerary?.image || '/images/yatra_all_india_spiritual_darshan_bus_tickets_holiday_packages_9.jpg',
           date: new Date(pb.travelDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
           travelerCount: pb.travelersCount,
           totalAmount: Number(pb.totalAmount),
@@ -310,8 +311,9 @@ export default function CustomerProfilePage() {
         if (typeof window !== 'undefined') {
           const storedUser = getStoredUser() || {};
           const merged = { ...storedUser, ...updated };
-          localStorage.setItem('vedbus_user', JSON.stringify(merged));
+          localStorage.setItem('auth_user', JSON.stringify(merged));
           localStorage.setItem('user', JSON.stringify(merged));
+          window.dispatchEvent(new Event('auth-change'));
           window.dispatchEvent(new Event('storage'));
         }
 
@@ -377,11 +379,10 @@ export default function CustomerProfilePage() {
     setSavedPassengers(updated);
     setSelectedPassengerIds([]);
     const localUser = getStoredUser();
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    const passengersKey = localUser?.id ? `saved_passengers_${localUser.id}` : (localUser?.phone ? `saved_passengers_${localUser.phone}` : 'saved_passengers');
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(passengersKey, JSON.stringify(updated));
-        localStorage.setItem('vedbus_saved_passengers', JSON.stringify(updated));
       } catch {}
     }
   };
@@ -391,11 +392,10 @@ export default function CustomerProfilePage() {
     setSavedPassengers(updated);
     setSelectedPassengerIds(selectedPassengerIds.filter((pId) => pId !== id));
     const localUser = getStoredUser();
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    const passengersKey = localUser?.id ? `saved_passengers_${localUser.id}` : (localUser?.phone ? `saved_passengers_${localUser.phone}` : 'saved_passengers');
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(passengersKey, JSON.stringify(updated));
-        localStorage.setItem('vedbus_saved_passengers', JSON.stringify(updated));
       } catch {}
     }
   };
@@ -432,11 +432,10 @@ export default function CustomerProfilePage() {
       setSelectedPassengerIds([...selectedPassengerIds, newId]);
     }
     const localUser = getStoredUser();
-    const passengersKey = localUser?.id ? `vedbus_saved_passengers_${localUser.id}` : (localUser?.phone ? `vedbus_saved_passengers_${localUser.phone}` : 'vedbus_saved_passengers');
+    const passengersKey = localUser?.id ? `saved_passengers_${localUser.id}` : (localUser?.phone ? `saved_passengers_${localUser.phone}` : 'saved_passengers');
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(passengersKey, JSON.stringify(updated));
-        localStorage.setItem('vedbus_saved_passengers', JSON.stringify(updated));
       } catch {}
     }
     setIsPassengerModalOpen(false);
@@ -483,7 +482,7 @@ export default function CustomerProfilePage() {
               <div className="space-y-0.5 sm:space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-extrabold text-slate-950 tracking-tight">
-                    {userProfile?.name || 'VedBus Traveller'}
+                    {userProfile?.name || 'Traveller'}
                   </h1>
                   <span className="px-2.5 py-0.5 rounded-full bg-amber-200/90 text-amber-950 font-extrabold text-[11px] border border-amber-300 shadow-sm flex items-center gap-1 whitespace-nowrap">
                     ⭐ VIP Club Member
@@ -491,12 +490,12 @@ export default function CustomerProfilePage() {
                 </div>
 
                 <p className="text-xs font-semibold text-slate-700">
-                  {userProfile?.email || 'traveller@vedbus.in'} <span className="mx-1 font-normal text-slate-400">|</span> {userProfile?.phone || '+91 98765 43210'}
+                  {userProfile?.email || 'traveller@yatrabus.in'} <span className="mx-1 font-normal text-slate-400">|</span> {userProfile?.phone || '+91 98765 43210'}
                 </p>
 
                 <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 pt-0.5">
                   <span className="material-symbols-outlined text-[16px] text-emerald-600 fill-1">verified</span>
-                  <span>Verified VedBus Account (Assigned Plate Priority)</span>
+                  <span>Verified Account (Assigned Plate Priority)</span>
                 </div>
 
                 <div className="pt-1">
@@ -549,7 +548,7 @@ export default function CustomerProfilePage() {
               </span>
             </button>
 
-            {/* Card 2: VedBus Wallet */}
+            {/* Card 2: Wallet */}
             <button
               type="button"
               onClick={() => setActiveTab('wallet')}
@@ -560,7 +559,7 @@ export default function CustomerProfilePage() {
               </div>
               <div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 block">
-                  VEDBUS WALLET
+                  MY WALLET
                 </span>
                 <span className="text-xs sm:text-sm font-black text-red-600 block leading-tight">
                   ₹0
@@ -580,7 +579,7 @@ export default function CustomerProfilePage() {
             {[
               { label: `Upcoming Trips (${upcomingTrips.length})`, key: 'upcoming', icon: 'confirmation_number' },
               { label: 'Past Journeys & Reviews', key: 'past', icon: 'history' },
-              { label: 'VedBus Wallet & Points', key: 'wallet', icon: 'account_balance_wallet' },
+              { label: 'Wallet & Points', key: 'wallet', icon: 'account_balance_wallet' },
               { label: `Saved Passengers (${savedPassengers.length})`, key: 'passengers', icon: 'group' },
             ].map((tab) => (
               <button
@@ -779,10 +778,10 @@ export default function CustomerProfilePage() {
                           <button
                             type="button"
                             onClick={() => {
-                              const shareText = `🎉 VedBus Confirmed Package #${trip.bookingId || trip.id}\nPackage: ${trip.title}\nDuration: ${trip.duration}\nHotel: ${trip.hotelTier === '5star' ? '5★ Luxury' : trip.hotelTier === '4star' ? '4★ Deluxe' : '3★ Standard'}\nAmount: ₹${(trip.totalAmount || trip.paidAmount || 0).toLocaleString('en-IN')}`;
+                              const shareText = `🎉 Confirmed Package #${trip.bookingId || trip.id}\nPackage: ${trip.title}\nDuration: ${trip.duration}\nHotel: ${trip.hotelTier === '5star' ? '5★ Luxury' : trip.hotelTier === '4star' ? '4★ Deluxe' : '3★ Standard'}\nAmount: ₹${(trip.totalAmount || trip.paidAmount || 0).toLocaleString('en-IN')}`;
                               if (typeof navigator !== 'undefined' && navigator.share) {
                                 navigator.share({
-                                  title: `VedBus Package #${trip.bookingId || trip.id}`,
+                                  title: `Confirmed Package #${trip.bookingId || trip.id}`,
                                   text: shareText,
                                   url: typeof window !== 'undefined' ? window.location.origin + '/packages' : '',
                                 }).catch(() => {});
@@ -1028,11 +1027,11 @@ export default function CustomerProfilePage() {
                         <button
                           type="button"
                           onClick={() => {
-                            const shareText = `🎟️ VedBus Confirmed Ticket #${trip.id}\nRoute: ${trip.from} ➔ ${trip.to}\nDate: ${trip.depDate}\nSeats: ${trip.seats.join(', ')}\nBus Plate: ${trip.busPlate}`;
+                            const shareText = `🎟️ Confirmed Ticket #${trip.id}\nRoute: ${trip.from} ➔ ${trip.to}\nDate: ${trip.depDate}\nSeats: ${trip.seats.join(', ')}\nBus Plate: ${trip.busPlate}`;
                             const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${trip.id}` : '';
                             if (typeof navigator !== 'undefined' && navigator.share) {
                               navigator.share({
-                                title: `VedBus Ticket #${trip.id}`,
+                                title: `Confirmed Ticket #${trip.id}`,
                                 text: shareText,
                                 url: shareUrl,
                               }).catch(() => {});
@@ -1114,7 +1113,7 @@ export default function CustomerProfilePage() {
           </div>
         )}
 
-        {/* TAB 3: VEDBUS WALLET */}
+        {/* TAB 3: WALLET */}
         {activeTab === 'wallet' && (
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-slate-900 text-white flex justify-between items-center shadow-lg">
@@ -1697,7 +1696,7 @@ export default function CustomerProfilePage() {
                 <span>100% Instant Wallet Refund Guaranteed</span>
               </div>
               <p className="text-amber-800">
-                Amount of <strong>₹{(cancelModalTrip.totalFare || cancelModalTrip.totalAmount || 850).toLocaleString('en-IN')}</strong> will be credited directly to your VedBus Wallet with 0 cancellation penalty.
+                Amount of <strong>₹{(cancelModalTrip.totalFare || cancelModalTrip.totalAmount || 850).toLocaleString('en-IN')}</strong> will be credited directly to your Wallet with 0 cancellation penalty.
               </p>
             </div>
 

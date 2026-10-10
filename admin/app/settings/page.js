@@ -38,7 +38,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("vedbus_admin_user");
+        const stored = localStorage.getItem("admin_user") || localStorage.getItem("vedbus_admin_user");
         if (stored) {
           const u = JSON.parse(stored);
           setCurrentUser(u);
@@ -80,7 +80,7 @@ export default function SettingsPage() {
     }
     if (currentUser) {
       const updated = { ...currentUser, name: displayName };
-      localStorage.setItem("vedbus_admin_user", JSON.stringify(updated));
+      localStorage.setItem("admin_user", JSON.stringify(updated));
       setCurrentUser(updated);
     }
     setSaved(true);
@@ -400,7 +400,7 @@ export default function SettingsPage() {
                     </span>
                     <input
                       type="email"
-                      value={currentUser?.email || "admin@vedbus.in"}
+                      value={currentUser?.email || "admin@yatrabus.in"}
                       disabled
                       style={{
                         width: "100%", paddingLeft: 38, paddingRight: 40, paddingTop: 10, paddingBottom: 10,
@@ -637,7 +637,7 @@ export default function SettingsPage() {
                   Super Admin Management Panel
                 </div>
                 <div style={{ fontSize: "0.8125rem", color: "#B45309", marginTop: 2 }}>
-                  Create, configure, enable, or disable administrator accounts across the VedBus system.
+                  Create, configure, enable, or disable administrator accounts across the system.
                 </div>
               </div>
             </div>
@@ -953,7 +953,7 @@ export default function SettingsPage() {
                   <input
                     type="email"
                     required
-                    placeholder="e.g. ramesh@vedbus.in"
+                    placeholder="e.g. ramesh@yatrabus.in"
                     value={newAdminEmail}
                     onChange={e => setNewAdminEmail(e.target.value)}
                     style={{

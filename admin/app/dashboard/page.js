@@ -399,7 +399,7 @@ export default function DashboardPage() {
           id: b.id,
           type: b.type || (b.package ? "Package" : "Bus"),
           customer: b.customer || b.user?.name || "Passenger",
-          email: b.email || b.user?.email || "customer@vedbus.in",
+          email: b.email || b.user?.email || "customer@yatrabus.in",
           route: b.route || (b.trip?.route ? `${b.trip.route.originCity} → ${b.trip.route.destinationCity}` : (b.package?.title || "Intercity Route")),
           date: b.date ? new Date(b.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : (b.bookingDate ? new Date(b.bookingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "Today"),
           amount: typeof b.amount === 'string' && b.amount.startsWith('₹') ? b.amount : `₹${Number(b.amount || b.totalAmount || 0).toLocaleString('en-IN')}`,
@@ -426,7 +426,7 @@ export default function DashboardPage() {
           <h1 className="dashboard-title" style={{ fontFamily: "var(--font-playfair, 'Playfair Display')", fontSize: "1.875rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.15, margin: "0 0 0.25rem" }}>
             Welcome back, Admin!
           </h1>
-          <p className="dashboard-subtitle" style={{ fontSize: "0.875rem", color: "#94A3B8" }}>Here's what's happening with VedBus today.</p>
+          <p className="dashboard-subtitle" style={{ fontSize: "0.875rem", color: "#94A3B8" }}>Here&apos;s what&apos;s happening with your operations today.</p>
         </div>
         <div className="dashboard-date-badge">
           <span className="material-symbols-outlined dashboard-date-icon">calendar_today</span>

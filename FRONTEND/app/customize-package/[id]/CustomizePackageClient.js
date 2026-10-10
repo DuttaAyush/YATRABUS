@@ -96,7 +96,7 @@ export default function CustomizePackageClient({ params }) {
 
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem('vedbus_pending_package', JSON.stringify(packagePayload));
+        localStorage.setItem('pending_package', JSON.stringify(packagePayload));
       } catch (err) {
         console.error('Failed to store pending package:', err);
       }
@@ -370,7 +370,7 @@ export default function CustomizePackageClient({ params }) {
               )}
 
               <div className="flex justify-between text-emerald-700 font-bold">
-                <span>VedBus Markup</span>
+                <span>Platform Markup</span>
                 <span>₹0 (FREE)</span>
               </div>
 

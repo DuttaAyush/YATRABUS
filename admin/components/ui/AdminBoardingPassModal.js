@@ -8,18 +8,18 @@ export default function AdminBoardingPassModal({ isOpen, onClose, ticketData }) 
   if (!isOpen || !ticketData) return null;
 
   const {
-    id = "VB-20261015-0042",
+    id = "YB-20261015-0042",
     bookingId = id,
     customerName = "Rajesh Kumar",
     customerPhone = "+91 98765 43210",
     customerEmail = "rajesh.kumar@gmail.com",
-    operator = "VedBus Luxury Gold Express",
+    operator = "Luxury Gold Express",
     busType = "Volvo B11R Multi-Axle AC Sleeper (2+1)",
     busPlate = "MH 12 QZ 8812",
     from = "Nagpur",
-    fromStation = "VedBus Central Hub, Dharampeth",
+    fromStation = "Central Hub, Dharampeth",
     to = "Pune",
-    toStation = "VedBus Swargate Lounge, Pune",
+    toStation = "Swargate Lounge, Pune",
     depTime = "06:00 AM",
     depDate = "15 Sep 2026",
     arrTime = "12:30 PM",
@@ -347,7 +347,7 @@ export default function AdminBoardingPassModal({ isOpen, onClose, ticketData }) 
                 Total Amount Paid: <strong style={{ color: "#10B981" }}>{totalAmount}</strong>
               </div>
               <div style={{ fontSize: "0.6875rem", color: "#94A3B8" }}>
-                256-Bit SSL Verified Official E-Ticket • VedBus Admin Concierge
+                256-Bit SSL Verified Official E-Ticket • Official Admin Concierge
               </div>
             </div>
 

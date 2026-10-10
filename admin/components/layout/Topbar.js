@@ -25,7 +25,7 @@ export default function Topbar({ onToggleSidebar }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("vedbus_admin_user");
+        const stored = localStorage.getItem("admin_user") || localStorage.getItem("vedbus_admin_user");
         if (stored) {
           setCurrentUser(JSON.parse(stored));
         }
@@ -372,6 +372,8 @@ export default function Topbar({ onToggleSidebar }) {
         type="button"
         onClick={() => {
           if (typeof window !== "undefined") {
+            localStorage.removeItem("admin_token");
+            localStorage.removeItem("admin_user");
             localStorage.removeItem("vedbus_admin_token");
             localStorage.removeItem("vedbus_admin_user");
             window.location.href = "/login";

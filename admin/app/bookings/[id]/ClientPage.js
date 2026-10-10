@@ -467,13 +467,13 @@ export default function BusBookingDetailPage({ params }) {
           onClose={() => setIsTicketModalOpen(false)}
           ticketData={{
             id: "VB-20261015-0042",
-            bookingId: "VB-20261015-0042",
+            bookingId: "YB-20261015-0042",
             customerName: "Abhishek Sharma",
             customerPhone: "+91 98765 43210",
             customerEmail: "abhishek.sharma@gmail.com",
-            operator: "VedBus Luxury Gold Express",
+            operator: "Luxury Gold Express",
             busType: "Volvo AC Sleeper (2+1)",
-            busPlate: "MH-31-VB-8899",
+            busPlate: "MH-31-AP-8899",
             from: "Nagpur",
             fromStation: "Nagpur Central Bus Stand (Ganeshpeth)",
             to: "Pune",

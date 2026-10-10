@@ -26,9 +26,12 @@ export default function Sidebar({ isOpen, onClose }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const u = JSON.parse(localStorage.getItem("vedbus_admin_user") || "{}");
+        const u = JSON.parse(localStorage.getItem("admin_user") || localStorage.getItem("vedbus_admin_user") || "{}");
         if (
           u.role === "SUPER_ADMIN" ||
+          u.email?.includes("superadmin") ||
+          u.email === "admin@yatrabus.in" ||
+          u.email === "superadmin@yatrabus.in" ||
           u.email === "admin@vedbus.in" ||
           u.email === "superadmin@vedbus.in" ||
           u.email === "admin@vedbus.com"
@@ -99,7 +102,7 @@ export default function Sidebar({ isOpen, onClose }) {
             }}>
               <img
                 src="/logo.png"
-                alt="VedBus Logo"
+                alt="YatraBus Logo"
                 style={{
                   height: 32,
                   width: "auto",

@@ -13,7 +13,7 @@ export default function AdminShell({ children, noScroll = false }) {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("vedbus_admin_token");
+      const token = localStorage.getItem("admin_token") || localStorage.getItem("vedbus_admin_token");
       if (!token) {
         router.replace("/login");
       } else {

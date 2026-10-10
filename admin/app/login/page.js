@@ -6,7 +6,7 @@ import { adminFetch } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@vedbus.in");
+  const [email, setEmail] = useState("admin@yatrabus.in");
   const [password, setPassword] = useState("admin123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,17 +36,18 @@ export default function LoginPage() {
           const isSuper =
             userObj.role === "SUPER_ADMIN" ||
             email.includes("superadmin") ||
-            email === "admin@vedbus.in" ||
-            email === "admin@vedbus.com";
+            email === "admin@yatrabus.in" ||
+            email === "admin@yatrabus.com";
 
           const finalUser = {
             ...userObj,
             role: isSuper ? "SUPER_ADMIN" : (userObj.role || "ADMIN"),
-            name: userObj.name || (isSuper ? "Super Admin" : "VedBus Admin"),
+            name: userObj.name || (isSuper ? "Super Admin" : "Operations Admin"),
           };
 
-          localStorage.setItem("vedbus_admin_token", data.data?.accessToken || data.accessToken);
-          localStorage.setItem("vedbus_admin_user", JSON.stringify(finalUser));
+          const tokenVal = data.data?.accessToken || data.accessToken;
+          localStorage.setItem("admin_token", tokenVal);
+          localStorage.setItem("admin_user", JSON.stringify(finalUser));
         }
         router.push("/dashboard");
       } else {
@@ -62,19 +63,17 @@ export default function LoginPage() {
           if (typeof window !== "undefined") {
             const isSuper =
               email.includes("superadmin") ||
-              email === "admin@vedbus.in" ||
-              email === "admin@vedbus.com";
+              email === "admin@yatrabus.in" ||
+              email === "admin@yatrabus.com";
 
-            localStorage.setItem("vedbus_admin_token", "demo_admin_token_2026");
-            localStorage.setItem(
-              "vedbus_admin_user",
-              JSON.stringify({
-                id: isSuper ? "dev-superadmin-uuid-001" : "dev-admin-uuid-002",
-                name: isSuper ? "Super Admin" : "Operations Admin",
-                email,
-                role: isSuper ? "SUPER_ADMIN" : "ADMIN"
-              })
-            );
+            const demoUser = {
+              id: isSuper ? "dev-superadmin-uuid-001" : "dev-admin-uuid-002",
+              name: isSuper ? "Super Admin" : "Operations Admin",
+              email,
+              role: isSuper ? "SUPER_ADMIN" : "ADMIN"
+            };
+            localStorage.setItem("admin_token", "demo_admin_token_2026");
+            localStorage.setItem("admin_user", JSON.stringify(demoUser));
           }
           router.push("/dashboard");
         } else {
@@ -94,19 +93,17 @@ export default function LoginPage() {
         if (typeof window !== "undefined") {
           const isSuper =
             email.includes("superadmin") ||
-            email === "admin@vedbus.in" ||
-            email === "admin@vedbus.com";
+            email === "admin@yatrabus.in" ||
+            email === "admin@yatrabus.com";
 
-          localStorage.setItem("vedbus_admin_token", "demo_admin_token_2026");
-          localStorage.setItem(
-            "vedbus_admin_user",
-            JSON.stringify({
-              id: isSuper ? "dev-superadmin-uuid-001" : "dev-admin-uuid-002",
-              name: isSuper ? "Super Admin" : "Operations Admin",
-              email,
-              role: isSuper ? "SUPER_ADMIN" : "ADMIN"
-            })
-          );
+          const demoUser = {
+            id: isSuper ? "dev-superadmin-uuid-001" : "dev-admin-uuid-002",
+            name: isSuper ? "Super Admin" : "Operations Admin",
+            email,
+            role: isSuper ? "SUPER_ADMIN" : "ADMIN"
+          };
+          localStorage.setItem("admin_token", "demo_admin_token_2026");
+          localStorage.setItem("admin_user", JSON.stringify(demoUser));
         }
         router.push("/dashboard");
       } else {
@@ -165,7 +162,7 @@ export default function LoginPage() {
               margin: 0,
             }}
           >
-            VedBus Admin Portal
+            Admin Portal
           </h1>
           <p style={{ color: "#64748B", fontSize: "0.875rem", marginTop: 6, lineHeight: 1.4 }}>
             Sign in to access management controls & platform settings
@@ -206,7 +203,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@vedbus.in"
+                placeholder="admin@yatrabus.in"
                 required
                 style={{
                   width: "100%", paddingLeft: 38, paddingRight: 12, paddingTop: 10, paddingBottom: 10,
@@ -295,7 +292,7 @@ export default function LoginPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <button
               type="button"
-              onClick={() => handleQuickFill("admin@vedbus.in", "admin123")}
+              onClick={() => handleQuickFill("admin@yatrabus.in", "admin123")}
               style={{
                 width: "100%",
                 padding: "0.5rem 0.75rem",
@@ -317,14 +314,14 @@ export default function LoginPage() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#D97706" }}>star</span>
-                <span><strong>Super Admin:</strong> admin@vedbus.in</span>
+                <span><strong>Super Admin:</strong> admin@yatrabus.in</span>
               </div>
               <span style={{ fontSize: "0.6875rem", color: "#B45309", backgroundColor: "#FDE68A", padding: "1px 6px", borderRadius: 4 }}>Auto-fill</span>
             </button>
 
             <button
               type="button"
-              onClick={() => handleQuickFill("superadmin@vedbus.in", "admin123")}
+              onClick={() => handleQuickFill("superadmin@yatrabus.in", "admin123")}
               style={{
                 width: "100%",
                 padding: "0.5rem 0.75rem",
@@ -346,7 +343,7 @@ export default function LoginPage() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#64748B" }}>admin_panel_settings</span>
-                <span><strong>Super Admin:</strong> superadmin@vedbus.in</span>
+                <span><strong>Super Admin:</strong> superadmin@yatrabus.in</span>
               </div>
               <span style={{ fontSize: "0.6875rem", color: "#64748B", backgroundColor: "#E2E8F0", padding: "1px 6px", borderRadius: 4 }}>Auto-fill</span>
             </button>

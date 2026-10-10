@@ -4,7 +4,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost
  * apiFetch — authenticated fetch for the customer frontend.
  *
  * Auth strategy (in priority order):
- * 1. httpOnly cookie `vedbus_access` sent automatically by the browser (credentials: 'include')
+ * 1. httpOnly cookie sent automatically by the browser (credentials: 'include')
  * 2. Fallback: Bearer token from localStorage (for dev/compat)
  */
 export async function apiFetch(endpoint, options = {}) {
@@ -13,7 +13,7 @@ export async function apiFetch(endpoint, options = {}) {
   // Try reading token from localStorage as fallback (dev mode or if cookie is not set)
   const token =
     (typeof window !== 'undefined' &&
-      (localStorage.getItem('vedbus_token') || localStorage.getItem('vedbus_user_token') || localStorage.getItem('token'))) ||
+      (localStorage.getItem('auth_token') || localStorage.getItem('token') || localStorage.getItem('vedbus_token') || localStorage.getItem('vedbus_user_token'))) ||
     null;
 
   const headers = {
@@ -26,7 +26,7 @@ export async function apiFetch(endpoint, options = {}) {
     return await fetch(url, {
       ...options,
       headers,
-      credentials: 'include', // sends httpOnly vedbus_access cookie automatically
+      credentials: 'include', // sends httpOnly auth cookie automatically
     });
   } catch (err) {
     console.warn(`[apiFetch] Network error for ${url}:`, err?.message || err);

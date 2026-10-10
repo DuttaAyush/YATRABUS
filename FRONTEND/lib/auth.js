@@ -1,9 +1,9 @@
-// VedBus Authentication Helpers
+// Authentication Helpers
 
 export function getStoredUser() {
   if (typeof window === 'undefined') return null;
   try {
-    const u = localStorage.getItem('vedbus_user');
+    const u = localStorage.getItem('auth_user') || localStorage.getItem('vedbus_user');
     if (!u || u === 'null' || u === 'undefined') return null;
     const parsed = JSON.parse(u);
     return parsed && typeof parsed === 'object' && (parsed.id || parsed.email || parsed.phone) ? parsed : null;
@@ -15,9 +15,10 @@ export function getStoredUser() {
 export function getStoredToken() {
   if (typeof window === 'undefined') return null;
   const token =
+    localStorage.getItem('auth_token') ||
+    localStorage.getItem('token') ||
     localStorage.getItem('vedbus_token') ||
-    localStorage.getItem('vedbus_user_token') ||
-    localStorage.getItem('token');
+    localStorage.getItem('vedbus_user_token');
   if (!token || token === 'null' || token === 'undefined' || token.trim() === '') return null;
   return token;
 }
@@ -43,11 +44,13 @@ export async function logoutUser(redirectTo = '/') {
     });
   } catch {}
   if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_user');
+    localStorage.removeItem('auth_token');
     localStorage.removeItem('vedbus_user');
     localStorage.removeItem('vedbus_token');
     localStorage.removeItem('vedbus_user_token');
     localStorage.removeItem('token');
-    window.dispatchEvent(new Event('vedbus-auth-change'));
+    window.dispatchEvent(new Event('auth-change'));
     if (redirectTo) {
       window.location.href = redirectTo;
     }
@@ -58,7 +61,7 @@ export function getUserAvatar(user) {
   if (user?.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http')) {
     return user.avatar;
   }
-  const seed = String(user?.id || user?.email || user?.phone || user?.name || 'vedbus_user');
+  const seed = String(user?.id || user?.email || user?.phone || user?.name || 'traveler_user');
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = (hash << 5) - hash + seed.charCodeAt(i);

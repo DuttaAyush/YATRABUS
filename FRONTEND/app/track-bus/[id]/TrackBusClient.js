@@ -50,7 +50,7 @@ export default function TrackBusClient({ params }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('vedbus_user_trips');
+        const stored = localStorage.getItem('user_trips') || localStorage.getItem('vedbus_user_trips');
         if (stored) {
           const trips = JSON.parse(stored);
           const found = trips.find(t => t.id === ticketId);

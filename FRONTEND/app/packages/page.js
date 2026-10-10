@@ -104,7 +104,7 @@ export default function CuratedPackagesMasterPage() {
         {/* HERO BACKGROUND IMAGE WITH SCROLL SCALE ZOOM */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
-            alt="VedBus Curated Travel Highway Banner"
+            alt="Curated Travel Highway Banner"
             src="/images/screen.png"
             className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
             style={{ transform: `scale(${scrollScale})` }}
@@ -126,7 +126,7 @@ export default function CuratedPackagesMasterPage() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 font-bold text-xs uppercase tracking-wider mb-3 sm:mb-4 border border-white/15 shadow-sm">
             <span className="material-symbols-outlined text-[16px]">explore</span>
-            VedBus Curated Travel Portal
+            Curated Travel Portal
           </span>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight mb-3 sm:mb-4 max-w-4xl mx-auto leading-tight">
             Explore All Curated Travel Packages

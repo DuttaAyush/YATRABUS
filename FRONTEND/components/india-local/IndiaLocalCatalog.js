@@ -8,7 +8,7 @@ const domesticPackagesData = [
   {
     id: 1,
     category: 'coastal',
-    image: '/images/vedbus_india_local_holiday_travel_packages_5.jpg',
+    image: '/images/yatra_india_local_holiday_travel_packages_5.jpg',
     duration: '4 Nights / 5 Days',
     subtitle: 'Luxury Bus / Flight + Cab',
     title: 'Goa Luxury Coastal & Heritage Villa',
@@ -20,7 +20,7 @@ const domesticPackagesData = [
   {
     id: 2,
     category: 'heritage',
-    image: '/images/vedbus_india_local_holiday_travel_packages_6.jpg',
+    image: '/images/yatra_india_local_holiday_travel_packages_6.jpg',
     duration: '5 Nights / 6 Days',
     subtitle: 'Houseboat + AC Sedan',
     title: 'Kerala Backwaters & Munnar Tea Trails',
@@ -32,7 +32,7 @@ const domesticPackagesData = [
   {
     id: 3,
     category: 'hills',
-    image: '/images/vedbus_india_local_holiday_travel_packages_7.jpg',
+    image: '/images/yatra_india_local_holiday_travel_packages_7.jpg',
     duration: '6 Nights / 7 Days',
     subtitle: 'Volvo AC Sleeper + Cab',
     title: 'Himachal Snow Valley & Rohtang Pass',
@@ -44,7 +44,7 @@ const domesticPackagesData = [
   {
     id: 4,
     category: 'heritage',
-    image: '/images/vedbus_india_local_holiday_travel_packages_8.jpg',
+    image: '/images/yatra_india_local_holiday_travel_packages_8.jpg',
     duration: '5 Nights / 6 Days',
     subtitle: 'BharatBenz AC Coach',
     title: 'Golden Triangle & Coastal Heritage Circuit',

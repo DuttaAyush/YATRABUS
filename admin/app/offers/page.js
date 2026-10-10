@@ -8,7 +8,7 @@ import { adminFetch } from "@/lib/api";
 const INITIAL_OFFERS = [
   {
     id: "OFF-101",
-    code: "VEDBUS100",
+    code: "YATRA100",
     title: "Flat ₹100 Off on First Bus Booking",
     type: "Flat Discount",
     discount: "₹ 100",
@@ -200,7 +200,7 @@ export default function OffersPage() {
         <div style={{ background: "#fff", borderRadius: 12, padding: "1rem", border: "1px solid #F1F5F9", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div style={{ fontSize: "0.72rem", color: "#94A3B8" }}>Top Performing Code</div>
           <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#2563EB", margin: "0.2rem 0" }}>
-            VEDBUS100
+            YATRA100
           </div>
           <div style={{ fontSize: "0.6875rem", color: "#64748B" }}>412 redemptions</div>
         </div>

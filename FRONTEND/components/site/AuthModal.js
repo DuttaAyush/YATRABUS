@@ -132,13 +132,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
           id: 'usr_' + Date.now(),
           name: `User ${mobileNumber.slice(-4)}`,
           phone: mobileNumber,
-          email: `${mobileNumber}@vedbus.in`,
+          email: `${mobileNumber}@yatrabus.in`,
           role: 'USER',
         };
         if (typeof window !== 'undefined') {
-          localStorage.setItem('vedbus_token', token);
-          localStorage.setItem('vedbus_user', JSON.stringify(user));
-          window.dispatchEvent(new Event('vedbus-auth-change'));
+          localStorage.setItem('auth_token', token);
+          localStorage.setItem('auth_user', JSON.stringify(user));
+          window.dispatchEvent(new Event('auth-change'));
+          window.dispatchEvent(new Event('storage'));
         }
         setSuccessMessage(`Welcome back, ${user.name || 'Traveller'}! Logging in...`);
         setTimeout(() => onClose(), 600);
@@ -185,9 +186,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
           role: 'USER',
         };
         if (typeof window !== 'undefined') {
-          localStorage.setItem('vedbus_token', token);
-          localStorage.setItem('vedbus_user', JSON.stringify(user));
-          window.dispatchEvent(new Event('vedbus-auth-change'));
+          localStorage.setItem('auth_token', token);
+          localStorage.setItem('auth_user', JSON.stringify(user));
+          window.dispatchEvent(new Event('auth-change'));
+          window.dispatchEvent(new Event('storage'));
         }
         setSuccessMessage(`Welcome back, ${user.name}! Logging in...`);
         setTimeout(() => onClose(), 600);
@@ -241,11 +243,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
           role: 'USER',
         };
         if (typeof window !== 'undefined') {
-          localStorage.setItem('vedbus_token', token);
-          localStorage.setItem('vedbus_user', JSON.stringify(user));
-          window.dispatchEvent(new Event('vedbus-auth-change'));
+          localStorage.setItem('auth_token', token);
+          localStorage.setItem('auth_user', JSON.stringify(user));
+          window.dispatchEvent(new Event('auth-change'));
+          window.dispatchEvent(new Event('storage'));
         }
-        setSuccessMessage(`Account created successfully for ${fullName}! Welcome to VedBus.`);
+        setSuccessMessage(`Account created successfully for ${fullName}! Welcome aboard.`);
         setTimeout(() => onClose(), 600);
       } else {
         setErrors({ general: data.message || 'Registration failed. Please check your details.' });
@@ -283,7 +286,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
           <div>
             <div className="flex items-center justify-between gap-4 mb-3 sm:mb-4">
               <div className="flex items-center gap-2">
-                <img src="/images/logo.png" alt="VedBus Logo" className="h-7 sm:h-8 w-auto object-contain" />
+                <img src="/images/logo.png" alt="YatraBus Logo" className="h-7 sm:h-8 w-auto object-contain" />
               </div>
 
               {/* Mode Toggle Switcher: Log In / Sign Up */}
@@ -328,7 +331,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
               </>
             ) : (
               <>
-                <h2 className="text-xl sm:text-3xl font-serif font-bold text-slate-900">Create your VedBus Account</h2>
+                <h2 className="text-xl sm:text-3xl font-serif font-bold text-slate-900">Create your Account</h2>
                 <p className="text-xs text-slate-500 mt-1">
                   Join thousands of travellers exploring India with comfort &amp; safety.
                 </p>
@@ -579,7 +582,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                   }}
                   className="text-xs font-bold text-slate-600 hover:text-brand-scarlet transition-colors"
                 >
-                  New to VedBus? <span className="text-brand-scarlet underline">Create Account ➔</span>
+                  Don&apos;t have an account? <span className="text-brand-scarlet underline">Create Account ➔</span>
                 </button>
               </div>
             </div>
@@ -742,7 +745,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                 disabled={isSubmitting}
                 className="w-full min-h-[44px] rounded-xl bg-brand-scarlet hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-red-600/20 flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-60"
               >
-                <span>{isSubmitting ? 'Creating Account...' : 'Create VedBus Account'}</span>
+                <span>{isSubmitting ? 'Creating Account...' : 'Create Account'}</span>
                 <span className="material-symbols-outlined text-[18px]">person_add</span>
               </button>
 
@@ -783,7 +786,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         <div className="md:col-span-5 relative hidden md:flex flex-col justify-between p-6 sm:p-8 text-white overflow-hidden bg-slate-950 max-h-[92dvh] sm:max-h-[90vh]">
           <img
             src="/images/domestic-hero.jpg"
-            alt="VedBus Luxury Coach on Expressway"
+            alt="Luxury Coach on Expressway"
             className="absolute inset-0 w-full h-full object-cover object-center opacity-75"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />

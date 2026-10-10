@@ -108,7 +108,7 @@ export default function InternationalHero() {
             alt="Breathtaking sunlit turquoise ocean and mountains"
             className="w-full h-full object-cover object-center will-change-transform transition-transform duration-100 ease-out"
             style={{ transform: `scale(${scrollScale})` }}
-            src="/images/vedbus_international_holiday_travel_packages_1.jpg"
+            src="/images/yatra_international_holiday_travel_packages_1.jpg"
             fetchPriority="high"
             loading="eager"
             decoding="async"

@@ -29,10 +29,10 @@ export default function AuthGuard({
     };
 
     checkAuth();
-    window.addEventListener('vedbus-auth-change', checkAuth);
+    window.addEventListener('auth-change', checkAuth);
     window.addEventListener('storage', checkAuth);
     return () => {
-      window.removeEventListener('vedbus-auth-change', checkAuth);
+      window.removeEventListener('auth-change', checkAuth);
       window.removeEventListener('storage', checkAuth);
     };
   }, []);

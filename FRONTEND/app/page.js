@@ -10,7 +10,7 @@ import InternationalPackages from '@/components/site/InternationalPackages';
 import SpiritualPackages from '@/components/site/SpiritualPackages';
 import DomesticPackages from '@/components/site/DomesticPackages';
 import Hospitality from '@/components/site/Hospitality';
-import WhyVedBus from '@/components/site/WhyVedBus';
+import WhyUs from '@/components/site/WhyUs';
 import Testimonials from '@/components/site/Testimonials';
 import ContactForm from '@/components/site/ContactForm';
 import Footer from '@/components/site/Footer';
@@ -33,7 +33,7 @@ export default function HomePage() {
           <InternationalPackages />
           <SpiritualPackages />
           <DomesticPackages />
-          <WhyVedBus />
+          <WhyUs />
           <Hospitality />
           <Testimonials />
           <ContactForm />

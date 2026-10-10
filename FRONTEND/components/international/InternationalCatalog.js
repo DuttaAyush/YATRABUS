@@ -8,7 +8,7 @@ const packagesData = [
   {
     id: 1,
     category: 'family',
-    image: '/images/vedbus_international_holiday_travel_packages_6.jpg',
+    image: '/images/yatra_international_holiday_travel_packages_6.jpg',
     duration: '5 Nights / 6 Days',
     subtitle: 'Return Flights • Visa',
     title: 'Dubai & Abu Dhabi Royal Extravaganza',
@@ -19,7 +19,7 @@ const packagesData = [
   {
     id: 2,
     category: 'honeymoon',
-    image: '/images/vedbus_international_holiday_travel_packages_8.jpg',
+    image: '/images/yatra_international_holiday_travel_packages_8.jpg',
     duration: '6 Nights / 7 Days',
     subtitle: 'Direct Flights Included',
     title: 'Bali & Southeast Asia Island Odyssey',
@@ -30,7 +30,7 @@ const packagesData = [
   {
     id: 3,
     category: 'europe',
-    image: '/images/vedbus_international_holiday_travel_packages_9.jpg',
+    image: '/images/yatra_international_holiday_travel_packages_9.jpg',
     duration: '8 Nights / 9 Days',
     subtitle: 'Schengen Visa Concierge',
     title: 'Grand Wonders of Europe: Swiss Alps & Paris',
@@ -41,7 +41,7 @@ const packagesData = [
   {
     id: 4,
     category: 'honeymoon',
-    image: '/images/vedbus_international_holiday_travel_packages_10.jpg',
+    image: '/images/yatra_international_holiday_travel_packages_10.jpg',
     duration: '5 Nights / 6 Days',
     subtitle: 'Island Flight + Ferry',
     title: 'Santorini Romantic Cyclades Getaway',

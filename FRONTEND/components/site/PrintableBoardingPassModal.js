@@ -10,13 +10,13 @@ export default function PrintableBoardingPassModal({ isOpen, onClose, ticketData
   const {
     id = 'YB-994821',
     bookingId = id,
-    operator = 'VedBus Luxury Gold Express',
+    operator = 'Luxury Gold Express',
     busType = 'Volvo 9600 Multi-Axle 2+1 AC Sleeper',
     busPlate = 'MH-12-QZ-8812',
     from = 'Nagpur',
-    fromStation = 'VedBus Central Hub, Dharampeth',
+    fromStation = 'Central Hub, Dharampeth',
     to = 'Pune',
-    toStation = 'VedBus Swargate Lounge, Pune',
+    toStation = 'Swargate Lounge, Pune',
     depTime = '20:30',
     depDate = 'Scheduled Journey',
     arrTime = '07:00',
@@ -49,10 +49,10 @@ export default function PrintableBoardingPassModal({ isOpen, onClose, ticketData
   };
 
   const handleShare = () => {
-    const text = `🎟️ VedBus Confirmed Ticket #${bookingId}\n🚌 ${operator} (${busPlate})\n🛣️ ${from} ➔ ${to}\n🕒 ${depDate} at ${depTime}\n💺 Seats: ${Array.isArray(seats) ? seats.join(', ') : seats}\n💰 Amount: ₹${totalFare}`;
+    const text = `🎟️ Confirmed Ticket #${bookingId}\n🚌 ${operator} (${busPlate})\n🛣️ ${from} ➔ ${to}\n🕒 ${depDate} at ${depTime}\n💺 Seats: ${Array.isArray(seats) ? seats.join(', ') : seats}\n💰 Amount: ₹${totalFare}`;
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator.share({
-        title: `VedBus E-Ticket #${bookingId}`,
+        title: `E-Ticket #${bookingId}`,
         text: text,
         url: typeof window !== 'undefined' ? `${window.location.origin}/track-bus/${bookingId}` : '',
       }).catch(() => {});
@@ -320,7 +320,7 @@ export default function PrintableBoardingPassModal({ isOpen, onClose, ticketData
                 <span className="text-slate-300">Fare Payment: <strong className="text-emerald-400 font-bold">PAID IN FULL (₹{Number(totalFare).toLocaleString('en-IN')})</strong></span>
               </div>
               <div className="text-slate-400 text-[11px]">
-                Valid for journey on date specified. Subject to VedBus terms &amp; conditions.
+                Valid for journey on date specified. Subject to official terms &amp; conditions.
               </div>
             </div>
 

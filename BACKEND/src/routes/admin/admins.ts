@@ -11,7 +11,7 @@ let devAdmins: any[] = [
   {
     id: 'dev-admin-uuid-001',
     name: 'Super Admin',
-    email: 'admin@vedbus.in',
+    email: 'admin@yatrabus.in',
     phone: '+91 99999 88888',
     role: 'SUPER_ADMIN',
     isActive: true,
@@ -21,7 +21,7 @@ let devAdmins: any[] = [
   {
     id: 'dev-admin-uuid-002',
     name: 'Operations Manager',
-    email: 'ops@vedbus.in',
+    email: 'ops@yatrabus.in',
     phone: '+91 98765 00001',
     role: 'ADMIN',
     isActive: true,
@@ -31,7 +31,7 @@ let devAdmins: any[] = [
   {
     id: 'dev-admin-uuid-003',
     name: 'Support Supervisor',
-    email: 'support.lead@vedbus.in',
+    email: 'support.lead@yatrabus.in',
     phone: '+91 98765 00002',
     role: 'ADMIN',
     isActive: true,

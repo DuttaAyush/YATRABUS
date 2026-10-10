@@ -683,7 +683,7 @@ export default function TripsPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "2px solid #0F172A", paddingBottom: "1rem", marginBottom: "1rem" }}>
               <div>
                 <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.01em" }}>
-                  <span style={{ color: "#B91C1C" }}>VEDBUS</span> PASSENGER MANIFEST
+                  <span style={{ color: "#B91C1C" }}>OFFICIAL</span> PASSENGER MANIFEST
                 </div>
                 <div style={{ fontSize: "0.75rem", color: "#64748B", marginTop: 2 }}>
                   Official Boarding & Conductor Passenger Roll

@@ -69,7 +69,7 @@ export default function AdminsManagementPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const u = JSON.parse(localStorage.getItem("vedbus_admin_user") || "{}");
+        const u = JSON.parse(localStorage.getItem("admin_user") || localStorage.getItem("vedbus_admin_user") || "{}");
         if (u.id) setCurrentAdminId(u.id);
       } catch {}
     }
@@ -691,7 +691,7 @@ export default function AdminsManagementPage() {
             fontSize: "0.8125rem", color: "#64748B"
           }}>
             <span>Showing {filteredAdmins.length} of {admins.length} administrator accounts</span>
-            <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>VedBus Enterprise Auth &bull; Admin Table</span>
+            <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Enterprise Auth &bull; Admin Table</span>
           </div>
         </div>
       </div>
@@ -751,7 +751,7 @@ export default function AdminsManagementPage() {
                 <input
                   type="email"
                   required
-                  placeholder="priya@vedbus.in"
+                  placeholder="priya@yatrabus.in"
                   value={newAdmin.email}
                   onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
                   style={{

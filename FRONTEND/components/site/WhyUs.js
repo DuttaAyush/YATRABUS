@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 
-export default function WhyVedBus() {
+export default function WhyUs() {
   const advantageCards = [
     {
       title: 'Instant Bus Plate Allocation',
@@ -55,8 +55,8 @@ export default function WhyVedBus() {
       {/* BACKGROUND GRAPHIC IMAGE */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/images/why_vedbus_bg.png"
-          alt="Why VedBus Advantage Background"
+          src="/images/why_us_bg.png"
+          alt="Why Book With Us Background"
           className="w-full h-full object-cover object-center pointer-events-none"
         />
         {/* Light Tint Overlay */}
@@ -69,10 +69,10 @@ export default function WhyVedBus() {
         {/* SECTION HEADER */}
         <div className="text-center max-w-xl mx-auto mb-8 sm:mb-10 space-y-1.5">
           <span className="text-[11px] font-extrabold text-red-500 uppercase tracking-widest block">
-            THE vedbus ADVANTAGE
+            THE ADVANTAGE
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-extrabold text-slate-900 tracking-tight leading-tight">
-            Why Book Directly on VedBus?
+            Why Book Directly With Us?
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed pt-0.5">
             More savings. More control. A smoother journey from start to finish.
